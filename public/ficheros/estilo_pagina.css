@@ -1,0 +1,168 @@
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+body
+{
+	  display: flex;
+	  flex-direction: column;
+	  margin: 0;
+	  min-height: 100vh;
+}
+
+/* este contenedor1 es hijo de un contenedor padre flex */
+/* por tanto podemos aplicar propiedades flex->hijos */
+/* nunca propiedades flex->padre porque no es padre */
+/* si en este contenedor queremos meter hijos flex, este contenedor lo tendríamos que hacer padre flex con display:flex */
+.contenedor1
+{
+	display: flex;
+	border: solid 1px red;
+	/* la capacidad de un elemento flexible para alterar sus dimensiones*/
+	flex: 1;
+	/* eje horizontal - x */
+	justify-content: center;
+	/* eje vertical - y */
+	align-items: center;		
+	border-radius:8px;
+	margin:28px;
+}
+
+.contenedor2
+{
+	display: flex;
+	flex-direction: column;
+	border: solid 0px red;
+	/* la capacidad de un elemento flexible para alterar sus dimensiones*/
+	flex: 1;
+	/* eje horizontal - x */
+	justify-content: center;
+	/* eje vertical - y */
+	align-items: center;	
+	margin: 15px;
+}
+
+.contenedor3
+{
+	
+	border: solid 0px blue;
+	/* eje horizontal - x */
+	/*justify-content: start;*/
+	/* eje vertical - y */
+	/*align-items: start;*/
+	
+	/* anula alineación vertical especificada en .contenedor2 */
+	/* se alinea verticalmente arriba */
+	align-self: flex-start;
+	
+	/* para que pueda crecer */
+	flex-Grow: 1;
+	font-family: sans-serif;
+}
+
+
+.label_mensaje
+{
+	border-style: solid;
+	border-width: 1px;
+	border-color: blue;
+	  /* redondeado */
+	border-radius: 6px;
+	padding:7px;
+}
+
+#imagenlogo
+{
+	border: solid 0px blue;
+	max-width: 90%;
+	border-radius:8px;
+	padding:10px;
+	
+}
+
+.footer
+{
+	display: flex;
+	/* factor de contracción */
+	/* flex-shrink:0; */
+	background-color: white;
+	/* border-width: 1px; */
+	/* border-color: blue; */
+	height: 60px;
+	/* eje vertical - y */
+	align-items: center;
+	/* eje horizontal - x */
+	justify-content: center;	
+	color: navy;
+	font-size: 16px;
+	font-family: sans-serif;
+}
+
+.div_mensaje
+{
+	display: flex;
+	border-style: solid;
+	border-width: 1px;
+	border-color: LightSalmon;
+	background-color:NavajoWhite;
+	color: brown;
+	
+	align-items: center;
+	justify-content: center;		
+	
+	border-radius: 4px;
+}
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+@media (max-width: 1000px)
+{
+	
+.contenedor3
+{
+	/*width:100%;*/
+}
+
+}
+
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+@media only screen and (max-width: 780px)
+{
+
+	.contenedor2
+	{
+		flex-direction: column;
+	}
+	
+	.contenedor3
+	{
+		width:100%;
+	}
+
+	#boton1,#boton1,#criterio1, #criterio2,#mensaje_label,#nif,#L1
+	{
+		display: block;
+	}
+
+	#criterio1
+	{
+		margin-bottom:10px;
+	}
+	
+	#mensaje_label
+	{
+		margin-top:10px;
+		margin-bottom:10px;
+	}
+	
+	#nif,#L1
+	{
+		margin-left:5px;
+	}
+}
+
+

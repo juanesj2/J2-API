@@ -1,0 +1,197 @@
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+
+.titulo
+{
+	font-size: 24px;
+	color: white;
+}
+
+.BarraNavegar
+{
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
+	/* márgenes interiores de la barra de navegación */
+	padding: 10px;
+	font-size: 20px;
+	color: white;	
+	background-color: white;
+	font-family: calibri;
+}
+ 
+ .cabecera
+ {
+	 display:flex;
+	 align-items:center;
+ }
+ 
+.Grupo_opciones
+{
+	display:flex;
+	align-items: end;
+}
+ 
+.Opcion_menu
+{
+	/* espacio a la derecha entre opciones de menú */
+	padding-right: 30px;
+}
+
+.label_menu
+{
+	cursor:pointer;
+}
+ 
+.label_menu: hover
+{
+  color: black;
+}
+
+.Grupo_opciones_derecha
+{
+	margin-left:auto;
+	align-items: end;
+	padding-top:15px;
+}
+
+.Opcion_menu_icono
+{
+	display: none;
+}
+
+.L1
+{
+	font-size: 23px;
+	font-family:Calibri;
+	color:white;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.L2
+{
+	font-size: 23px;
+	font-family:Calibri;
+	color:aqua;
+	padding-left: 0px;
+	padding-top:15px;
+	padding-right:5px;
+}
+
+.L3
+{
+	font-size: 23px;
+	font-family:Calibri;
+	color:yellow;
+	padding-right:20px;
+	padding-top:15px;
+}
+
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+@media (max-width: 1000px)
+{
+.titulo
+{
+	font-size: 18px;
+}
+
+.Opcion_menu
+{
+	/* espacio a la derecha entre opciones de menú */
+	padding-right: 15px;
+}
+
+.label_menu
+{
+	font-size: 18px;
+}
+
+.L1,.L2,.L3
+{
+	font-size: 20px;
+}
+
+}
+
+
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+@media only screen and (max-width: 780px)
+{
+
+.Grupo_opciones,.BarraNavegar
+{
+	flex-direction: column;
+}
+
+.Grupo_opciones
+{
+	display:none;
+}
+		
+.Grupo_opciones_derecha
+{
+	margin-left:0px;
+}
+
+.Opcion_menu_icono
+{
+	/* visualizo icono móvil */
+	display: initial;
+	align-self: flex-end;
+	position: absolute;
+	margin-top: 70px;
+	margin-right: 10px;
+	cursor: pointer;
+}	 
+
+.Opcion_menu
+{
+	/* espacio a la derecha entre opciones de menú */
+	padding:0px;
+}
+
+.label_menu
+{
+	display:block;
+	border: solid 1px white;
+	width:100%;
+	text-align: center;
+	margin-top:4px;	
+}
+
+ .cabecera
+ {
+	 flex-direction: column;
+	 align-items:center;
+ }
+
+.L1,.L2,.L3
+{
+	padding:0px;
+}
+
+.L3
+{
+	padding-bottom:10px;
+}
+
+.Opcion_menu
+{
+	width:100%;
+}
+
+.visualizo
+{
+	display: flex;
+}	 
+
+}

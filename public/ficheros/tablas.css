@@ -1,0 +1,134 @@
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+
+table.table
+{
+   width: 80%;
+}
+
+.table th,.table td
+{ 
+  text-align: left; 
+  vertical-align: middle;
+  padding: 0.40em;
+  border: 1px solid blue;
+  font-family: calibri;
+  font-size: 16px;
+  border-radius:8px;
+}
+
+
+.table th
+{
+  text-align: left;
+  background-color: POWDERBLUE; 
+  color: MEDIUMBLUE;
+}
+
+
+.table td:nth-child(1),
+.table th:nth-child(1)
+{
+  text-align: center;
+  background-color: lemonchiffon;
+  color: black;
+  width:5%;
+}
+
+.table td:nth-child(2),
+.table th:nth-child(2)
+{
+  text-align: center;
+  width:10%;
+}
+
+.table td:nth-child(3),
+.table th:nth-child(3)
+{
+  text-align: left;
+  /*background-color: lightgreen; */
+  width:20%;
+}
+
+.table td:nth-child(4),
+.table th:nth-child(4)
+{
+  text-align: left;
+  /*background-color: lightblue;*/
+  width:20%;
+}
+
+.table td:nth-child(5),
+.table th:nth-child(5)
+{
+  text-align: center;
+  /*background-color: lightpink;*/
+  width:5%;
+}
+
+.table td:nth-child(6),
+.table th:nth-child(6)
+{
+  text-align: center;
+  width:10%;
+}
+
+.table td:nth-child(7),
+.table th:nth-child(7)
+{
+  background-color: lemonchiffon;
+  text-align: center;
+  width:40%;
+}
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+
+
+
+
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+@media (max-width: 768px)
+{
+  tr
+  { 
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: wrap;
+	
+	justify-content: center;
+	align-items: center;
+
+    /* espacio entre registro y registro */
+    margin: 0.5em 0;
+
+  }
+  
+  td,th
+  {
+    /* flex-grow: como crecen... 1 igual/2 distinto */
+    /* flex-shrink: encogimiento #main div:nth-of-type(2) {flex-shrink: 6;} */
+    /* muy importante: probar a quitar el siguiente */
+    /* flex-basis: define el tamaño predeterminado de un elemento antes de que se distribuya el espacio restante */ 
+    flex: 1 1 150px;
+ 	align-self: stretch;
+
+  }
+
+
+/* hacemos referencia a todos */
+.table td:nth-child(n),
+.table th:nth-child(n)
+  {
+    text-align: center;
+	vertical-align:  middle;
+  }
+ 
+}
+

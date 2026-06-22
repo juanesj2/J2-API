@@ -1,0 +1,287 @@
+{
+  "_MainLayout-Di-FODYY.js": {
+    "file": "assets/MainLayout-Di-FODYY.js",
+    "name": "MainLayout",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_leaflet-CG6DamIu.css": {
+    "file": "assets/leaflet-CG6DamIu.css",
+    "src": "_leaflet-CG6DamIu.css"
+  },
+  "_leaflet-Dhgky1jM.js": {
+    "file": "assets/leaflet-Dhgky1jM.js",
+    "name": "leaflet",
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/leaflet-CG6DamIu.css"
+    ],
+    "assets": [
+      "assets/layers-BWBAp2CZ.png",
+      "assets/layers-2x-Bpkbi35X.png",
+      "assets/marker-icon-hN30_KVU.png"
+    ]
+  },
+  "node_modules/leaflet/dist/images/layers-2x.png": {
+    "file": "assets/layers-2x-Bpkbi35X.png",
+    "src": "node_modules/leaflet/dist/images/layers-2x.png"
+  },
+  "node_modules/leaflet/dist/images/layers.png": {
+    "file": "assets/layers-BWBAp2CZ.png",
+    "src": "node_modules/leaflet/dist/images/layers.png"
+  },
+  "node_modules/leaflet/dist/images/marker-icon.png": {
+    "file": "assets/marker-icon-hN30_KVU.png",
+    "src": "node_modules/leaflet/dist/images/marker-icon.png"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Q0OuL_Tm.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/Pages/Admin/Dashboard.jsx": {
+    "file": "assets/Dashboard-BNEKcr1C.js",
+    "name": "Dashboard",
+    "src": "resources/js/Pages/Admin/Dashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Admin/FotografiaEdit.jsx": {
+    "file": "assets/FotografiaEdit-Bu5C7E7G.js",
+    "name": "FotografiaEdit",
+    "src": "resources/js/Pages/Admin/FotografiaEdit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Admin/Fotografias.jsx": {
+    "file": "assets/Fotografias-Ddo-IBe5.js",
+    "name": "Fotografias",
+    "src": "resources/js/Pages/Admin/Fotografias.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Admin/ReporteDetalle.jsx": {
+    "file": "assets/ReporteDetalle-DpG5yTWH.js",
+    "name": "ReporteDetalle",
+    "src": "resources/js/Pages/Admin/ReporteDetalle.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Admin/Reportes.jsx": {
+    "file": "assets/Reportes-3LQMRIHc.js",
+    "name": "Reportes",
+    "src": "resources/js/Pages/Admin/Reportes.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Admin/UsuarioEdit.jsx": {
+    "file": "assets/UsuarioEdit-B9tl2PTQ.js",
+    "name": "UsuarioEdit",
+    "src": "resources/js/Pages/Admin/UsuarioEdit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Admin/Usuarios.jsx": {
+    "file": "assets/Usuarios-DSQm-P0z.js",
+    "name": "Usuarios",
+    "src": "resources/js/Pages/Admin/Usuarios.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Auth/Login.jsx": {
+    "file": "assets/Login-CwV0og-d.js",
+    "name": "Login",
+    "src": "resources/js/Pages/Auth/Login.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Auth/Register.jsx": {
+    "file": "assets/Register-7b5602JJ.js",
+    "name": "Register",
+    "src": "resources/js/Pages/Auth/Register.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/js/Pages/Desafios/Index.jsx": {
+    "file": "assets/Index-CijtPv2i.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Desafios/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Desafios/MisDesafios.jsx": {
+    "file": "assets/MisDesafios-BJv4PqSt.js",
+    "name": "MisDesafios",
+    "src": "resources/js/Pages/Desafios/MisDesafios.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Fotografias/Comentar.jsx": {
+    "file": "assets/Comentar-CCLZzc_Q.js",
+    "name": "Comentar",
+    "src": "resources/js/Pages/Fotografias/Comentar.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js",
+      "_leaflet-Dhgky1jM.js"
+    ]
+  },
+  "resources/js/Pages/Fotografias/Create.jsx": {
+    "file": "assets/Create-DTgV1IkU.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Fotografias/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js",
+      "_leaflet-Dhgky1jM.js"
+    ]
+  },
+  "resources/js/Pages/Fotografias/Index.jsx": {
+    "file": "assets/Index-BkXAlyEI.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Fotografias/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Fotografias/MisFotografias.jsx": {
+    "file": "assets/MisFotografias-DX4hDdD2.js",
+    "name": "MisFotografias",
+    "src": "resources/js/Pages/Fotografias/MisFotografias.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Fotografias/Reportar.jsx": {
+    "file": "assets/Reportar-BAOPXFCx.js",
+    "name": "Reportar",
+    "src": "resources/js/Pages/Fotografias/Reportar.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Grupos/Create.jsx": {
+    "file": "assets/Create-B-hmpbRL.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Grupos/Create.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Grupos/Index.jsx": {
+    "file": "assets/Index-DOD0q5AB.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Grupos/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Grupos/Join.jsx": {
+    "file": "assets/Join-DAChnmYv.js",
+    "name": "Join",
+    "src": "resources/js/Pages/Grupos/Join.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Grupos/Show.jsx": {
+    "file": "assets/Show-z4zO7shY.js",
+    "name": "Show",
+    "src": "resources/js/Pages/Grupos/Show.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/Pages/Profile/Edit.jsx": {
+    "file": "assets/Edit-CYkdHTL_.js",
+    "name": "Edit",
+    "src": "resources/js/Pages/Profile/Edit.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-Di-FODYY.js"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-DCETQbAe.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/Admin/Dashboard.jsx",
+      "resources/js/Pages/Admin/FotografiaEdit.jsx",
+      "resources/js/Pages/Admin/Fotografias.jsx",
+      "resources/js/Pages/Admin/ReporteDetalle.jsx",
+      "resources/js/Pages/Admin/Reportes.jsx",
+      "resources/js/Pages/Admin/UsuarioEdit.jsx",
+      "resources/js/Pages/Admin/Usuarios.jsx",
+      "resources/js/Pages/Auth/Login.jsx",
+      "resources/js/Pages/Auth/Register.jsx",
+      "resources/js/Pages/Desafios/Index.jsx",
+      "resources/js/Pages/Desafios/MisDesafios.jsx",
+      "resources/js/Pages/Fotografias/Comentar.jsx",
+      "resources/js/Pages/Fotografias/Create.jsx",
+      "resources/js/Pages/Fotografias/Index.jsx",
+      "resources/js/Pages/Fotografias/MisFotografias.jsx",
+      "resources/js/Pages/Fotografias/Reportar.jsx",
+      "resources/js/Pages/Grupos/Create.jsx",
+      "resources/js/Pages/Grupos/Index.jsx",
+      "resources/js/Pages/Grupos/Join.jsx",
+      "resources/js/Pages/Grupos/Show.jsx",
+      "resources/js/Pages/Profile/Edit.jsx"
+    ],
+    "css": [
+      "assets/app-Q0OuL_Tm.css"
+    ]
+  }
+}

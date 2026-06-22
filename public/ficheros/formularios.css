@@ -1,0 +1,278 @@
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+/*************************** MONITOR  GRANDE ***********************************/
+.contenedor-formulario
+{
+	padding-top: 30px;
+	padding-right: 20px;
+	padding-bottom: 10px;
+	padding-left: 30px;
+	
+	
+	border: solid 1px blue;   
+	font-family: Arial, Helvetica;
+	border-radius:8px;
+ }
+ 
+ .form-group
+{
+   display: flex;
+   flex-direction: row;
+}
+ 
+ .form-group label
+{
+	width: 100px;
+	height: 25px;
+	font-weight: bold;
+	font-size: 16px;
+	text-align: right;
+	margin-top: 6px;
+}
+
+.form-group .input-control
+{
+	margin-bottom: 10px;
+	margin-right: 8px;
+	margin-left: 3px;
+	height: 25px;
+	
+	font-family: Helvetica;
+	font-size: 16px;
+	text-transform: uppercase;  
+}
+
+.input-control
+{
+	text-transform: uppercase;  
+}
+
+.input-control:focus
+{
+	background-color:#F6CEF5;
+}
+ 
+ .leyenda
+ {
+ 	font-weight: bold;
+	font-size: 22px;
+	font-family: Helvetica;
+	color: brown;
+ }
+ 
+#img1
+{
+	margin-left: 105px;
+	margin-bottom: 5px;
+	border-radius:6px;
+	width:80px;
+	height:80px;
+	border:1px solid blue;
+}
+
+.boton
+{
+  background-color: DodgerBlue; 
+  border: none; 
+  color: white; 
+  padding: 15px;
+  margin-top:10px;
+  margin-right:10px;
+  margin-left:5px;
+  font-size: 16px; 
+  cursor: pointer; 
+  /* redondeado */
+  border-radius: 8px;
+  width: 120px;
+}
+
+.boton2
+{
+  background-color: #27AE60; 
+  border: none; 
+  color: white; 
+  padding: 15px;
+  margin-top:10px;
+  margin-right:10px;
+  margin-left:5px;
+  font-size: 16px; 
+  cursor: pointer; 
+  /* redondeado */
+  border-radius: 8px;
+  width: 120px;
+}
+
+.boton:hover
+{
+  background-color: RoyalBlue;
+}
+
+.boton2:hover
+{
+  background-color: #229954;
+}
+
+.boton:disabled 
+{
+  background-color: red;
+  cursor: not-allowed;
+}
+
+#mensaje
+{
+	margin-top:25px;
+}
+
+.titulo
+{
+	font-size: 28px;
+}
+
+.boton_ant_sig
+{
+  background-color: DodgerBlue; 
+  color: white; 
+  cursor: pointer; 
+  border-radius: 5px;
+  width: 50px;
+  height:30px;
+  border: none; 
+}
+
+.boton_ant_sig:disabled 
+{
+  background-color: red;
+  cursor: not-allowed;
+}
+
+#label1
+{
+	display:inline;
+	font-family: Helvetica;
+ 	font-weight: bold;
+	font-size: 20px;
+	color: brown;
+}
+
+#label2
+{
+	display:inline;
+	font-family: Helvetica;
+ 	font-weight: bold;
+	font-size: 20px;
+	color: blue;
+}
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+/**************************** TAMAÑO TABLET ************************************/
+@media (max-width: 1000px)
+{
+	
+.contenedor-formulario
+{
+	border-color: green;
+}
+
+.form-group .input-control
+{
+	font-size: 16px; 
+	/*background-color: yellow;*/
+}
+
+.form-group label
+{
+	text-align: right;
+	font-size: 16px; 
+}   
+
+.titulo
+{
+	font-size: 24px;
+}
+
+}
+
+
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+/**************************** TAMAÑO MÓVIL ************************************/
+@media (max-width: 780px)
+{
+	
+.contenedor-formulario
+{
+	border-color: fuchsia;   
+	padding: 20px;
+	margin-bottom:20px;
+	margin-top:20px;
+	
+}
+
+.form-group
+ {
+	 flex-direction: column;
+ }
+		   
+.form-group .input-control
+{
+	margin-left: 0px;
+	margin-bottom: 10px;	
+	margin-top: 5px;
+	min-width: 100%;
+	font-size: 14px; 
+	background-color: initial;
+}
+
+.form-group label
+{
+	text-align: left;
+	margin-top: 0px;
+	height: 15px;
+	font-size: 14px; 
+	font-weight: normal;
+}   
+
+.input-control:focus
+{
+	  background-color:#F6CEF5;
+}
+
+.boton,.boton2
+{
+	font-size: 14px; 
+	width: 100%;
+	margin-right:0px;
+	margin-left:0px;
+}
+
+/* botón selección fichero imagen */
+#imagen
+{
+	width: 140px;
+}   		
+
+#img1
+{
+	margin-left: 0px;
+}
+
+.titulo
+{
+	font-size: 20px;
+}
+
+#provincia
+{
+	margin-top:4px;
+}
+
+ .leyenda
+ {
+	font-size: 18px;
+ }
+}
+
+ 
