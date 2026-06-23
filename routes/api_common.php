@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/usuario', [UserController::class, 'show']);
     Route::put('/usuario', [UserController::class, 'update']);
+    Route::delete('/usuario', [UserController::class, 'destroySelf']);
     Route::get('/usuarios/buscar', [UserController::class, 'search']);
 
     // Admin routes (Usuarios)

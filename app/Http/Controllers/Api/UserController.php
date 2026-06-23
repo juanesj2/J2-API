@@ -130,6 +130,30 @@ class UserController extends Controller
     }
 
     /**
+     * Remove the authenticated user's own account.
+     */
+    public function destroySelf(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $user = clone $request->user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'password' => ['La contraseña proporcionada es incorrecta.'],
+            ]);
+        }
+
+        // Logout the user and delete the account
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json(['message' => 'Cuenta eliminada correctamente']);
+    }
+
+    /**
      * Search users by name.
      */
     public function search(Request $request)

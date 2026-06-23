@@ -122,4 +122,40 @@ class GrupoController extends Controller
 
         return response()->json(['message' => 'Has salido del grupo']);
     }
+    public function getMensajes($id)
+    {
+        $grupo = Grupo::findOrFail($id);
+        
+        $mensajes = \App\Models\GrupoMensaje::where('grupo_id', $grupo->id)
+            ->with('user')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json(['data' => $mensajes]);
+    }
+
+    public function storeMensaje(Request $request, $id)
+    {
+        $request->validate([
+            'mensaje' => 'required|string',
+        ]);
+
+        $grupo = Grupo::findOrFail($id);
+        $user = $request->user();
+
+        // Verify user is in group
+        if (!$grupo->usuarios()->where('usuario_id', $user->id)->exists()) {
+            return response()->json(['error' => 'No perteneces a este grupo'], 403);
+        }
+
+        $mensaje = \App\Models\GrupoMensaje::create([
+            'grupo_id' => $grupo->id,
+            'usuario_id' => $user->id,
+            'mensaje' => $request->mensaje,
+        ]);
+
+        $mensaje->load('user');
+
+        return response()->json(['data' => $mensaje]);
+    }
 }

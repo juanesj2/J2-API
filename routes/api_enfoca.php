@@ -33,6 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/grupos/mis-grupos', [GrupoController::class, 'misGrupos']);
     Route::post('/grupos/unirse', [GrupoController::class, 'unirse']);
     Route::delete('/grupos/{id}/salir', [GrupoController::class, 'salir']);
+    Route::get('/grupos/{id}/mensajes', [GrupoController::class, 'getMensajes']);
+    Route::post('/grupos/{id}/mensajes', [GrupoController::class, 'storeMensaje']);
     Route::apiResource('grupos', GrupoController::class);
 
     // ----- DESAFIOS -----
