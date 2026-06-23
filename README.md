@@ -1,58 +1,48 @@
-# J2-API: Servicio Central de API
+<div align="center">
+  <img src="public/imagenes/logo_ENFOKA-sin-fondo.png" alt="J2 Hub Logo" width="200"/>
 
-J2-API es un backend centralizado construido con **Laravel 11** diseñado para proveer servicios RESTful a múltiples aplicaciones y plataformas (Frontend Web, Móvil, etc.).
+  <h1>🚀 J2 API & Hub Central</h1>
+  <p>El centro neurálgico para el ecosistema de aplicaciones de JuanStiven.</p>
+  
+  ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+  ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+  ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+  ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)
+</div>
 
-## 🚀 Arquitectura
+---
 
-Este repositorio está desacoplado de los frontends cliente. Utiliza **Laravel Sanctum** para ofrecer:
-- Autenticación segura para SPAs (Single Page Applications) mediante cookies de sesión (CSRF / stateful authentication).
-- Autenticación por Tokens (API Tokens) para aplicaciones móviles y clientes de terceros.
+## 🌟 ¿Qué es J2 API & Hub?
 
-## 📦 Requisitos del Sistema
+J2 API es un servidor **RESTful de alto rendimiento** construido con Laravel 11. No solo sirve los datos de las aplicaciones móviles y web (como *Enfoca* y *Love Widget*), sino que incorpora un **Panel de Control Premium (J2 Hub)** desde el cual se puede gestionar toda la infraestructura.
 
-- PHP >= 8.2
-- Composer
-- Base de datos MySQL / MariaDB / PostgreSQL
+### ✨ Características del Hub
+- **Detección Dinámica de Apps:** Lee automáticamente las rutas y descubre qué aplicaciones están activas en el servidor.
+- **Gestión de Usuarios:** Lista completa de todos los usuarios del ecosistema, con buscadores en tiempo real y filtros dinámicos por App.
+- **Despliegue con un Clic:** Botón mágico para hacer un `git pull`, migrar bases de datos y limpiar la caché, ¡todo en 3 segundos sin tocar la terminal!
+- **Control de Roles:** Asignación rápida de permisos de administrador (Admin/SuperAdmin).
 
-## ⚙️ Configuración y Despliegue
+---
 
-1. **Clonar el repositorio y entrar en la carpeta:**
-   ```bash
-   git clone <repo-url> J2-API
-   cd J2-API
-   ```
+## ⚙️ Arquitectura
 
-2. **Instalar dependencias de PHP:**
-   ```bash
-   composer install
-   ```
+El ecosistema utiliza **Laravel Sanctum** para manejar dos tipos de autenticación:
+1. **API Tokens:** Para clientes móviles y dispositivos IoT.
+2. **Sesiones Stateful:** Para la navegación web dentro del J2 Hub.
 
-3. **Configuración de Variables de Entorno:**
-   - Copia `.env.example` a `.env`.
-   - Genera la llave de la aplicación: `php artisan key:generate`
-   - Configura tus accesos a Base de Datos en el `.env` (ej. `DB_DATABASE=j2_db`).
-   - Define el `FRONTEND_URL` o dominios permitidos en `SANCTUM_STATEFUL_DOMAINS` para el manejo de sesiones SPA (por ejemplo, `localhost:5173,enfoca.example.com`).
+---
 
-4. **Migraciones:**
-   ```bash
-   php artisan migrate
-   ```
+## 🚀 Despliegue Automatizado (Live)
 
-5. **Iniciar el Servidor Local:**
-   ```bash
-   php artisan serve
-   ```
-   Por defecto, la API estará disponible en `http://localhost:8000/api`.
+¡Este servidor está alojado en Alwaysdata! 
+Para actualizar la versión de producción:
+1. Entra a **[https://j2api.alwaysdata.net/hub](https://j2api.alwaysdata.net/hub)**.
+2. Inicia sesión con tus credenciales de administrador.
+3. Haz clic en el botón de **"Pull & Actualizar API"**.
+4. ¡El sistema descargará los cambios de GitHub al instante!
 
-## 🔒 Autenticación y CORS
+---
 
-Para conectar tu SPA (ej. React o Vue):
-- Asegúrate de que el frontend configura `axios` (o tu cliente HTTP) con `withCredentials: true`.
-- Antes de iniciar sesión, el cliente debe realizar una petición `GET` a `/sanctum/csrf-cookie` para inicializar la protección CSRF.
-- Las variables `CORS_ALLOWED_ORIGINS` o la configuración en `config/cors.php` deben coincidir exactamente con el origen de tus aplicaciones cliente.
-
-## 📚 Endpoints Principales (Ejemplos)
-- `POST /api/login`: Autenticación de usuarios.
-- `POST /api/register`: Registro de nuevos usuarios.
-- `GET /api/usuario`: Retorna la información del usuario en sesión.
-*(Ver las rutas completas en `routes/api.php`)*
+<div align="center">
+  <p><i>Desarrollado con ❤️ para dominar el mundo del software.</i></p>
+</div>
