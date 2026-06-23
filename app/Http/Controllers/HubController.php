@@ -101,11 +101,31 @@ class HubController extends Controller
     /**
      * Gestión de Usuarios
      */
-    public function users()
+    public function users(Request $request)
     {
-        // Paginar usuarios de 15 en 15, ordenados por los más recientes
-        $users = User::orderBy('created_at', 'desc')->paginate(15);
-        return view('hub.users', compact('users'));
+        $query = User::query();
+
+        // Búsqueda por nombre o email
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtrado por App
+        if ($request->filled('app')) {
+            $query->where('app', $request->input('app'));
+        }
+
+        // Obtener la lista de apps dinámicamente desde la BD para el filtro
+        $availableApps = User::select('app')->distinct()->whereNotNull('app')->where('app', '!=', '')->pluck('app');
+
+        // Paginar usuarios de 15 en 15, conservando los parámetros de búsqueda
+        $users = $query->orderBy('created_at', 'desc')->paginate(15)->appends($request->all());
+
+        return view('hub.users', compact('users', 'availableApps'));
     }
 
     public function toggleRole(User $user)

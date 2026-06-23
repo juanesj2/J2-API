@@ -8,6 +8,44 @@
     <p class="text-gray-400">Listado centralizado de todos los usuarios registrados en tus aplicaciones.</p>
 </div>
 
+<!-- Filtros y Búsqueda -->
+<div class="glass-panel p-5 mb-8 rounded-2xl flex flex-col sm:flex-row gap-4 items-center justify-between border border-white/5">
+    <form method="GET" action="{{ route('hub.users') }}" class="flex flex-col sm:flex-row w-full gap-4">
+        <!-- Input Search -->
+        <div class="relative flex-1">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </span>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar usuario por nombre o correo..." class="w-full bg-gray-900/80 border border-gray-700/50 text-white rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-500 shadow-inner">
+        </div>
+        
+        <!-- App Filter -->
+        <div class="relative w-full sm:w-56">
+            <select name="app" onchange="this.form.submit()" class="w-full bg-gray-900/80 border border-gray-700/50 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all appearance-none cursor-pointer shadow-inner">
+                <option value="">Cualquier App</option>
+                @foreach($availableApps as $app)
+                    <option value="{{ $app }}" {{ request('app') === $app ? 'selected' : '' }}>{{ $app }}</option>
+                @endforeach
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+        </div>
+        
+        <div class="flex gap-2">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-medium transition-colors shadow-lg shadow-indigo-500/20 whitespace-nowrap">
+                Buscar
+            </button>
+            
+            @if(request()->hasAny(['search', 'app']) && (request('search') != '' || request('app') != ''))
+                <a href="{{ route('hub.users') }}" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2.5 rounded-xl font-medium transition-colors whitespace-nowrap flex items-center border border-gray-700">
+                    Limpiar
+                </a>
+            @endif
+        </div>
+    </form>
+</div>
+
 <div class="glass-panel rounded-3xl overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -75,7 +113,31 @@
     </div>
     
     <div class="p-5 border-t border-gray-800 bg-gray-900/30">
-        {{ $users->links() }}
+        @if($users->count() > 0)
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-sm text-gray-400 text-center sm:text-left">
+                    Mostrando <span class="font-medium text-white">{{ $users->firstItem() }}</span> a <span class="font-medium text-white">{{ $users->lastItem() }}</span> de <span class="font-bold text-indigo-400">{{ $users->total() }}</span> resultados
+                </div>
+                
+                <div class="flex space-x-2">
+                    @if ($users->onFirstPage())
+                        <span class="px-4 py-2 bg-gray-800/30 text-gray-600 rounded-xl cursor-not-allowed border border-gray-800 text-sm font-medium">Anterior</span>
+                    @else
+                        <a href="{{ $users->previousPageUrl() }}" class="px-4 py-2 bg-gray-800 hover:bg-indigo-600 text-gray-300 hover:text-white rounded-xl transition-colors border border-gray-700 text-sm font-medium shadow-sm">Anterior</a>
+                    @endif
+
+                    @if ($users->hasMorePages())
+                        <a href="{{ $users->nextPageUrl() }}" class="px-4 py-2 bg-gray-800 hover:bg-indigo-600 text-gray-300 hover:text-white rounded-xl transition-colors border border-gray-700 text-sm font-medium shadow-sm">Siguiente</a>
+                    @else
+                        <span class="px-4 py-2 bg-gray-800/30 text-gray-600 rounded-xl cursor-not-allowed border border-gray-800 text-sm font-medium">Siguiente</span>
+                    @endif
+                </div>
+            </div>
+        @else
+            <div class="text-center py-8">
+                <p class="text-gray-500">No se encontraron usuarios con esos filtros.</p>
+            </div>
+        @endif
     </div>
 </div>
 @endsection
