@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HubController;
 use App\Http\Middleware\HubAuthMiddleware;
 
-Route::get("/", function () { return response()->json(["message" => "J2 API Running"]); });
+Route::get("/", function () { return redirect('/hub'); });
 
 // ============================
 //           J2 HUB
