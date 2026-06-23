@@ -1,48 +1,30 @@
 <div align="center">
-  <img src="public/imagenes/logo_ENFOKA-sin-fondo.png" alt="J2 Hub Logo" width="200"/>
-
-  <h1>🚀 J2 API & Hub Central</h1>
-  <p>El centro neurálgico para el ecosistema de aplicaciones de JuanStiven.</p>
-  
-  ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
-  ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
-  ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-  ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)
+  <img src="public/imagenes/logo_ENFOKA-sin-fondo.png" alt="Logo" width="150"/>
+  <h1>J2 API & Hub</h1>
 </div>
 
----
+¡Buenas! Este es el backend principal de mis proyectos. Básicamente, he montado una única API en Laravel 11 para no tener que crear un servidor distinto por cada aplicación que se me ocurra hacer. Desde aquí controlo las bases de datos, los usuarios y todo el ecosistema.
 
-## 🌟 ¿Qué es J2 API & Hub?
-
-J2 API es un servidor **RESTful de alto rendimiento** construido con Laravel 11. No solo sirve los datos de las aplicaciones móviles y web (como *Enfoca* y *Love Widget*), sino que incorpora un **Panel de Control Premium (J2 Hub)** desde el cual se puede gestionar toda la infraestructura.
-
-### ✨ Características del Hub
-- **Detección Dinámica de Apps:** Lee automáticamente las rutas y descubre qué aplicaciones están activas en el servidor.
-- **Gestión de Usuarios:** Lista completa de todos los usuarios del ecosistema, con buscadores en tiempo real y filtros dinámicos por App.
-- **Despliegue con un Clic:** Botón mágico para hacer un `git pull`, migrar bases de datos y limpiar la caché, ¡todo en 3 segundos sin tocar la terminal!
-- **Control de Roles:** Asignación rápida de permisos de administrador (Admin/SuperAdmin).
+Además, he programado un **Panel de Control (J2 Hub)** dentro de la propia API. Entro ahí desde el móvil o el PC, veo quién se ha registrado, controlo los roles y con darle a un solo botón, el servidor entero se actualiza con los últimos cambios de GitHub.
 
 ---
 
-## ⚙️ Arquitectura
+## 📱 Mis Aplicaciones 
 
-El ecosistema utiliza **Laravel Sanctum** para manejar dos tipos de autenticación:
-1. **API Tokens:** Para clientes móviles y dispositivos IoT.
-2. **Sesiones Stateful:** Para la navegación web dentro del J2 Hub.
+Esta API da vida a las siguientes aplicaciones que tengo ahora mismo activas:
 
----
+### 📸 [Enfoca](#)
+Es una red social basada en la fotografía y en capturar el momento. Los usuarios pueden subir sus fotos, interactuar, chatear y conseguir logros (como si fuera un videojuego). Toda la gestión de cuentas, los mensajes del chat y las fotos optimizadas pasan por este servidor.
 
-## 🚀 Despliegue Automatizado (Live)
-
-¡Este servidor está alojado en Alwaysdata! 
-Para actualizar la versión de producción:
-1. Entra a **[https://j2api.alwaysdata.net/hub](https://j2api.alwaysdata.net/hub)**.
-2. Inicia sesión con tus credenciales de administrador.
-3. Haz clic en el botón de **"Pull & Actualizar API"**.
-4. ¡El sistema descargará los cambios de GitHub al instante!
+### ❤️ [Love Widget](#)
+Es una aplicación pensada para parejas. Un widget muy chulo para compartir tu estado de ánimo, mandarse mensajes y mantener el contacto de una forma directa y bonita directamente en la pantalla de inicio del móvil. Toda la sincronización y la lógica está conectada a esta misma base de datos.
 
 ---
 
-<div align="center">
-  <p><i>Desarrollado con ❤️ para dominar el mundo del software.</i></p>
-</div>
+## 🛠 Cómo funciona esto por dentro
+
+- **Laravel 11:** El motor principal para manejar la lógica y la base de datos.
+- **Detección Automática:** La API lee sola los archivos de rutas (`api_enfoca.php`, `api_love_widget.php`). Si mañana hago una tercera app, solo añado el archivo y el Hub la reconoce mágicamente.
+- **Autenticación mixta:** Uso Tokens (Sanctum) para que las apps de los móviles se conecten, y cookies normales para cuando yo entro al Hub desde mi navegador.
+
+¡Y poco más! Todo centralizado y fácil de escalar.
