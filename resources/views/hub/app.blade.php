@@ -16,12 +16,24 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Lista de Rutas -->
-    <div class="glass-panel rounded-3xl p-6">
-        <h2 class="text-xl font-bold text-white mb-4">Endpoints Detectados</h2>
+    <div x-data="{ methodFilter: 'ALL' }" class="glass-panel rounded-3xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <h2 class="text-xl font-bold text-white">Endpoints Detectados</h2>
+            <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 custom-scrollbar">
+                <button @click="methodFilter = 'ALL'" :class="methodFilter === 'ALL' ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700'" class="px-3 py-1 text-xs font-bold rounded-lg transition-colors border border-gray-700">TODO</button>
+                <button @click="methodFilter = 'GET'" :class="methodFilter === 'GET' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' : 'bg-gray-800/50 text-gray-400 hover:text-blue-400 hover:bg-gray-700'" class="px-3 py-1 text-xs font-bold rounded-lg transition-colors border border-gray-700">GET</button>
+                <button @click="methodFilter = 'POST'" :class="methodFilter === 'POST' ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-gray-800/50 text-gray-400 hover:text-green-400 hover:bg-gray-700'" class="px-3 py-1 text-xs font-bold rounded-lg transition-colors border border-gray-700">POST</button>
+                <button @click="methodFilter = 'PUT'" :class="methodFilter === 'PUT' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' : 'bg-gray-800/50 text-gray-400 hover:text-yellow-400 hover:bg-gray-700'" class="px-3 py-1 text-xs font-bold rounded-lg transition-colors border border-gray-700">PUT</button>
+                <button @click="methodFilter = 'DELETE'" :class="methodFilter === 'DELETE' ? 'bg-red-500/20 text-red-400 border-red-500/50' : 'bg-gray-800/50 text-gray-400 hover:text-red-400 hover:bg-gray-700'" class="px-3 py-1 text-xs font-bold rounded-lg transition-colors border border-gray-700">DELETE</button>
+            </div>
+        </div>
+
         @if(count($routes) > 0)
             <div class="space-y-3">
                 @foreach($routes as $route)
-                    <div class="bg-gray-900/50 border border-gray-800 rounded-xl p-3 flex items-center gap-3">
+                    <div x-show="methodFilter === 'ALL' || methodFilter === '{{ $route['method'] }}' || (methodFilter === 'PUT' && '{{ $route['method'] }}' === 'PATCH')"
+                         x-transition.opacity
+                         class="bg-gray-900/50 border border-gray-800 rounded-xl p-3 flex items-center gap-3">
                         @php
                             $methodColor = match($route['method']) {
                                 'GET' => 'text-blue-400 bg-blue-500/10 border-blue-500/20',
