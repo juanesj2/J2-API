@@ -30,8 +30,9 @@ class HubController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            if (Auth::user()->rol === 'SuperAdmin') {
+        // Siempre recordar la sesión para no tener que iniciar sesión cada vez
+        if (Auth::attempt($credentials, true)) {
+            if (Auth::user()->rol === 'SuperAdmin' || Auth::user()->rol === 'admin') {
                 $request->session()->regenerate();
                 return redirect()->intended('/hub');
             } else {
