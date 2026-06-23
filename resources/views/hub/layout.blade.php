@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>J2 Hub - @yield('title')</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <!-- Tailwind CSS (CDN para evitar compilar) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -38,7 +39,7 @@
     <!-- Mobile Header -->
     <div class="md:hidden glass-panel border-b border-gray-800 p-4 flex justify-between items-center sticky top-0 z-20">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">J2</div>
+            <img src="{{ asset('imagenes/logo_hub.png') }}" alt="J2 Hub Logo" class="w-8 h-8 shadow-lg">
             <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">HUB</span>
         </div>
         <button onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden');" class="text-gray-400 hover:text-white">
@@ -54,7 +55,7 @@
         <div>
             <div class="p-6 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">J2</div>
+                    <img src="{{ asset('imagenes/logo_hub.png') }}" alt="J2 Hub Logo" class="w-10 h-10 shadow-lg">
                     <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">HUB</span>
                 </div>
                 <button onclick="document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('overlay').classList.add('hidden');" class="md:hidden text-gray-400 hover:text-white">
