@@ -25,6 +25,12 @@ class FotografiaResource extends JsonResource
             'usuario_id' => $this->usuario_id,
             'vetada' => (bool)$this->vetada,
             
+            'ISO' => $this->ISO,
+            'velocidad_obturacion' => $this->velocidad_obturacion,
+            'apertura' => $this->apertura,
+            'latitud' => $this->latitud,
+            'longitud' => $this->longitud,
+            
             // Relación con el usuario que subió la foto
             'user' => new UserResource($this->whenLoaded('user')),
             
