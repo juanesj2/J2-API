@@ -166,13 +166,21 @@ class HubController extends Controller
         exec('git pull origin main 2>&1', $pullOutput, $pullCode);
         $output['pull'] = implode("\n", $pullOutput);
 
-        // Ejecutar migraciones con PHP_BINARY (Evita errores si "php" no está en el PATH)
-        exec(PHP_BINARY . ' artisan migrate --force 2>&1', $migrateOutput, $migrateCode);
-        $output['migrate'] = implode("\n", $migrateOutput);
+        // Ejecutar migraciones de forma nativa para evitar cuelgues
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output['migrate'] = \Illuminate\Support\Facades\Artisan::output();
+        } catch (\Exception $e) {
+            $output['migrate'] = "Error: " . $e->getMessage();
+        }
 
-        // Limpiar cachés
-        exec(PHP_BINARY . ' artisan optimize:clear 2>&1', $optimizeOutput, $optimizeCode);
-        $output['optimize'] = implode("\n", $optimizeOutput);
+        // Limpiar cachés de forma nativa
+        try {
+            \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+            $output['optimize'] = \Illuminate\Support\Facades\Artisan::output();
+        } catch (\Exception $e) {
+            $output['optimize'] = "Error: " . $e->getMessage();
+        }
 
         return view('hub.deploy', compact('output'));
     }
