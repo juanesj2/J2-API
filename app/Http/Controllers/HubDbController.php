@@ -178,4 +178,38 @@ class HubDbController extends Controller
 
         return redirect()->route('hub.db.index')->with('error', 'La sesión ha expirado o no está desbloqueada.');
     }
+
+    public function executeSql(Request $request)
+    {
+        $unlockedAt = session('db_unlocked_at');
+        if (!$unlockedAt || now()->timestamp - $unlockedAt >= 7200) {
+            return back()->with('error', 'Acceso denegado. Verifica tu contraseña primero.');
+        }
+
+        $request->validate([
+            'query' => 'required|string'
+        ]);
+
+        $sql = trim($request->input('query'));
+        
+        if (empty($sql)) {
+            return back()->with('error', 'La consulta SQL está vacía.');
+        }
+
+        try {
+            // Check if it's a SELECT query
+            if (stripos($sql, 'select') === 0 || stripos($sql, 'show') === 0 || stripos($sql, 'describe') === 0 || stripos($sql, 'explain') === 0) {
+                $results = DB::select($sql);
+                // Return success with count
+                $count = count($results);
+                return back()->with('success', "Consulta ejecutada correctamente. {$count} filas devueltas.");
+            } else {
+                // Non-select queries (INSERT, UPDATE, DELETE, DROP, etc)
+                $affected = DB::statement($sql);
+                return back()->with('success', 'Sentencia SQL ejecutada correctamente.');
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error SQL: ' . $e->getMessage());
+        }
+    }
 }

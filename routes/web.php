@@ -40,6 +40,7 @@ Route::prefix('hub')->group(function () {
         Route::get('/db', [HubDbController::class, 'index'])->name('hub.db.index');
         Route::post('/db/verify', [HubDbController::class, 'unlockDb'])->name('hub.db.verify');
         Route::post('/db/extend', [HubDbController::class, 'extendSession'])->name('hub.db.extend');
+        Route::post('/db/sql', [HubDbController::class, 'executeSql'])->name('hub.db.sql');
         Route::get('/db/{table}', [HubDbController::class, 'show'])->name('hub.db.show');
         Route::post('/db/{table}/insert', [HubDbController::class, 'insertRow'])->name('hub.db.insert');
         Route::put('/db/{table}/{id}', [HubDbController::class, 'updateRow'])->name('hub.db.update');
