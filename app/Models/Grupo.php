@@ -29,7 +29,7 @@ class Grupo extends Model
     // Esta es una relacion con el modelo de User
     public function usuarios()
     {
-        return $this->belongsToMany(User::class, 'grupo_usuarios', 'grupo_id', 'usuario_id')
+        return $this->belongsToMany(User::class, 'enfoca_grupo_usuarios', 'grupo_id', 'usuario_id')
                     ->withTimestamps()
                     ->withPivot('rol');
     }

@@ -91,14 +91,14 @@ class User extends Authenticatable
 
     public function desafios()
     {
-        return $this->belongsToMany(Desafio::class, 'desafio_usuario', 'usuario_id', 'desafio_id')
-                    ->withTimestamps()
-                    ->withPivot('conseguido_en');
+        return $this->belongsToMany(Desafio::class, 'enfoca_desafio_usuario', 'usuario_id', 'desafio_id')
+                    ->withPivot('conseguido_en')
+                    ->withTimestamps();
     }
 
     public function grupos()
     {
-        return $this->belongsToMany(Grupo::class, 'grupo_usuarios', 'usuario_id', 'grupo_id')
+        return $this->belongsToMany(Grupo::class, 'enfoca_grupo_usuarios', 'usuario_id', 'grupo_id')
                     ->withTimestamps()
                     ->withPivot('rol');
     }
