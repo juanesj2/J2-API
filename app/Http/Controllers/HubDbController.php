@@ -14,17 +14,41 @@ class HubDbController extends Controller
         $dbName = config('database.connections.mysql.database');
         $tableKey = "Tables_in_{$dbName}";
         
+        $systemTables = ['cache', 'cache_locks', 'failed_jobs', 'jobs', 'job_batches', 'migrations', 'password_reset_tokens', 'personal_access_tokens', 'sessions', 'users'];
+        
         $tableData = [];
+        $categories = ['Todas' => 0, 'Enfoca' => 0, 'Love Widget' => 0, 'System' => 0, 'General' => 0];
+
         foreach ($tables as $table) {
             $tableName = $table->$tableKey;
             $count = DB::table($tableName)->count();
+            
+            $category = 'General';
+            if (in_array($tableName, $systemTables)) {
+                $category = 'System';
+            } elseif (str_starts_with($tableName, 'couple_')) {
+                $category = 'Love Widget';
+            } elseif (str_starts_with($tableName, 'enfoca_') || in_array($tableName, ['comentarios', 'achievements', 'reports', 'posts'])) {
+                $category = 'Enfoca';
+            }
+
+            if (!isset($categories[$category])) {
+                $categories[$category] = 0;
+            }
+            $categories[$category]++;
+            $categories['Todas']++;
+
             $tableData[] = [
                 'name' => $tableName,
-                'count' => $count
+                'count' => $count,
+                'category' => $category
             ];
         }
+        
+        // Remove empty categories
+        $categories = array_filter($categories, fn($count) => $count > 0);
 
-        return view('hub.db.index', compact('tableData', 'dbName'));
+        return view('hub.db.index', compact('tableData', 'dbName', 'categories'));
     }
 
     public function show($table)
