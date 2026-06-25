@@ -8,13 +8,6 @@
         <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2">Visión General</h1>
         <p class="text-gray-400 text-sm md:text-base">Estado de la API y aplicaciones conectadas al J2 Hub.</p>
     </div>
-    <form method="POST" action="/hub/deploy" class="w-full lg:w-auto">
-        @csrf
-        <button type="submit" class="w-full lg:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-            Pull & Actualizar API
-        </button>
-    </form>
 </div>
 
 <!-- Stats -->

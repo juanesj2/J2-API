@@ -114,7 +114,7 @@
         <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 pointer-events-none"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 pointer-events-none"></div>
 
-        <div class="relative z-10 p-5 md:p-10 max-w-7xl mx-auto min-h-screen flex flex-col">
+        <div class="relative z-10 p-5 md:p-10 max-w-7xl mx-auto min-h-screen flex flex-col pb-24">
             @if(session('error'))
                 <div class="mb-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center gap-3 animate-pulse">
                     <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
@@ -124,6 +124,19 @@
 
             @yield('content')
         </div>
+        
+        <!-- Floating Action Button -->
+        @auth
+        <div class="fixed bottom-6 right-6 z-50">
+            <form method="POST" action="/hub/deploy">
+                @csrf
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-6 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] hover:-translate-y-1 transition-all flex items-center justify-center gap-3 border border-indigo-400/30">
+                    <svg class="w-5 h-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                    <span>Pull & Actualizar</span>
+                </button>
+            </form>
+        </div>
+        @endauth
     </main>
 
 </body>
