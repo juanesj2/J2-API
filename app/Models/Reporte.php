@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class Reporte extends Model
 {
+    use HasFactory;
 
     // Hacemos referencia a la tabla reportes de la base de datos
-    protected $table = 'reportes';
+    protected $table = 'enfoca_reportes';
 
     // Estas son las columnas que laravel va a poder modificar de la base de datos
     protected $fillable = [

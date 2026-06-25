@@ -3,17 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 // Auth nos servira para comprobar si el usuario esta logueado
 use Illuminate\Support\Facades\Auth;
 
 class Comentarios extends Model
 {
+    use HasFactory;
+
+    protected $table = 'enfoca_comentarios';
+
     // Desactivamos las marcas de tiempo que usa laravel para que no intente crear 
     // las columnas created_at y updated_at en la base de datos
     public $timestamps = false;
-
-    // Hacemos referencia a la la tabla comentarios de la base de datos
-    protected $table = 'comentarios';
 
     // Estas son las columnas que laravel va a poder modificar de la base de datos
     protected $fillable = ['fotografia_id', 'usuario_id', 'contenido'];

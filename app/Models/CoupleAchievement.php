@@ -9,6 +9,8 @@ class CoupleAchievement extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_couple_achievements';
+
     protected $fillable = [
         'couple_id',
         'achievement_id',

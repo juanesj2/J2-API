@@ -9,6 +9,8 @@ class Achievement extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_achievements';
+
     // Use string as primary key
     protected $primaryKey = 'id';
     public $incrementing = false;

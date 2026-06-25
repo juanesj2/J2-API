@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
 
 class Grupo extends Model
 {
-    // Hacemos referencia a la tabla desafios de la base de datos
-    protected $table = 'grupo';
+    use HasFactory;
+
+    protected $table = 'enfoca_grupos';
 
     protected $fillable = [
         'nombre',

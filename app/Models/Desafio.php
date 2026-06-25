@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
 
 class Desafio extends Model
 {
+    use HasFactory;
 
-    // Hacemos referencia a la tabla desafios de la base de datos
-    protected $table = 'desafios';
+    protected $table = 'enfoca_desafios';
 
     //**************************************************************/
     //**************************************************************/

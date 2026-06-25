@@ -9,6 +9,8 @@ class Drawing extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_drawings';
+
     protected $fillable = ['user_id', 'couple_id', 'drawing_prompt_id', 'image_path'];
 
     public function prompt()

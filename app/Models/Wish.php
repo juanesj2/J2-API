@@ -9,6 +9,8 @@ class Wish extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_wishes';
+
     protected $fillable = ['couple_id', 'title', 'completed'];
 
     protected $casts = [

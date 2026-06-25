@@ -9,6 +9,8 @@ class SwipeAnswer extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_swipe_answers';
+
     protected $fillable = ['user_id', 'couple_id', 'swipe_question_id', 'answer'];
 
     public function question()

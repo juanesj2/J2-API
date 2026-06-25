@@ -9,6 +9,8 @@ class Question extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_questions';
+
     protected $fillable = [
         'category',
         'question_text'

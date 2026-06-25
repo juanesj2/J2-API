@@ -3,17 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
 
 class Likes extends Model
 {
+    use HasFactory;
 
     // Desactivar las marcas de tiempo que usa Laravel para que no intente crear
     // las columnas created_at y updated_at en la base de datos
     public $timestamps = false;
 
     // Hacemos referencia a la la tabla likes de la base de datos
-    protected $table = 'likes';
+    protected $table = 'enfoca_likes';
 
     // Estas son las columnas que laravel va a poder modificar de la base de datos
     protected $fillable = ['usuario_id', 'fotografia_id'];

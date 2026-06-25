@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class GrupoMensaje extends Model
 {
+    use HasFactory;
+
+    protected $table = 'enfoca_grupo_mensajes';
+
     protected $fillable = [
         'grupo_id',
         'usuario_id',

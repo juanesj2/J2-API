@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
 
 
 class Fotografia extends Model
 {
+    use HasFactory;
+
+    protected $table = 'enfoca_fotografias';
 
     // Desactivamos las marcas de tiempo que usa laravel para que no intente crear 
     // las columnas created_at y updated_at en la base de datos

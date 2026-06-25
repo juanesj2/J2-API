@@ -26,9 +26,9 @@ class HubDbController extends Controller
             $category = 'General';
             if (in_array($tableName, $systemTables)) {
                 $category = 'System';
-            } elseif (str_starts_with($tableName, 'couple_')) {
+            } elseif (str_starts_with($tableName, 'lovewidget_')) {
                 $category = 'Love Widget';
-            } elseif (str_starts_with($tableName, 'enfoca_') || in_array($tableName, ['comentarios', 'achievements', 'reports', 'posts'])) {
+            } elseif (str_starts_with($tableName, 'enfoca_')) {
                 $category = 'Enfoca';
             }
 

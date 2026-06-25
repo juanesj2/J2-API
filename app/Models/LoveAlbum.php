@@ -9,6 +9,8 @@ class LoveAlbum extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_love_albums';
+
     protected $fillable = [
         'couple_id',
         'name',

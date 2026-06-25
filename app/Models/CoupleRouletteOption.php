@@ -9,6 +9,8 @@ class CoupleRouletteOption extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_couple_roulette_options';
+
     protected $fillable = [
         'couple_id',
         'title'

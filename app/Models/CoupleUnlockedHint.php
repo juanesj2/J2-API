@@ -9,6 +9,8 @@ class CoupleUnlockedHint extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_couple_unlocked_hints';
+
     protected $fillable = [
         'couple_id',
         'user_id',

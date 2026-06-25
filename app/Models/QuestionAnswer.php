@@ -9,6 +9,8 @@ class QuestionAnswer extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_question_answers';
+
     protected $fillable = [
         'couple_id',
         'user_id',

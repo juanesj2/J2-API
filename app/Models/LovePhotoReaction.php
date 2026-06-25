@@ -9,6 +9,8 @@ class LovePhotoReaction extends Model
 {
     use HasFactory;
 
+    protected $table = 'lovewidget_love_photo_reactions';
+
     protected $fillable = [
         'love_photo_id',
         'user_id',
