@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class HubController extends Controller
@@ -343,17 +344,19 @@ class HubController extends Controller
     {
         $unlockedAt = session('env_unlocked_at');
         if (!$unlockedAt || now()->timestamp - $unlockedAt >= 7200) {
-            return back()->with('error', 'Acceso denegado o sesión caducada. Verifica tu contraseña primero.');
+            return back()->with('error', 'Acceso denegado. Verifica tu contraseña primero.');
         }
 
-        $request->validate(['env_content' => 'required']);
-        File::put(base_path('.env'), $request->env_content);
-        
-        try {
-            \Illuminate\Support\Facades\Artisan::call('config:clear');
-        } catch (\Exception $e) {}
+        $request->validate([
+            'env_content' => 'required|string'
+        ]);
 
-        return back()->with('success', 'Archivo .env actualizado correctamente.');
+        if (File::exists(base_path('.env'))) {
+            File::put(base_path('.env'), $request->env_content);
+            return back()->with('success', 'Archivo .env actualizado correctamente.');
+        }
+
+        return back()->with('error', 'El archivo .env no existe.');
     }
 
     public function extendEnvSession(Request $request)
@@ -361,9 +364,31 @@ class HubController extends Controller
         $unlockedAt = session('env_unlocked_at');
         if ($unlockedAt && (now()->timestamp - $unlockedAt) < 7200) {
             session(['env_unlocked_at' => now()->timestamp]);
-            return redirect()->back()->with('success', 'Sesión del entorno extendida por 2 horas más.');
+            return redirect()->back()->with('success', 'Sesión del .env extendida por 2 horas más.');
         }
 
         return redirect()->route('hub.env')->with('error', 'La sesión ha expirado o no está desbloqueada.');
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Perfil actualizado correctamente.');
     }
 }

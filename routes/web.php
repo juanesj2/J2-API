@@ -26,9 +26,11 @@ Route::prefix('hub')->group(function () {
         Route::delete('/usuarios/{user}', [HubController::class, 'deleteUser']);
         Route::post('/deploy', [HubController::class, 'deploy'])->name('hub.deploy');
 
-        // Logs
+        // Hub Features
         Route::get('/logs', [HubController::class, 'logs'])->name('hub.logs');
         Route::post('/logs/clear', [HubController::class, 'clearLogs'])->name('hub.logs.clear');
+        
+        Route::post('/profile/update', [HubController::class, 'updateProfile'])->name('hub.profile.update');
 
         // Env Editor
         Route::get('/env', [HubController::class, 'envEditor'])->name('hub.env');

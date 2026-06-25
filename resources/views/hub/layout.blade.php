@@ -87,23 +87,81 @@
             </nav>
         </div>
 
-        <div class="p-4 mb-4">
-            <div class="glass-panel rounded-2xl p-4 flex flex-col gap-3 text-sm border-gray-800">
-                <div class="flex items-center gap-3">
-                    <img src="{{ Auth::user()->profile_photo_path ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=4f46e5&color=fff' }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover shrink-0">
-                    <div class="overflow-hidden">
-                        <p class="font-bold text-white truncate">{{ Auth::user()->name }}</p>
-                        <p class="text-xs text-indigo-400 font-medium truncate">Super Admin</p>
+        <div class="p-4 mb-4" x-data="{ profileModalOpen: false }">
+            <button @click="profileModalOpen = true" class="w-full text-left glass-panel rounded-2xl p-4 flex items-center gap-3 text-sm border border-gray-800 hover:border-indigo-500/50 hover:bg-white/5 transition-all group">
+                <img src="{{ Auth::user()->profile_photo_path ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=4f46e5&color=fff' }}" alt="Avatar" class="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-700 group-hover:border-indigo-500 transition-colors">
+                <div class="overflow-hidden flex-1">
+                    <p class="font-bold text-white truncate group-hover:text-indigo-400 transition-colors">{{ Auth::user()->name }}</p>
+                    <p class="text-xs text-indigo-500 font-medium truncate">Super Admin</p>
+                </div>
+                <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+            </button>
+
+            <!-- Profile Modal -->
+            <template x-teleport="body">
+                <div x-show="profileModalOpen" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                    <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                        <div x-show="profileModalOpen" x-transition.opacity class="fixed inset-0 bg-black/80 transition-opacity" aria-hidden="true" @click="profileModalOpen = false"></div>
+                        <div x-show="profileModalOpen" x-transition class="relative transform overflow-hidden rounded-3xl bg-gray-900 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-indigo-500/30">
+                            
+                            <div class="px-6 py-6 border-b border-gray-800 bg-gray-800/50 flex justify-between items-center">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                    </div>
+                                    Perfil de Administrador
+                                </h3>
+                                <button @click="profileModalOpen = false" class="text-gray-400 hover:text-white transition-colors">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+
+                            <form action="/hub/profile/update" method="POST" class="p-6">
+                                @csrf
+                                <div class="space-y-4 mb-6">
+                                    <div>
+                                        <label class="block text-gray-400 text-sm font-bold mb-2">Nombre</label>
+                                        <input type="text" name="name" value="{{ Auth::user()->name }}" required class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-400 text-sm font-bold mb-2">Correo Electrónico</label>
+                                        <input type="email" name="email" value="{{ Auth::user()->email }}" required class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+                                    </div>
+                                    
+                                    <hr class="border-gray-800 my-4">
+                                    <p class="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wider">Seguridad</p>
+                                    
+                                    <div>
+                                        <label class="block text-gray-400 text-sm font-bold mb-2">Nueva Contraseña (opcional)</label>
+                                        <input type="password" name="password" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors" placeholder="Dejar en blanco para no cambiar">
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-400 text-sm font-bold mb-2">Confirmar Contraseña</label>
+                                        <input type="password" name="password_confirmation" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-800 mt-6">
+                                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-indigo-500/20">
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <div class="px-6 py-4 bg-gray-950/50 border-t border-gray-800 rounded-b-3xl">
+                                <form method="POST" action="/hub/logout" class="w-full">
+                                    @csrf
+                                    <button type="submit" class="w-full text-center py-2.5 text-red-400 hover:text-white hover:bg-red-500/20 rounded-xl border border-transparent hover:border-red-500/30 transition-all flex items-center justify-center gap-2 font-medium">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                                        Cerrar Sesión Segura
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-                <form method="POST" action="/hub/logout" class="w-full">
-                    @csrf
-                    <button type="submit" class="w-full text-center py-2 text-gray-400 hover:text-red-400 transition-colors flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                        Cerrar Sesión
-                    </button>
-                </form>
-            </div>
+            </template>
         </div>
     </aside>
     @endauth
