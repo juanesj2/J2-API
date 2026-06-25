@@ -89,10 +89,32 @@ class HubController extends Controller
             }
         }
 
+        // Métricas del servidor
+        $diskTotal = disk_total_space(base_path());
+        $diskFree = disk_free_space(base_path());
+        $diskUsed = $diskTotal - $diskFree;
+        $diskUsagePercent = $diskTotal > 0 ? round(($diskUsed / $diskTotal) * 100, 2) : 0;
+
+        $dbName = config('database.connections.mysql.database');
+        $dbSizeQuery = \Illuminate\Support\Facades\DB::select("
+            SELECT SUM(data_length + index_length) / 1024 / 1024 AS size_mb 
+            FROM information_schema.TABLES 
+            WHERE table_schema = ?
+        ", [$dbName]);
+        $dbSize = $dbSizeQuery[0]->size_mb ?? 0;
+
         // Estadísticas rápidas
         $stats = [
             'total_users' => User::count(),
             'total_apps' => count($apps),
+            'php_version' => phpversion(),
+            'laravel_version' => app()->version(),
+            'env' => app()->environment(),
+            'disk_total_gb' => round($diskTotal / 1024 / 1024 / 1024, 2),
+            'disk_used_gb' => round($diskUsed / 1024 / 1024 / 1024, 2),
+            'disk_free_gb' => round($diskFree / 1024 / 1024 / 1024, 2),
+            'disk_usage_percent' => $diskUsagePercent,
+            'db_size_mb' => round($dbSize, 2),
         ];
 
         return view('hub.index', compact('apps', 'stats'));
@@ -175,6 +197,57 @@ class HubController extends Controller
         return view('hub.app', compact('appName', 'routes', 'file', 'content'));
     }
 
+    public function exportCollection($file)
+    {
+        $path = base_path('routes/' . $file);
+        if (!File::exists($path) || !str_starts_with($file, 'api_')) {
+            abort(404);
+        }
+
+        $content = File::get($path);
+        preg_match_all("/Route::(get|post|put|patch|delete)\(\s*['\"]([^'\"]+)['\"]/", $content, $matches);
+        
+        $routes = [];
+        if (!empty($matches[0])) {
+            foreach ($matches[1] as $index => $method) {
+                $routes[] = [
+                    'method' => strtoupper($method),
+                    'uri' => $matches[2][$index]
+                ];
+            }
+        }
+
+        $appName = ucwords(str_replace(['api_', '.php', '_'], ['', '', ' '], $file));
+        
+        $postman = [
+            'info' => [
+                'name' => "J2 API - {$appName}",
+                'schema' => 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
+            ],
+            'item' => []
+        ];
+
+        foreach ($routes as $route) {
+            $uri = str_starts_with($route['uri'], '/') ? ltrim($route['uri'], '/') : $route['uri'];
+            $postman['item'][] = [
+                'name' => "[{$route['method']}] {$uri}",
+                'request' => [
+                    'method' => $route['method'],
+                    'header' => [
+                        ['key' => 'Accept', 'value' => 'application/json', 'type' => 'text']
+                    ],
+                    'url' => [
+                        'raw' => "{{base_url}}/api/{$uri}",
+                        'host' => ['{{base_url}}'],
+                        'path' => array_merge(['api'], array_filter(explode('/', $uri)))
+                    ]
+                ]
+            ];
+        }
+
+        return response()->json($postman)->header('Content-Disposition', 'attachment; filename="postman_collection_' . strtolower(str_replace(' ', '_', $appName)) . '.json"');
+    }
+
     /**
      * Ejecutar Deploy desde GitHub
      */
@@ -204,5 +277,78 @@ class HubController extends Controller
         }
 
         return view('hub.deploy', compact('output'));
+    }
+
+    /**
+     * Log Viewer
+     */
+    public function logs()
+    {
+        $logPath = storage_path('logs/laravel.log');
+        $logs = [];
+
+        if (File::exists($logPath)) {
+            $content = File::get($logPath);
+            preg_match_all('/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\].*?(?=\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]|$)/s', $content, $matches);
+            
+            if (!empty($matches[0])) {
+                $logs = array_reverse($matches[0]); // Most recent first
+                $logs = array_slice($logs, 0, 200); // Limit to 200
+            } else if (!empty(trim($content))) {
+                $logs = array_slice(array_reverse(explode("\n", trim($content))), 0, 200);
+            }
+        }
+
+        return view('hub.logs', compact('logs'));
+    }
+
+    public function clearLogs()
+    {
+        $logPath = storage_path('logs/laravel.log');
+        if (File::exists($logPath)) {
+            File::put($logPath, '');
+        }
+        return back()->with('success', 'Logs limpiados correctamente.');
+    }
+
+    /**
+     * Env Editor
+     */
+    public function envEditor()
+    {
+        $hasAccess = session('env_unlocked', false);
+        $envContent = '';
+        if ($hasAccess && File::exists(base_path('.env'))) {
+            $envContent = File::get(base_path('.env'));
+        }
+        return view('hub.env', compact('hasAccess', 'envContent'));
+    }
+
+    public function verifyEnvPassword(Request $request)
+    {
+        $request->validate(['password' => 'required']);
+        
+        if (Auth::attempt(['email' => Auth::user()->email, 'password' => $request->password])) {
+            session(['env_unlocked' => true]);
+            return back()->with('success', 'Contraseña verificada. Tienes acceso al archivo .env.');
+        }
+
+        return back()->with('error', 'Contraseña incorrecta.');
+    }
+
+    public function updateEnv(Request $request)
+    {
+        if (!session('env_unlocked', false)) {
+            return back()->with('error', 'Acceso denegado. Verifica tu contraseña primero.');
+        }
+
+        $request->validate(['env_content' => 'required']);
+        File::put(base_path('.env'), $request->env_content);
+        
+        try {
+            \Illuminate\Support\Facades\Artisan::call('config:clear');
+        } catch (\Exception $e) {}
+
+        return back()->with('success', 'Archivo .env actualizado correctamente.');
     }
 }

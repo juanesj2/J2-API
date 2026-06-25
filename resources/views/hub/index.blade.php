@@ -18,35 +18,71 @@
 </div>
 
 <!-- Stats -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-10">
-    <div class="glass-panel p-4 lg:p-6 rounded-2xl lg:rounded-3xl flex items-center gap-4 lg:gap-5 overflow-hidden">
-        <div class="w-12 h-12 lg:w-14 lg:h-14 shrink-0 rounded-xl lg:rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-            <svg class="w-6 h-6 lg:w-7 lg:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 mb-6">
+    <div class="glass-panel p-4 lg:p-6 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
         </div>
         <div class="min-w-0">
-            <p class="text-gray-400 text-xs lg:text-sm font-medium truncate">Usuarios Registrados</p>
-            <h3 class="text-2xl lg:text-3xl font-bold text-white truncate">{{ $stats['total_users'] }}</h3>
+            <p class="text-gray-400 text-xs font-medium truncate">Usuarios Registrados</p>
+            <h3 class="text-2xl font-bold text-white truncate">{{ $stats['total_users'] }}</h3>
         </div>
     </div>
     
-    <div class="glass-panel p-4 lg:p-6 rounded-2xl lg:rounded-3xl flex items-center gap-4 lg:gap-5 overflow-hidden">
-        <div class="w-12 h-12 lg:w-14 lg:h-14 shrink-0 rounded-xl lg:rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
-            <svg class="w-6 h-6 lg:w-7 lg:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+    <div class="glass-panel p-4 lg:p-6 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
         </div>
         <div class="min-w-0">
-            <p class="text-gray-400 text-xs lg:text-sm font-medium truncate">Apps Detectadas</p>
-            <h3 class="text-2xl lg:text-3xl font-bold text-white truncate">{{ $stats['total_apps'] }}</h3>
+            <p class="text-gray-400 text-xs font-medium truncate">Apps Detectadas</p>
+            <h3 class="text-2xl font-bold text-white truncate">{{ $stats['total_apps'] }}</h3>
         </div>
     </div>
     
-    <div class="glass-panel p-4 lg:p-6 rounded-2xl lg:rounded-3xl flex items-center gap-4 lg:gap-5 overflow-hidden">
-        <div class="w-12 h-12 lg:w-14 lg:h-14 shrink-0 rounded-xl lg:rounded-2xl bg-green-500/20 text-green-400 flex items-center justify-center">
-            <svg class="w-6 h-6 lg:w-7 lg:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <div class="glass-panel p-4 lg:p-6 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </div>
+        <div class="w-full min-w-0">
+            <div class="flex justify-between items-end mb-1">
+                <p class="text-gray-400 text-xs font-medium truncate">Disco Usado</p>
+                <span class="text-[10px] text-gray-300">{{ $stats['disk_used_gb'] }}/{{ $stats['disk_total_gb'] }} GB</span>
+            </div>
+            <div class="w-full bg-gray-700/50 rounded-full h-1.5 mb-1">
+                <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $stats['disk_usage_percent'] }}%"></div>
+            </div>
+            <h3 class="text-lg font-bold text-white truncate">{{ $stats['disk_usage_percent'] }}%</h3>
+        </div>
+    </div>
+
+    <div class="glass-panel p-4 lg:p-6 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
         </div>
         <div class="min-w-0">
-            <p class="text-gray-400 text-xs lg:text-sm font-medium truncate">Estado del Servidor</p>
-            <h3 class="text-2xl lg:text-3xl font-bold text-green-400 truncate">Online</h3>
+            <p class="text-gray-400 text-xs font-medium truncate">BD (MySQL)</p>
+            <h3 class="text-2xl font-bold text-white truncate">{{ $stats['db_size_mb'] }} <span class="text-sm font-normal text-gray-400">MB</span></h3>
         </div>
+    </div>
+</div>
+
+<!-- Info Server -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+    <div class="glass-panel p-3 text-center rounded-xl">
+        <p class="text-gray-500 text-xs mb-1">PHP Version</p>
+        <p class="text-white font-mono text-sm">{{ $stats['php_version'] }}</p>
+    </div>
+    <div class="glass-panel p-3 text-center rounded-xl">
+        <p class="text-gray-500 text-xs mb-1">Laravel</p>
+        <p class="text-white font-mono text-sm">{{ $stats['laravel_version'] }}</p>
+    </div>
+    <div class="glass-panel p-3 text-center rounded-xl">
+        <p class="text-gray-500 text-xs mb-1">Entorno</p>
+        <p class="text-white font-mono text-sm capitalize">{{ $stats['env'] }}</p>
+    </div>
+    <div class="glass-panel p-3 text-center rounded-xl">
+        <p class="text-gray-500 text-xs mb-1">Status</p>
+        <p class="text-green-400 font-bold text-sm">● Online</p>
     </div>
 </div>
 
