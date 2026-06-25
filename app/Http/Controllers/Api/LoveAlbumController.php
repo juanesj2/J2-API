@@ -311,24 +311,11 @@ class LoveAlbumController extends Controller
             return response()->json(['message' => 'Álbum no encontrado o no pertenece a tu pareja.'], 404);
         }
 
-        $photosToCopy = LovePhoto::whereIn('id', $request->photo_ids)
+        LovePhoto::whereIn('id', $request->photo_ids)
             ->where('couple_id', $couple->id)
-            ->get();
+            ->update(['album_id' => $albumId]);
 
-        foreach ($photosToCopy as $photo) {
-            LovePhoto::create([
-                'couple_id' => $photo->couple_id,
-                'user_id' => $photo->user_id,
-                'album_id' => $albumId,
-                'image_path' => $photo->image_path,
-                'description' => $photo->description,
-                'fecha_recuerdo' => $photo->fecha_recuerdo,
-                'created_at' => $photo->created_at,
-                'updated_at' => now(),
-            ]);
-        }
-
-        return response()->json(['message' => 'Fotos copiadas al álbum con éxito']);
+        return response()->json(['message' => 'Fotos añadidas al álbum con éxito']);
     }
 
     public function index(Request $request)
@@ -629,6 +616,30 @@ class LoveAlbumController extends Controller
         ]);
 
         return response()->json(['message' => 'Álbum creado', 'album' => $album], 201);
+    }
+
+    public function updateAlbum(Request $request, $id)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $album = LoveAlbum::where('couple_id', $couple->id)->find($id);
+        if (!$album) {
+            return response()->json(['message' => 'Álbum no encontrado'], 404);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:100',
+        ]);
+
+        $album->name = $request->name;
+        $album->save();
+
+        return response()->json(['message' => 'Álbum actualizado', 'album' => $album]);
     }
 
     public function updateAlbumCover(Request $request, $id)

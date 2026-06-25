@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     // Álbumes Personalizados (Colecciones)
     Route::get('/albums', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getAlbums']);
     Route::post('/albums', [\App\Http\Controllers\Api\LoveAlbumController::class, 'createAlbum']);
+    Route::put('/albums/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateAlbum']);
     Route::post('/albums/{id}/cover', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateAlbumCover']);
     Route::post('/albums/{id}/photos', [\App\Http\Controllers\Api\LoveAlbumController::class, 'assignPhotosToAlbum']);
 
