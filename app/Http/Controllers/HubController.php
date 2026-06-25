@@ -323,7 +323,8 @@ class HubController extends Controller
         if ($hasAccess && File::exists(base_path('.env'))) {
             $envContent = File::get(base_path('.env'));
         }
-        return view('hub.env', compact('hasAccess', 'envContent'));
+
+        return view('hub.env', compact('hasAccess', 'envContent', 'unlockedAt'));
     }
 
     public function verifyEnvPassword(Request $request)
@@ -353,5 +354,16 @@ class HubController extends Controller
         } catch (\Exception $e) {}
 
         return back()->with('success', 'Archivo .env actualizado correctamente.');
+    }
+
+    public function extendEnvSession(Request $request)
+    {
+        $unlockedAt = session('env_unlocked_at');
+        if ($unlockedAt && (now()->timestamp - $unlockedAt) < 7200) {
+            session(['env_unlocked_at' => now()->timestamp]);
+            return redirect()->back()->with('success', 'Sesión del entorno extendida por 2 horas más.');
+        }
+
+        return redirect()->route('hub.env')->with('error', 'La sesión ha expirado o no está desbloqueada.');
     }
 }

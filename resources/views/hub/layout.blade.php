@@ -139,5 +139,44 @@
         @endauth
     </main>
 
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('sessionTimer', (unlockedAt) => ({
+                unlockedAt: unlockedAt,
+                timeLeftText: 'Calculando...',
+                interval: null,
+                
+                init() {
+                    this.updateTimer();
+                    this.interval = setInterval(() => {
+                        this.updateTimer();
+                    }, 1000);
+                },
+                
+                updateTimer() {
+                    if (!this.unlockedAt) {
+                        this.timeLeftText = 'Expirado';
+                        return;
+                    }
+                    
+                    const now = Math.floor(Date.now() / 1000);
+                    const expiresAt = this.unlockedAt + 7200; // 2 hours
+                    const remaining = expiresAt - now;
+                    
+                    if (remaining <= 0) {
+                        this.timeLeftText = 'Expirado';
+                        clearInterval(this.interval);
+                        // Optional: reload to show lock screen
+                        window.location.reload();
+                    } else {
+                        const h = Math.floor(remaining / 3600);
+                        const m = Math.floor((remaining % 3600) / 60);
+                        const s = remaining % 60;
+                        this.timeLeftText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                    }
+                }
+            }));
+        });
+    </script>
 </body>
 </html>

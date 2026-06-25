@@ -70,7 +70,7 @@ class HubDbController extends Controller
         $unlockedAt = session('db_unlocked_at');
         $hasAccess = $unlockedAt && now()->timestamp - $unlockedAt < 7200;
 
-        return view('hub.db.show', compact('table', 'columns', 'records', 'hasAccess'));
+        return view('hub.db.show', compact('table', 'columns', 'records', 'hasAccess', 'unlockedAt'));
     }
 
     public function unlockDb(Request $request)
@@ -161,7 +161,18 @@ class HubDbController extends Controller
             DB::table($table)->where('id', $id)->delete();
             return back()->with('success', 'Registro eliminado correctamente.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al eliminar: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al eliminar el registro: ' . $e->getMessage());
         }
+    }
+
+    public function extendSession(Request $request)
+    {
+        $unlockedAt = session('db_unlocked_at');
+        if ($unlockedAt && (now()->timestamp - $unlockedAt) < 7200) {
+            session(['db_unlocked_at' => now()->timestamp]);
+            return redirect()->back()->with('success', 'Sesión de la base de datos extendida por 2 horas más.');
+        }
+
+        return redirect()->route('hub.db.index')->with('error', 'La sesión ha expirado o no está desbloqueada.');
     }
 }

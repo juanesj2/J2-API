@@ -34,10 +34,12 @@ Route::prefix('hub')->group(function () {
         Route::get('/env', [HubController::class, 'envEditor'])->name('hub.env');
         Route::post('/env/verify', [HubController::class, 'verifyEnvPassword'])->name('hub.env.verify');
         Route::post('/env/update', [HubController::class, 'updateEnv'])->name('hub.env.update');
+        Route::post('/env/extend', [HubController::class, 'extendEnvSession'])->name('hub.env.extend');
 
         // Database Viewer
         Route::get('/db', [HubDbController::class, 'index'])->name('hub.db.index');
         Route::post('/db/verify', [HubDbController::class, 'unlockDb'])->name('hub.db.verify');
+        Route::post('/db/extend', [HubDbController::class, 'extendSession'])->name('hub.db.extend');
         Route::get('/db/{table}', [HubDbController::class, 'show'])->name('hub.db.show');
         Route::post('/db/{table}/insert', [HubDbController::class, 'insertRow'])->name('hub.db.insert');
         Route::put('/db/{table}/{id}', [HubDbController::class, 'updateRow'])->name('hub.db.update');
