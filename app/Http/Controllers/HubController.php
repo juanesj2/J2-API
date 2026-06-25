@@ -316,7 +316,9 @@ class HubController extends Controller
      */
     public function envEditor()
     {
-        $hasAccess = session('env_unlocked', false);
+        $unlockedAt = session('env_unlocked_at');
+        $hasAccess = $unlockedAt && now()->timestamp - $unlockedAt < 7200;
+        
         $envContent = '';
         if ($hasAccess && File::exists(base_path('.env'))) {
             $envContent = File::get(base_path('.env'));
@@ -329,8 +331,8 @@ class HubController extends Controller
         $request->validate(['password' => 'required']);
         
         if (Auth::attempt(['email' => Auth::user()->email, 'password' => $request->password])) {
-            session(['env_unlocked' => true]);
-            return back()->with('success', 'Contraseña verificada. Tienes acceso al archivo .env.');
+            session(['env_unlocked_at' => now()->timestamp]);
+            return back()->with('success', 'Contraseña verificada. Tienes acceso al archivo .env por 2 horas.');
         }
 
         return back()->with('error', 'Contraseña incorrecta.');
@@ -338,8 +340,9 @@ class HubController extends Controller
 
     public function updateEnv(Request $request)
     {
-        if (!session('env_unlocked', false)) {
-            return back()->with('error', 'Acceso denegado. Verifica tu contraseña primero.');
+        $unlockedAt = session('env_unlocked_at');
+        if (!$unlockedAt || now()->timestamp - $unlockedAt >= 7200) {
+            return back()->with('error', 'Acceso denegado o sesión caducada. Verifica tu contraseña primero.');
         }
 
         $request->validate(['env_content' => 'required']);
