@@ -318,6 +318,27 @@ class LoveAlbumController extends Controller
         return response()->json(['message' => 'Fotos añadidas al álbum con éxito']);
     }
 
+    public function removePhotosFromAlbum(Request $request)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $request->validate([
+            'photo_ids' => 'required|array',
+            'photo_ids.*' => 'integer'
+        ]);
+
+        LovePhoto::whereIn('id', $request->photo_ids)
+            ->where('couple_id', $couple->id)
+            ->update(['album_id' => null]);
+
+        return response()->json(['message' => 'Fotos quitadas del álbum con éxito']);
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();

@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::put('/albums/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateAlbum']);
     Route::post('/albums/{id}/cover', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateAlbumCover']);
     Route::post('/albums/{id}/photos', [\App\Http\Controllers\Api\LoveAlbumController::class, 'assignPhotosToAlbum']);
+    Route::post('/albums/photos/remove', [\App\Http\Controllers\Api\LoveAlbumController::class, 'removePhotosFromAlbum']);
 
     // Fotos
     Route::get('/photos', [\App\Http\Controllers\Api\LoveAlbumController::class, 'index']);
