@@ -174,7 +174,7 @@
                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
-                    <form :action="'{{ route('hub.db.update', ['table' => $table, 'id' => '']) }}/' + editRow.id" method="POST">
+                    <form :action="`/hub/db/{{ $table }}/${editRow.id}`" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="px-6 py-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
@@ -209,7 +209,7 @@
                         <h3 class="text-xl font-bold text-white mb-2">¿Eliminar registro?</h3>
                         <p class="text-gray-400 mb-6">Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar el registro con ID <strong class="text-white" x-text="deleteId"></strong>?</p>
                         
-                        <form :action="'{{ route('hub.db.delete', ['table' => $table, 'id' => '']) }}/' + deleteId" method="POST" class="flex justify-center gap-3">
+                        <form :action="`/hub/db/{{ $table }}/${deleteId}`" method="POST" class="flex justify-center gap-3">
                             @csrf
                             @method('DELETE')
                             <button type="button" @click="deleteModalOpen = false" class="px-4 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 transition-colors font-medium">Cancelar</button>
