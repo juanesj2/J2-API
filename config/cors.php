@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => explode(',', env('FRONTEND_URL', 'http://localhost:5173,https://enfoca.alwaysdata.net')),
+    'allowed_origins' => explode(',', env('FRONTEND_URL', 'http://localhost:8100,http://localhost:5173,https://enfoca.alwaysdata.net,http://localhost,capacitor://localhost')),
 
     'allowed_origins_patterns' => [],
 
