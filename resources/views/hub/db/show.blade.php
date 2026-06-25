@@ -92,7 +92,7 @@
     </div>
 </div>
 
-<div class="glass-panel rounded-3xl shadow-xl overflow-hidden border border-gray-800">
+<div class="glass-panel rounded-3xl shadow-xl overflow-hidden border border-gray-800" x-data="{ editModalOpen: false, editRow: {}, deleteModalOpen: false, deleteId: null }">
     <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left text-sm text-gray-300">
             <thead class="text-xs text-gray-400 uppercase bg-gray-900/50 border-b border-gray-800">
@@ -110,7 +110,7 @@
                     @endforeach
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-800" x-data="{ editModalOpen: false, editRow: {}, deleteModalOpen: false, deleteId: null }">
+            <tbody class="divide-y divide-gray-800">
                 @forelse($records as $row)
                     <tr class="hover:bg-white/5 transition-colors">
                         @if($hasAccess && $hasId)
