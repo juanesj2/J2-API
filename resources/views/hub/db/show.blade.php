@@ -97,7 +97,7 @@
         <table class="w-full text-left text-sm text-gray-300">
             <thead class="text-xs text-gray-400 uppercase bg-gray-900/50 border-b border-gray-800">
                 <tr>
-                    @php $hasId = in_array('id', $columns); @endphp
+                    @php $hasId = collect($columns)->map(fn($c) => strtolower($c))->contains('id'); @endphp
                     @if($hasAccess && $hasId)
                         <th scope="col" class="px-6 py-4 font-bold tracking-wider sticky left-0 bg-gray-900/90 z-10 w-24 border-r border-gray-800">
                             Acciones
@@ -158,7 +158,10 @@
     @endif
 
     <!-- Modales de Edición y Eliminación -->
-    @if($hasAccess && $records->isNotEmpty() && in_array('id', $columns))
+    @php
+        $hasId = collect($columns)->map(fn($c) => strtolower($c))->contains('id');
+    @endphp
+    @if($hasAccess && $records->isNotEmpty() && $hasId)
         <!-- Modal Editar -->
         <div x-show="editModalOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

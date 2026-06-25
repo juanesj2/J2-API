@@ -102,6 +102,15 @@ class HubDbController extends Controller
             }
         }
 
+        $columns = Schema::getColumnListing($table);
+        $columnsLower = array_map('strtolower', $columns);
+        if (in_array('created_at', $columnsLower) && !isset($insertData['created_at'])) {
+            $insertData['created_at'] = now();
+        }
+        if (in_array('updated_at', $columnsLower) && !isset($insertData['updated_at'])) {
+            $insertData['updated_at'] = now();
+        }
+
         try {
             DB::table($table)->insert($insertData);
             return back()->with('success', 'Registro insertado correctamente.');
@@ -124,6 +133,12 @@ class HubDbController extends Controller
             if ($value !== null && $value !== '') {
                 $updateData[$key] = $value;
             }
+        }
+
+        $columns = Schema::getColumnListing($table);
+        $columnsLower = array_map('strtolower', $columns);
+        if (in_array('updated_at', $columnsLower) && !isset($updateData['updated_at'])) {
+            $updateData['updated_at'] = now();
         }
 
         try {
