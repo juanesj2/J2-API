@@ -49,7 +49,10 @@ class HubDbController extends Controller
         // Remove empty categories
         $categories = array_filter($categories, fn($count) => $count > 0);
 
-        return view('hub.db.index', compact('tableData', 'dbName', 'categories'));
+        $unlockedAt = session('db_unlocked_at');
+        $hasAccess = $unlockedAt && now()->timestamp - $unlockedAt < 7200;
+
+        return view('hub.db.index', compact('tableData', 'dbName', 'categories', 'unlockedAt', 'hasAccess'));
     }
 
     public function show($table)
