@@ -15,6 +15,83 @@
     </div>
 </div>
 
+@if(session('success'))
+<div class="mb-6 bg-green-900/50 border-l-4 border-green-500 p-4 rounded-r-xl">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="ml-3">
+            <p class="text-sm text-green-300">{{ session('success') }}</p>
+        </div>
+    </div>
+</div>
+@endif
+
+@if(session('error'))
+<div class="mb-6 bg-red-900/50 border-l-4 border-red-500 p-4 rounded-r-xl">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+        </div>
+        <div class="ml-3">
+            <p class="text-sm text-red-300">{{ session('error') }}</p>
+        </div>
+    </div>
+</div>
+@endif
+
+<div x-data="{ openInsert: false }" class="mb-8">
+    <div class="flex justify-end mb-4">
+        <button @click="openInsert = !openInsert" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-indigo-500/20">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            <span x-text="openInsert ? 'Cancelar' : 'Insertar Registro'"></span>
+        </button>
+    </div>
+
+    <div x-show="openInsert" x-collapse x-cloak>
+        <div class="glass-panel p-6 rounded-3xl mb-6 border border-indigo-500/30">
+            <h3 class="text-xl font-bold text-white mb-4">Añadir nuevo registro</h3>
+            
+            @if(!$hasAccess)
+                <div class="bg-indigo-900/30 p-6 rounded-2xl border border-indigo-500/20 text-center max-w-lg mx-auto">
+                    <svg class="w-12 h-12 text-indigo-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z" /></svg>
+                    <h4 class="text-lg font-bold text-white mb-2">Seguridad de Base de Datos</h4>
+                    <p class="text-gray-400 text-sm mb-6">Por motivos de seguridad, introduce tu contraseña de administrador para desbloquear la inserción de datos.</p>
+                    
+                    <form action="{{ route('hub.db.verify') }}" method="POST">
+                        @csrf
+                        <input type="password" name="password" required class="w-full bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 mb-4 text-center" placeholder="Tu contraseña">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-indigo-500/20">
+                            Desbloquear
+                        </button>
+                    </form>
+                </div>
+            @else
+                <form action="{{ route('hub.db.insert', $table) }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($columns as $col)
+                            @if($col !== 'id' && $col !== 'created_at' && $col !== 'updated_at')
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-1">{{ $col }}</label>
+                                    <input type="text" name="{{ $col }}" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors" placeholder="Valor (opcional)">
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                    <div class="flex justify-end pt-4">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-xl transition-all shadow-lg shadow-green-500/20 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            Guardar Registro
+                        </button>
+                    </div>
+                </form>
+            @endif
+        </div>
+    </div>
+</div>
+
 <div class="glass-panel rounded-3xl shadow-xl overflow-hidden border border-gray-800">
     <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left text-sm text-gray-300">

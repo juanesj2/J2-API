@@ -37,6 +37,8 @@ Route::prefix('hub')->group(function () {
 
         // Database Viewer
         Route::get('/db', [HubDbController::class, 'index'])->name('hub.db.index');
+        Route::post('/db/verify', [HubDbController::class, 'verifyDbPassword'])->name('hub.db.verify');
         Route::get('/db/{table}', [HubDbController::class, 'show'])->name('hub.db.show');
+        Route::post('/db/{table}/insert', [HubDbController::class, 'insert'])->name('hub.db.insert');
     });
 });
