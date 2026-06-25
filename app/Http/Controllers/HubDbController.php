@@ -200,9 +200,8 @@ class HubDbController extends Controller
             // Check if it's a SELECT query
             if (stripos($sql, 'select') === 0 || stripos($sql, 'show') === 0 || stripos($sql, 'describe') === 0 || stripos($sql, 'explain') === 0) {
                 $results = DB::select($sql);
-                // Return success with count
-                $count = count($results);
-                return back()->with('success', "Consulta ejecutada correctamente. {$count} filas devueltas.");
+                // Return a view with the results
+                return view('hub.db.sql_results', compact('results', 'sql', 'unlockedAt'));
             } else {
                 // Non-select queries (INSERT, UPDATE, DELETE, DROP, etc)
                 $affected = DB::statement($sql);
