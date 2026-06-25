@@ -93,27 +93,59 @@ class HubDbController extends Controller
             return back()->with('error', 'Acceso denegado. Verifica tu contraseña primero.');
         }
 
-        $dbName = config('database.connections.mysql.database');
-        $tables = array_map(function($t) use ($dbName) {
-            $key = "Tables_in_{$dbName}";
-            return $t->$key;
-        }, DB::select('SHOW TABLES'));
-
-        if (!in_array($table, $tables)) {
-            abort(404);
-        }
-
         $data = $request->except(['_token']);
         
-        $insertData = array_filter($data, function($value) {
-            return $value !== null && $value !== '';
-        });
+        $insertData = [];
+        foreach ($data as $key => $value) {
+            if ($value !== null && $value !== '') {
+                $insertData[$key] = $value;
+            }
+        }
 
         try {
             DB::table($table)->insert($insertData);
             return back()->with('success', 'Registro insertado correctamente.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error al insertar: ' . $e->getMessage());
+        }
+    }
+
+    public function updateRow(Request $request, $table, $id)
+    {
+        $unlockedAt = session('db_unlocked_at');
+        if (!$unlockedAt || now()->timestamp - $unlockedAt >= 7200) {
+            return back()->with('error', 'Acceso denegado. Verifica tu contraseña primero.');
+        }
+
+        $data = $request->except(['_token', '_method']);
+        
+        $updateData = [];
+        foreach ($data as $key => $value) {
+            if ($value !== null && $value !== '') {
+                $updateData[$key] = $value;
+            }
+        }
+
+        try {
+            DB::table($table)->where('id', $id)->update($updateData);
+            return back()->with('success', 'Registro actualizado correctamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al actualizar: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteRow(Request $request, $table, $id)
+    {
+        $unlockedAt = session('db_unlocked_at');
+        if (!$unlockedAt || now()->timestamp - $unlockedAt >= 7200) {
+            return back()->with('error', 'Acceso denegado. Verifica tu contraseña primero.');
+        }
+
+        try {
+            DB::table($table)->where('id', $id)->delete();
+            return back()->with('success', 'Registro eliminado correctamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al eliminar: ' . $e->getMessage());
         }
     }
 }
