@@ -96,7 +96,7 @@ class GameController extends Controller
     public function answerSwipe(Request $request)
     {
         $request->validate([
-            'question_id' => 'required|exists:swipe_questions,id',
+            'question_id' => 'required|exists:lovewidget_swipe_questions,id',
             'answer' => 'required|boolean'
         ]);
 
@@ -270,7 +270,7 @@ class GameController extends Controller
     public function uploadDrawing(Request $request)
     {
         $request->validate([
-            'prompt_id' => 'required|exists:drawing_prompts,id',
+            'prompt_id' => 'required|exists:lovewidget_drawing_prompts,id',
             'image' => 'required|string' // base64
         ]);
 

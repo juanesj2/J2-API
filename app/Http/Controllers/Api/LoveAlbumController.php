@@ -388,7 +388,7 @@ class LoveAlbumController extends Controller
             'image' => 'required|file|max:15360',
             'description' => 'nullable|string|max:500',
             'fecha_recuerdo' => 'nullable|date',
-            'album_id' => 'nullable|exists:love_albums,id'
+            'album_id' => 'nullable|exists:lovewidget_love_albums,id'
         ]);
 
         if ($request->hasFile('image')) {

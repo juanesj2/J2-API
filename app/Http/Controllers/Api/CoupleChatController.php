@@ -45,7 +45,7 @@ class CoupleChatController extends Controller
 
         $request->validate([
             'mensaje' => 'required|string',
-            'love_photo_id' => 'nullable|exists:love_photos,id',
+            'love_photo_id' => 'nullable|exists:lovewidget_love_photos,id',
             'reply_to' => 'nullable|array'
         ]);
 

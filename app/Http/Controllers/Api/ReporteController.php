@@ -26,8 +26,8 @@ class ReporteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'foto_id' => 'required|exists:fotografias,id',
-            'motivo' => 'required|string|max:255',
+            'foto_id' => 'required|exists:enfoca_fotografias,id',
+            'motivo' => 'required|string|max:500',
         ]);
 
         $existe = Reporte::where('foto_id', $request->foto_id)
