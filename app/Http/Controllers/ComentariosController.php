@@ -63,7 +63,7 @@ class ComentariosController extends Controller
     {
         // Usamos validate para comprobar que los datos cumplan los requisitos
         $request->validate([
-            'fotografia_id' => 'required|exists:fotografias,id',
+            'fotografia_id' => 'required|exists:enfoca_fotografias,id',
             'comentario' => 'required|string|max:255',
         ]);
 

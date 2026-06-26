@@ -25,7 +25,6 @@ class Fotografia extends Model
     ];
 
     // Hacemos referencia a la la tabla fotografias de la base de datos
-    protected $table = 'fotografias';
 
     //**************************************************************/
     //**************************************************************/
