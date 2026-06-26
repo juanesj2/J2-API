@@ -688,6 +688,23 @@ class LoveAlbumController extends Controller
         return response()->json(['message' => 'Portada actualizada', 'album' => $album]);
     }
 
+    public function deleteAlbum($id)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+        if (!$couple) return response()->json([], 403);
+
+        $album = LoveAlbum::where('couple_id', $couple->id)->find($id);
+        if (!$album) return response()->json([], 404);
+
+        // Quitar la referencia del álbum a las fotos (no borramos las fotos en sí)
+        \App\Models\LovePhoto::where('album_id', $album->id)->update(['album_id' => null]);
+
+        $album->delete();
+
+        return response()->json(['message' => 'Álbum eliminado correctamente']);
+    }
+
     // --- HITOS IMPORTANTES (MILESTONES) ---
     public function getMilestones()
     {
