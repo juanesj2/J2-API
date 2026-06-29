@@ -13,17 +13,11 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::get('/roulette', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getRouletteOptions']);
     Route::post('/roulette', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateRouletteOptions']);
     
-    // Hitos
-    Route::get('/milestones', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getMilestones']);
-    Route::post('/milestones', [\App\Http\Controllers\Api\LoveAlbumController::class, 'addMilestone']);
-    Route::post('/milestones/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateMilestone']);
-    Route::delete('/milestones/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'deleteMilestone']);
-    
-    // Wishes
-    Route::get('/wishes', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getWishes']);
-    Route::post('/wishes', [\App\Http\Controllers\Api\LoveAlbumController::class, 'addWish']);
-    Route::put('/wishes/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateWish']);
-    Route::delete('/wishes/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'deleteWish']);
+    // Timeline y Planes (Sustituye a Hitos y Deseos)
+    Route::get('/plans', [\App\Http\Controllers\Api\CouplePlanController::class, 'index']);
+    Route::post('/plans', [\App\Http\Controllers\Api\CouplePlanController::class, 'store']);
+    Route::put('/plans/{id}', [\App\Http\Controllers\Api\CouplePlanController::class, 'update']);
+    Route::delete('/plans/{id}', [\App\Http\Controllers\Api\CouplePlanController::class, 'destroy']);
 
     // Widget Extras
     Route::get('/widget/food-places', [\App\Http\Controllers\Api\WidgetController::class, 'getFoodPlaces']);
