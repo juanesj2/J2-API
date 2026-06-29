@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('couple_plans', function (Blueprint $table) {
+        Schema::create('lovewidget_couple_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('couple_id')->constrained()->onDelete('cascade');
+            $table->foreignId('couple_id')->constrained('lovewidget_couples')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('category')->default('other'); // trip, date, music, other
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('couple_plans');
+        Schema::dropIfExists('lovewidget_couple_plans');
     }
 };
