@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::post('/pair', [\App\Http\Controllers\Api\LoveAlbumController::class, 'pair']);
+    Route::post('/unpair', [\App\Http\Controllers\Api\LoveAlbumController::class, 'unpair']);
     Route::get('/info', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getCoupleInfo']);
     Route::put('/info', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateCoupleInfo']);
     Route::post('/poke', [\App\Http\Controllers\Api\LoveAlbumController::class, 'poke']);

@@ -66,6 +66,20 @@ class LoveAlbumController extends Controller
         return response()->json(['message' => '¡Vinculación exitosa!'], 200);
     }
 
+    public function unpair()
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $couple->delete();
+
+        return response()->json(['message' => 'Pareja desvinculada con éxito.']);
+    }
+
     public function getCoupleInfo(Request $request)
     {
         $user = Auth::user();
