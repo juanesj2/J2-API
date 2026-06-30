@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WebhookController;
 
 // ============================
 //          TEST
@@ -21,6 +22,11 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/google-login', [AuthController::class, 'googleLogin']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::get('/test/reset-link/{email}', [AuthController::class, 'testResetLink']);
+
+// ============================
+//     WEBHOOKS
+// ============================
+Route::post('/webhooks/revenuecat', [WebhookController::class, 'revenueCat']);
 
 // ============================
 //     RUTAS PROTEGIDAS AUTH

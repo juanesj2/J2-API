@@ -127,6 +127,7 @@ class LoveAlbumController extends Controller
             'my_id' => (string) $user->id,
             'partner_id' => (string) $partnerId,
             'couple' => $couple,
+            'is_premium' => $couple && $couple->premium_until && $couple->premium_until->isFuture(),
             'current_streak' => $couple->current_streak,
             'my_mood' => $user->current_mood,
             'partner_mood' => $partner ? $partner->current_mood : null,
