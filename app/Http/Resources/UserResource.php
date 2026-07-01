@@ -29,6 +29,7 @@ class UserResource extends JsonResource
             'updated_at' => $this->updated_at,
             'pairing_code' => $this->pairing_code,
             'is_premium' => $is_premium,
+            'premium_until' => $couple ? $couple->premium_until : null,
             'esta_vetado' => $this->estaVetado(),
             'tiempo_restante_veto' => $this->tiempoRestanteVeto(),
             'fotografias' => FotografiaResource::collection($this->whenLoaded('fotografias')),
