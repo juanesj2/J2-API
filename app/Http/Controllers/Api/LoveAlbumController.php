@@ -131,6 +131,10 @@ class LoveAlbumController extends Controller
             'current_streak' => $couple->current_streak,
             'my_mood' => $user->current_mood,
             'partner_mood' => $partner ? $partner->current_mood : null,
+            'my_bubble_shape' => $user->bubble_shape,
+            'partner_bubble_shape' => $partner ? $partner->bubble_shape : null,
+            'my_avatar_frame' => $user->avatar_frame,
+            'partner_avatar_frame' => $partner ? $partner->avatar_frame : null,
             'my_birth_date' => $user->birth_date,
             'partner_birth_date' => $partner ? $partner->birth_date : null,
             'my_name' => $user->name,
@@ -186,6 +190,16 @@ class LoveAlbumController extends Controller
                     "{$user->name} se siente ahora: {$request->current_mood}."
                 );
             }
+        }
+
+        if ($request->has('bubble_shape')) {
+            $user->bubble_shape = $request->bubble_shape;
+            $user->save();
+        }
+
+        if ($request->has('avatar_frame')) {
+            $user->avatar_frame = $request->avatar_frame;
+            $user->save();
         }
 
         return response()->json(['message' => 'Información actualizada con éxito']);

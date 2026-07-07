@@ -36,6 +36,8 @@ class User extends Authenticatable
         'pairing_code',
         'birth_date',
         'avatar_url',
+        'bubble_shape',
+        'avatar_frame',
     ];
 
     /**
