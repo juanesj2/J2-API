@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Couple;
 use App\Models\CoupleMessage;
 use Illuminate\Support\Facades\Auth;
+use App\Services\FcmService;
+use App\Models\User;
 
 class CoupleChatController extends Controller
 {
@@ -56,6 +58,18 @@ class CoupleChatController extends Controller
             'love_photo_id' => $request->love_photo_id,
             'reply_to' => $request->reply_to,
         ]);
+
+        $partnerId = $couple->user1_id === $user->id ? $couple->user2_id : $couple->user1_id;
+        $partner = User::find($partnerId);
+        
+        if ($partner && $partner->fcm_token) {
+            $fcm = new FcmService();
+            $fcm->sendToToken(
+                $partner->fcm_token,
+                "Nuevo mensaje de {$user->name} 💌",
+                $request->mensaje
+            );
+        }
 
         return response()->json([
             'message' => 'Mensaje enviado',
