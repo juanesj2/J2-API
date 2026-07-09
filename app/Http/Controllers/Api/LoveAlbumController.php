@@ -98,12 +98,19 @@ class LoveAlbumController extends Controller
 
         // Control de ruptura de racha al vuelo
         $lastStreakDate = $couple->last_photo_date ? \Carbon\Carbon::parse($couple->last_photo_date)->startOfDay() : null;
-        if ($lastStreakDate && $couple->current_streak > 0) {
-            $diffInDays = $today->diffInDays($lastStreakDate);
-            if ($diffInDays > 1) {
-                // Racha rota (ayer nadie o sólo uno subió foto)
+        
+        if ($couple->current_streak > 0) {
+            if (!$lastStreakDate) {
+                // Estado inconsistente: tiene racha pero no hay fecha de última foto
                 $couple->current_streak = 0;
                 $couple->save();
+            } else {
+                $diffInDays = $today->diffInDays($lastStreakDate);
+                if ($diffInDays > 1) {
+                    // Racha rota (ayer nadie o sólo uno subió foto)
+                    $couple->current_streak = 0;
+                    $couple->save();
+                }
             }
         }
 
@@ -475,12 +482,16 @@ class LoveAlbumController extends Controller
                     }
                 }
             } else {
-                // SÓLO YO he subido hoy. Comprobamos si la racha se rompió ayer.
-                if ($lastStreakDate && $couple->current_streak > 0) {
-                    $diffInDays = $today->diffInDays($lastStreakDate);
-                    if ($diffInDays > 1) {
-                        // Ayer la racha murió
+                // SÓLO YO he subido hoy. Comprobamos si la racha se rompió ayer o hay un estado inconsistente.
+                if ($couple->current_streak > 0) {
+                    if (!$lastStreakDate) {
                         $couple->current_streak = 0;
+                    } else {
+                        $diffInDays = $today->diffInDays($lastStreakDate);
+                        if ($diffInDays > 1) {
+                            // Ayer la racha murió
+                            $couple->current_streak = 0;
+                        }
                     }
                 }
             }
