@@ -150,7 +150,14 @@ class LoveAlbumController extends Controller
             'partner_avatar' => ($partner && $partner->avatar_url) ? url('storage/' . $partner->avatar_url) : null,
             'my_photo_today' => $myPhotoToday,
             'partner_photo_today' => $partnerPhotoToday,
-            'unlocked_achievements' => $unlockedAchievements
+            'unlocked_achievements' => $unlockedAchievements,
+            'debug_streak' => [
+                'today' => $today->format('Y-m-d H:i:s'),
+                'last_streak_date' => $lastStreakDate ? $lastStreakDate->format('Y-m-d H:i:s') : null,
+                'diff_in_days' => $lastStreakDate ? $today->diffInDays($lastStreakDate) : null,
+                'db_last_photo_date' => $couple->last_photo_date,
+                'db_current_streak' => $couple->current_streak
+            ]
         ]);
     }
 
