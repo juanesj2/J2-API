@@ -106,7 +106,7 @@ class LoveAlbumController extends Controller
                 $couple->save();
             } else {
                 $diffInDays = $today->diffInDays($lastStreakDate);
-                if ($diffInDays > 1) {
+                if (abs($diffInDays) > 1) {
                     // Racha rota (ayer nadie o sólo uno subió foto)
                     $couple->current_streak = 0;
                     $couple->save();
@@ -475,14 +475,14 @@ class LoveAlbumController extends Controller
                     $couple->last_photo_date = $today->format('Y-m-d H:i:s');
                 } else {
                     $diffInDays = $today->diffInDays($lastStreakDate);
-                    if ($diffInDays == 1) {
+                    if (abs($diffInDays) == 1) {
                         // Racha se mantiene y sube
                         $couple->current_streak += 1;
                         if ($couple->current_streak > $couple->longest_streak) {
                             $couple->longest_streak = $couple->current_streak;
                         }
                         $couple->last_photo_date = $today->format('Y-m-d H:i:s');
-                    } elseif ($diffInDays > 1) {
+                    } elseif (abs($diffInDays) > 1) {
                         // Hubo un hueco (se rompió), reiniciar a 1
                         $couple->current_streak = 1;
                         $couple->last_photo_date = $today->format('Y-m-d H:i:s');
@@ -495,7 +495,7 @@ class LoveAlbumController extends Controller
                         $couple->current_streak = 0;
                     } else {
                         $diffInDays = $today->diffInDays($lastStreakDate);
-                        if ($diffInDays > 1) {
+                        if (abs($diffInDays) > 1) {
                             // Ayer la racha murió
                             $couple->current_streak = 0;
                         }
