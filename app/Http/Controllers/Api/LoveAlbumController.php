@@ -235,7 +235,9 @@ class LoveAlbumController extends Controller
         // Notify partner
         $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
         $partner = \App\Models\User::find($partnerId);
+        $debug = ['partner_has_token' => false];
         if ($partner && $partner->fcm_token) {
+            $debug['partner_has_token'] = true;
             $fcm = new FcmService();
 
             // Verificar si tienen el logro Dedo Inquieto
@@ -263,14 +265,23 @@ class LoveAlbumController extends Controller
             }
 
             $randomMessage = $messages[array_rand($messages)];
-            $fcm->sendToToken(
+            $success = $fcm->sendToToken(
                 $partner->fcm_token,
                 $title,
                 $randomMessage
             );
+            
+            $debug['fcm_success'] = $success;
+            if (!$success) {
+                $debug['fcm_error'] = $fcm->lastError;
+            }
         }
 
-        return response()->json(['message' => 'Zumbido enviado', 'poke_count' => $couple->poke_count]);
+        return response()->json([
+            'message' => 'Zumbido enviado', 
+            'poke_count' => $couple->poke_count,
+            'debug' => $debug
+        ]);
     }
 
     public function remindStreak()

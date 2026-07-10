@@ -9,6 +9,7 @@ use Kreait\Firebase\Messaging\Notification;
 class FcmService
 {
     protected $messaging;
+    public $lastError = null;
 
     public function __construct()
     {
@@ -36,7 +37,14 @@ class FcmService
 
     public function sendToToken($token, $title, $body, $data = [])
     {
-        if (!$token || !$this->messaging) return false;
+        if (!$token) {
+            $this->lastError = 'Token is missing';
+            return false;
+        }
+        if (!$this->messaging) {
+            $this->lastError = 'Messaging is null (Credentials file missing or invalid)';
+            return false;
+        }
 
         try {
             $message = CloudMessage::fromArray([
@@ -51,6 +59,7 @@ class FcmService
             $this->messaging->send($message);
             return true;
         } catch (\Throwable $e) {
+            $this->lastError = $e->getMessage();
             \Log::error('FCM Send Error: ' . $e->getMessage());
             return false;
         }
