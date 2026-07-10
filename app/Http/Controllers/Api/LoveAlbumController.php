@@ -265,10 +265,12 @@ class LoveAlbumController extends Controller
             }
 
             $randomMessage = $messages[array_rand($messages)];
+            $data = ['type' => $hasSecretSpammer ? 'super_poke' : 'poke'];
             $success = $fcm->sendToToken(
                 $partner->fcm_token,
                 $title,
-                $randomMessage
+                $randomMessage,
+                $data
             );
             
             $debug['fcm_success'] = $success;

@@ -48,14 +48,28 @@ class FcmService
         }
 
         try {
-            $message = CloudMessage::fromArray([
+            $messageArray = [
                 'token' => $token,
                 'notification' => [
                     'title' => $title,
                     'body' => $body,
-                ],
-                'data' => empty($data) ? null : $data,
-            ]);
+                ]
+            ];
+            
+            if (!empty($data)) {
+                $messageArray['data'] = $data;
+                
+                if (isset($data['type']) && $data['type'] === 'super_poke') {
+                    $messageArray['android'] = [
+                        'notification' => [
+                            'vibrate_timings' => ['0s', '1.5s', '0.2s', '1.5s', '0.2s', '1.5s'],
+                            'default_vibrate_timings' => false,
+                        ]
+                    ];
+                }
+            }
+
+            $message = CloudMessage::fromArray($messageArray);
 
             $this->messaging->send($message);
             return true;
