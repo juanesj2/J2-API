@@ -30,6 +30,7 @@ class FcmService
                 $this->messaging = null;
             }
         } catch (\Throwable $e) {
+            $this->lastError = 'Init Exception: ' . $e->getMessage();
             \Log::error('FCM Initialization Error: ' . $e->getMessage());
             $this->messaging = null;
         }
@@ -42,7 +43,7 @@ class FcmService
             return false;
         }
         if (!$this->messaging) {
-            $this->lastError = 'Messaging is null (Credentials file missing or invalid)';
+            $this->lastError = $this->lastError ?: 'Messaging is null (Credentials file missing or invalid)';
             return false;
         }
 
