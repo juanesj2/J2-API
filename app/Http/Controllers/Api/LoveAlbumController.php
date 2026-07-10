@@ -219,13 +219,29 @@ class LoveAlbumController extends Controller
         return response()->json(['message' => 'Información actualizada con éxito']);
     }
 
-    public function poke()
+    public function poke(Request $request)
     {
         $user = Auth::user();
         $couple = $this->getCoupleForUser($user->id);
 
         if (!$couple) {
             return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $isSuper = $request->input('is_super', false);
+
+        // Verificar si tienen el logro Dedo Inquieto
+        $hasSecretSpammer = \App\Models\CoupleAchievement::where('couple_id', $couple->id)
+            ->where('achievement_id', 'secret_spammer')
+            ->exists();
+
+        if ($isSuper && $hasSecretSpammer) {
+            // Verificar cooldown de 2 minutos para súper zumbidos
+            $cacheKey = 'super_poke_cooldown_' . $couple->id;
+            if (\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                return response()->json(['message' => 'Debes esperar 2 minutos antes de enviar otro súper zumbido. ¡No rompas el móvil!'], 429);
+            }
+            \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addMinutes(2));
         }
 
         $couple->last_poke_at = now();
@@ -240,12 +256,7 @@ class LoveAlbumController extends Controller
             $debug['partner_has_token'] = true;
             $fcm = new FcmService();
 
-            // Verificar si tienen el logro Dedo Inquieto
-            $hasSecretSpammer = \App\Models\CoupleAchievement::where('couple_id', $couple->id)
-                ->where('achievement_id', 'secret_spammer')
-                ->exists();
-
-            if ($hasSecretSpammer) {
+            if ($isSuper && $hasSecretSpammer) {
                 $messages = [
                     "⚡ ¡SÚPER ZUMBIDO! {$user->name} te ha bombardeado ⚡",
                     "💥 {$user->name} está golpeando la pantalla por ti 💥",
@@ -265,7 +276,7 @@ class LoveAlbumController extends Controller
             }
 
             $randomMessage = $messages[array_rand($messages)];
-            $data = ['type' => $hasSecretSpammer ? 'super_poke' : 'poke'];
+            $data = ['type' => ($isSuper && $hasSecretSpammer) ? 'super_poke' : 'poke'];
             $success = $fcm->sendToToken(
                 $partner->fcm_token,
                 $title,

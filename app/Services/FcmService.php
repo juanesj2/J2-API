@@ -62,7 +62,7 @@ class FcmService
                 if (isset($data['type']) && $data['type'] === 'super_poke') {
                     $messageArray['android'] = [
                         'notification' => [
-                            'vibrate_timings' => ['0s', '1.5s', '0.2s', '1.5s', '0.2s', '1.5s'],
+                            'vibrate_timings' => ['0s', '1s', '0.2s', '1s', '0.2s', '1s'],
                             'default_vibrate_timings' => false,
                         ]
                     ];
