@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     // Buzón Secreto (Cartitas de Amor)
     Route::get('/secret-notes', [\App\Http\Controllers\Api\SecretNoteController::class, 'index']);
     Route::post('/secret-notes', [\App\Http\Controllers\Api\SecretNoteController::class, 'store']);
+    Route::delete('/secret-notes/{id}', [\App\Http\Controllers\Api\SecretNoteController::class, 'destroy']);
 
     // Widget Extras
     Route::get('/widget/food-places', [\App\Http\Controllers\Api\WidgetController::class, 'getFoodPlaces']);

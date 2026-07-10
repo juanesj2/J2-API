@@ -70,4 +70,18 @@ class SecretNoteController extends Controller
             'note' => $note->load('user:id,name,avatar_url')
         ], 201);
     }
+
+    public function destroy($id)
+    {
+        $user = Auth::user();
+        $note = SecretNote::where('id', $id)->where('user_id', $user->id)->first();
+
+        if (!$note) {
+            return response()->json(['message' => 'Note not found or unauthorized'], 404);
+        }
+
+        $note->delete();
+
+        return response()->json(['message' => 'Note deleted successfully']);
+    }
 }
