@@ -37,7 +37,7 @@ COMPROBAR Arreglar el descargar y guardar foto
 COMPROBAR Arreglar micrófono 
 COMPROBAR Arreglar mapa 
 COMPROBAR Añadir juego de huella 🫆 al mandar emoji
-Dar una vuelta a los dibujos de pareja, arreglar selector de colores, ver los dibujos ya echos de ella 
+COMPROBAR Dar una vuelta a los dibujos de pareja, arreglar selector de colores, ver los dibujos ya echos de ella 
 Tinder de pareja, llegan muchas notificaciones 
 En la parte de más poner como notificación para los juegos 
 Al darle a la flecha para atrás que salga de donde estás 

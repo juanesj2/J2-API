@@ -109,16 +109,24 @@ class GameController extends Controller
             ['couple_id' => $couple->id, 'answer' => $request->answer]
         );
 
-        // Notificar a la pareja
+        // Notificar a la pareja (Limitado a 1 vez cada 2 horas para no hacer spam)
         $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
         $partner = \App\Models\User::find($partnerId);
+        
         if ($partner && $partner->fcm_token) {
-            $fcm = new FcmService();
-            $fcm->sendToToken(
-                $partner->fcm_token,
-                "Tinder de Pareja 🔥",
-                "{$user->name} ha respondido a una carta. ¡Abre la app para ver o responder!"
-            );
+            $cacheKey = "swipe_notification_{$user->id}_{$partnerId}";
+            
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                $fcm = new FcmService();
+                $fcm->sendToToken(
+                    $partner->fcm_token,
+                    "Tinder de Pareja 🔥",
+                    "{$user->name} está respondiendo cartas. ¡Entra para ver si tenéis coincidencias!"
+                );
+                
+                // Evitamos volver a enviar durante 2 horas
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(2));
+            }
         }
 
         return response()->json(['message' => 'Respuesta guardada', 'data' => $answer]);
