@@ -29,37 +29,53 @@ class GameController extends Controller
         $couple = $this->getCoupleForUser($user->id);
         if (!$couple) return response()->json(['message' => 'No tienes pareja'], 403);
 
+        $partnerId = $couple->user1_id === $user->id ? $couple->user2_id : $couple->user1_id;
+
         // 1. Preguntas (Questions)
-        // El frontend ya recibe todas, pero lo calculamos igual
         $totalQuestions = \App\Models\Question::count();
         $answeredQuestions = \App\Models\QuestionAnswer::where('user_id', $user->id)->count();
         $questionsPercent = $totalQuestions > 0 ? round(($answeredQuestions / $totalQuestions) * 100) : 0;
+        $partnerQuestions = \App\Models\QuestionAnswer::where('user_id', $partnerId)->pluck('question_id')->toArray();
+        $myQuestions = \App\Models\QuestionAnswer::where('user_id', $user->id)->pluck('question_id')->toArray();
+        $pendingQuestions = count(array_diff($partnerQuestions, $myQuestions));
 
         // 2. Swipe Game
         $totalSwipe = SwipeQuestion::count();
         $answeredSwipe = SwipeAnswer::where('user_id', $user->id)->count();
         $swipePercent = $totalSwipe > 0 ? round(($answeredSwipe / $totalSwipe) * 100) : 0;
+        $partnerSwipe = SwipeAnswer::where('user_id', $partnerId)->pluck('swipe_question_id')->toArray();
+        $mySwipe = SwipeAnswer::where('user_id', $user->id)->pluck('swipe_question_id')->toArray();
+        $pendingSwipe = count(array_diff($partnerSwipe, $mySwipe));
 
         // 3. Drawing Game
         $totalDrawing = DrawingPrompt::count();
         $answeredDrawing = Drawing::where('user_id', $user->id)->count();
         $drawingPercent = $totalDrawing > 0 ? round(($answeredDrawing / $totalDrawing) * 100) : 0;
+        $partnerDrawingIds = Drawing::where('user_id', $partnerId)->pluck('drawing_prompt_id')->toArray();
+        $myDrawingIds = Drawing::where('user_id', $user->id)->pluck('drawing_prompt_id')->toArray();
+        $pendingDrawing = count(array_diff($partnerDrawingIds, $myDrawingIds));
+
+        $totalPending = $pendingQuestions + $pendingSwipe + $pendingDrawing;
 
         return response()->json([
+            'total_pending' => $totalPending,
             'questions' => [
                 'total' => $totalQuestions,
                 'answered' => $answeredQuestions,
-                'percentage' => $questionsPercent
+                'percentage' => $questionsPercent,
+                'pending_actions' => $pendingQuestions
             ],
             'swipe' => [
                 'total' => $totalSwipe,
                 'answered' => $answeredSwipe,
-                'percentage' => $swipePercent
+                'percentage' => $swipePercent,
+                'pending_actions' => $pendingSwipe
             ],
             'drawing' => [
                 'total' => $totalDrawing,
                 'answered' => $answeredDrawing,
-                'percentage' => $drawingPercent
+                'percentage' => $drawingPercent,
+                'pending_actions' => $pendingDrawing
             ]
         ]);
     }

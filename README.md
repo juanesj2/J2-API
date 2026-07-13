@@ -38,15 +38,15 @@ COMPROBAR Arreglar micrófono
 COMPROBAR Arreglar mapa 
 COMPROBAR Añadir juego de huella 🫆 al mandar emoji
 COMPROBAR Dar una vuelta a los dibujos de pareja, arreglar selector de colores, ver los dibujos ya echos de ella 
-Tinder de pareja, llegan muchas notificaciones 
-En la parte de más poner como notificación para los juegos 
-Al darle a la flecha para atrás que salga de donde estás 
-En cine y comida bajar el menú y revisar rendimiento 
-En la parte de planificación de viaje dentro de equipaje al darle intro que cree otro 
-Arreglar el enviar notificación personalizada 
-Error al eliminar mensajes revisar
-Revisar colección del widget en más, al cerrar la app se deja de ver el álbum seleccionado 
-Arreglar en los dibujos las ya hechas, no se ven siempre 
+COMPROBAR Tinder de pareja, llegan muchas notificaciones 
+COMPROBAR En la parte de más poner como notificación para los juegos 
+COMPROBAR Al darle a la flecha para atrás que salga de donde estás 
+COMPROBAR En cine y comida bajar el menú y revisar rendimiento 
+COMPROBAR En la parte de planificación de viaje dentro de equipaje al darle intro que cree otro 
+COMPROBAR Arreglar el enviar notificación personalizada 
+COMPROBAR Error al eliminar mensajes revisar
+COMPROBAR Revisar colección del widget en más, al cerrar la app se deja de ver el álbum seleccionado 
 Revisar notificaciones con la app cerrada 
 La notificación de la racha siempre recuerda aunque se haya subido foto
 Por alguna razón cuando mi novia hace fotos la calidad de la foto se ve degradada incluso antes de subirla, con mi móvil no, porque?
+Cuando estoy en el chat los mensajes no se actualizan automaticamente, tengo que salir y entrar en el chat para poder ver los nuevos mensajes, eso no esta bien

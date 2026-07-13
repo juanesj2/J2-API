@@ -53,6 +53,14 @@ class FcmService
                 'notification' => [
                     'title' => $title,
                     'body' => $body,
+                ],
+                'android' => [
+                    'priority' => 'high'
+                ],
+                'apns' => [
+                    'headers' => [
+                        'apns-priority' => '10'
+                    ]
                 ]
             ];
             
@@ -60,11 +68,9 @@ class FcmService
                 $messageArray['data'] = $data;
                 
                 if (isset($data['type']) && $data['type'] === 'super_poke') {
-                    $messageArray['android'] = [
-                        'notification' => [
-                            'vibrate_timings' => ['0s', '1s', '0.2s', '1s', '0.2s', '1s'],
-                            'default_vibrate_timings' => false,
-                        ]
+                    $messageArray['android']['notification'] = [
+                        'vibrate_timings' => ['0s', '1s', '0.2s', '1s', '0.2s', '1s'],
+                        'default_vibrate_timings' => false,
                     ];
                 }
             }
