@@ -349,7 +349,14 @@ class GameController extends Controller
 
         $partnerId = $couple->user1_id === $user->id ? $couple->user2_id : $couple->user1_id;
 
-        $prompts = DrawingPrompt::paginate(50);
+        $interactedPromptIds = Drawing::where('couple_id', $couple->id)
+            ->distinct()
+            ->pluck('drawing_prompt_id');
+
+        $prompts = DrawingPrompt::whereIn('id', $interactedPromptIds)
+            ->orderBy('id', 'desc')
+            ->paginate(50);
+            
         $drawings = Drawing::where('couple_id', $couple->id)
             ->whereIn('drawing_prompt_id', $prompts->pluck('id'))
             ->get();
