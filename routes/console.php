@@ -24,13 +24,22 @@ Schedule::call(function () {
         if (!$u1 || !$u2) continue;
 
         // 1. STREAK REMINDER
-        if ($couple->last_photo_date) {
-            $lastPhotoDate = Carbon::parse($couple->last_photo_date);
-            $hoursSince = $lastPhotoDate->diffInHours(now());
-            if ($hoursSince >= 24 && $hoursSince < 48) {
-                if ($u1->fcm_token) $fcm->sendToToken($u1->fcm_token, "¡Cuidado con la racha! 📸", "Hace más de un día que no subís foto. ¡No perdáis el récord!");
-                if ($u2->fcm_token) $fcm->sendToToken($u2->fcm_token, "¡Cuidado con la racha! 📸", "Hace más de un día que no subís foto. ¡No perdáis el récord!");
-            }
+        $u1UploadedToday = \App\Models\LovePhoto::where('couple_id', $couple->id)
+            ->where('user_id', $u1->id)
+            ->whereDate('created_at', now()->toDateString())
+            ->exists();
+            
+        $u2UploadedToday = \App\Models\LovePhoto::where('couple_id', $couple->id)
+            ->where('user_id', $u2->id)
+            ->whereDate('created_at', now()->toDateString())
+            ->exists();
+
+        if (!$u1UploadedToday && $u1->fcm_token) {
+            $fcm->sendToToken($u1->fcm_token, "🔥 ¡No rompas la racha! 🔥", "Sube un recuerdo de hoy y descubre si tu pareja también lo hizo.");
+        }
+        
+        if (!$u2UploadedToday && $u2->fcm_token) {
+            $fcm->sendToToken($u2->fcm_token, "🔥 ¡No rompas la racha! 🔥", "Sube un recuerdo de hoy y descubre si tu pareja también lo hizo.");
         }
 
         // 2. ANNIVERSARY REMINDER

@@ -46,7 +46,7 @@ COMPROBAR En la parte de planificación de viaje dentro de equipaje al darle int
 COMPROBAR Arreglar el enviar notificación personalizada 
 COMPROBAR Error al eliminar mensajes revisar
 COMPROBAR Revisar colección del widget en más, al cerrar la app se deja de ver el álbum seleccionado 
-Revisar notificaciones con la app cerrada 
+COMPROBAR Revisar notificaciones con la app cerrada 
 La notificación de la racha siempre recuerda aunque se haya subido foto
 Por alguna razón cuando mi novia hace fotos la calidad de la foto se ve degradada incluso antes de subirla, con mi móvil no, porque?
 Cuando estoy en el chat los mensajes no se actualizan automaticamente, tengo que salir y entrar en el chat para poder ver los nuevos mensajes, eso no esta bien
