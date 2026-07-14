@@ -140,8 +140,8 @@ class GameController extends Controller
                     "{$user->name} está respondiendo cartas. ¡Entra para ver si tenéis coincidencias!"
                 );
                 
-                // Evitamos volver a enviar durante 2 horas
-                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(2));
+                // Evitamos volver a enviar durante 1 hora
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(1));
             }
         }
 
@@ -318,20 +318,24 @@ class GameController extends Controller
         $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
         $partner = \App\Models\User::find($partnerId);
         if ($partner && $partner->fcm_token) {
-            $partnerDrawing = Drawing::where('user_id', $partnerId)->where('drawing_prompt_id', $request->prompt_id)->first();
-            $fcm = new FcmService();
-            if ($partnerDrawing) {
-                $fcm->sendToToken(
-                    $partner->fcm_token,
-                    "¡Obras de arte listas! 🖼️",
-                    "{$user->name} ha completado su dibujo. ¡Entra a ver el resultado!"
-                );
-            } else {
-                $fcm->sendToToken(
-                    $partner->fcm_token,
-                    "¡Nuevo reto de dibujo! 🎨",
-                    "{$user->name} ha dibujado. ¡Te toca a ti para poder verlo!"
-                );
+            $cacheKey = "drawing_notification_{$user->id}_{$partnerId}";
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                $partnerDrawing = Drawing::where('user_id', $partnerId)->where('drawing_prompt_id', $request->prompt_id)->first();
+                $fcm = new FcmService();
+                if ($partnerDrawing) {
+                    $fcm->sendToToken(
+                        $partner->fcm_token,
+                        "¡Obras de arte listas! 🖼️",
+                        "{$user->name} ha completado su dibujo. ¡Entra a ver el resultado!"
+                    );
+                } else {
+                    $fcm->sendToToken(
+                        $partner->fcm_token,
+                        "¡Nuevo reto de dibujo! 🎨",
+                        "{$user->name} ha dibujado. ¡Te toca a ti para poder verlo!"
+                    );
+                }
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(1));
             }
         }
 

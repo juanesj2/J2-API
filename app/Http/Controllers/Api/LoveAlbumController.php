@@ -928,12 +928,16 @@ class LoveAlbumController extends Controller
         $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
         $partner = \App\Models\User::find($partnerId);
         if ($partner && $partner->fcm_token) {
-            $fcm = new FcmService();
-            $fcm->sendToToken(
-                $partner->fcm_token,
-                "¡Nueva respuesta! 👀",
-                "{$user->name} ha respondido una pregunta. ¡Te toca a ti!"
-            );
+            $cacheKey = "question_notification_{$user->id}_{$partnerId}";
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                $fcm = new FcmService();
+                $fcm->sendToToken(
+                    $partner->fcm_token,
+                    "¡Nueva respuesta! 👀",
+                    "{$user->name} ha respondido una pregunta. ¡Te toca a ti!"
+                );
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(1));
+            }
         }
 
         return response()->json(['message' => 'Respuesta guardada']);
