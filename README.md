@@ -36,11 +36,5 @@ TODO
 COMPROBAR Arreglar el descargar y guardar foto
 COMPROBAR Arreglar micrófono 
 COMPROBAR Arreglar mapa 
-
-
-COMPROBAR Revisar notificaciones con la app cerrada 
-COMPROBAR La notificación de la racha siempre recuerda aunque se haya subido foto
+COMPROBRAR Arreglar los menus para todos los moviles, porque si alguno tiene los botones abajo, se cubren muchas cosas
 COMPROBAR Por alguna razón cuando mi novia hace fotos la calidad de la foto se ve degradada incluso antes de subirla, con mi móvil no, porque?
-COMPROBAR Cuando estoy en el chat los mensajes no se actualizan automaticamente, tengo que salir y entrar en el chat para poder ver los nuevos mensajes, eso no esta bien
-
-Arreglar los menus para todos los moviles, porque si alguno tiene los botones abajo, se cubren muchas cosas
