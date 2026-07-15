@@ -416,7 +416,7 @@ class LoveAlbumController extends Controller
         }
 
         $query = LovePhoto::where('couple_id', $couple->id)
-            ->with(['user:id,name,email', 'reactions.user:id,name']);
+            ->with(['user:id,name,email,avatar_url', 'reactions.user:id,name']);
 
         if ($request->has('album_id')) {
             $query->where('album_id', $request->album_id);
@@ -542,7 +542,7 @@ class LoveAlbumController extends Controller
             // Para la respuesta JSON, lo incluimos.
             return response()->json([
                 'message' => 'Foto subida con éxito',
-                'photo' => $photo->load('user:id,name,email'),
+                'photo' => $photo->load('user:id,name,email,avatar_url'),
                 'streak' => $couple->current_streak,
                 'my_photo_today' => true,
                 'partner_photo_today' => $partnerPhotoToday
@@ -590,7 +590,7 @@ class LoveAlbumController extends Controller
         }
 
         $photo = LovePhoto::where('couple_id', $couple->id)
-            ->with(['user:id,name,email', 'reactions.user:id,name'])
+            ->with(['user:id,name,email,avatar_url', 'reactions.user:id,name'])
             ->find($id);
 
         if (!$photo) {
