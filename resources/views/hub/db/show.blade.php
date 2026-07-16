@@ -108,7 +108,7 @@
     </div>
 </div>
 
-<div class="glass-panel rounded-3xl shadow-xl overflow-hidden border border-gray-800" x-data="{ editModalOpen: false, editRow: {}, deleteModalOpen: false, deleteId: null }">
+<div class="glass-panel rounded-3xl shadow-xl overflow-hidden border border-gray-800" x-data="{ editModalOpen: false, editRow: {}, deleteModalOpen: false, deleteId: null, resetStreakModalOpen: false, resetStreakRow: {} }">
     <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left text-sm text-gray-300">
             <thead class="text-xs text-gray-400 uppercase bg-gray-900/50 border-b border-gray-800">
@@ -138,6 +138,11 @@
                                     <button @click="deleteId = '{{ $row->id }}'; deleteModalOpen = true" class="text-red-400 hover:text-red-300 transition-colors" title="Eliminar">
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                     </button>
+                                    @if($table === 'lovewidget_couples')
+                                        <button @click='resetStreakRow = @json($row); resetStreakModalOpen = true' class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Restablecer Racha">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /></svg>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         @endif
@@ -232,6 +237,43 @@
                                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-xl transition-all shadow-lg shadow-red-500/20">Sí, eliminar</button>
                                 </form>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Restablecer Racha -->
+                <div x-show="resetStreakModalOpen" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                    <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                        <div x-show="resetStreakModalOpen" x-transition.opacity class="fixed inset-0 bg-black/80 transition-opacity" aria-hidden="true" @click="resetStreakModalOpen = false"></div>
+                        <div x-show="resetStreakModalOpen" x-transition class="relative transform overflow-hidden rounded-2xl bg-gray-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-yellow-500/30">
+                            <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center bg-gray-800/50">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /></svg>
+                                    Restablecer Racha
+                                </h3>
+                                <button @click="resetStreakModalOpen = false" class="text-gray-400 hover:text-white">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                            <form :action="`/hub/db/lovewidget_couples/${resetStreakRow.id}`" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <div class="px-6 py-6">
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-400 mb-1">Racha Actual (current_streak)</label>
+                                        <input type="number" name="current_streak" x-model="resetStreakRow.current_streak" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white font-bold text-lg focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400 mb-1">Fecha Última Foto (last_photo_date)</label>
+                                        <input type="date" name="last_photo_date" x-model="resetStreakRow.last_photo_date" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-gray-300 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors">
+                                        <p class="text-xs text-gray-500 mt-1">Asegúrate de que sea la fecha de hoy para que no se reinicie a cero a las 00:00.</p>
+                                    </div>
+                                </div>
+                                <div class="px-6 py-4 bg-gray-800/50 border-t border-gray-800 flex justify-end gap-3">
+                                    <button type="button" @click="resetStreakModalOpen = false" class="px-4 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 transition-colors font-medium">Cancelar</button>
+                                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-6 rounded-xl transition-all shadow-lg shadow-yellow-500/20 text-shadow">Restablecer Racha</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
