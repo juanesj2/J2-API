@@ -28,6 +28,12 @@ class CoupleChatController extends Controller
             return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
         }
 
+        // Marcar como leídos los mensajes que no sean del usuario actual
+        CoupleMessage::where('couple_id', $couple->id)
+            ->where('user_id', '!=', $user->id)
+            ->where('status', '!=', 'read')
+            ->update(['status' => 'read']);
+
         $messages = CoupleMessage::where('couple_id', $couple->id)
             ->with(['user:id,name', 'photo'])
             ->orderBy('created_at', 'asc')
@@ -169,5 +175,22 @@ class CoupleChatController extends Controller
         return response()->json([
             'message' => 'Mensaje eliminado'
         ], 200);
+    }
+
+    public function markDelivered(Request $request)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        CoupleMessage::where('couple_id', $couple->id)
+            ->where('user_id', '!=', $user->id)
+            ->where('status', 'sent')
+            ->update(['status' => 'delivered']);
+
+        return response()->json(['message' => 'Mensajes marcados como entregados'], 200);
     }
 }

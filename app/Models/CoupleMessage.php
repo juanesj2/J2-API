@@ -18,7 +18,8 @@ class CoupleMessage extends Model
         'mensaje',
         'reply_to',
         'reactions',
-        'is_edited'
+        'is_edited',
+        'status'
     ];
 
     protected $casts = [
