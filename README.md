@@ -28,13 +28,3 @@ Es una aplicación pensada para parejas. Un widget muy chulo para compartir tu e
 - **Autenticación mixta:** Uso Tokens (Sanctum) para que las apps de los móviles se conecten, y cookies normales para cuando yo entro al Hub desde mi navegador.
 
 ¡Y poco más! Todo centralizado y fácil de escalar.
-
-
-
-TODO
-
-COMPROBAR Arreglar el descargar y guardar foto
-COMPROBAR Arreglar micrófono 
-COMPROBAR Arreglar mapa 
-COMPROBRAR Arreglar los menus para todos los moviles, porque si alguno tiene los botones abajo, se cubren muchas cosas
-COMPROBAR Por alguna razón cuando mi novia hace fotos la calidad de la foto se ve degradada incluso antes de subirla, con mi móvil no, porque?

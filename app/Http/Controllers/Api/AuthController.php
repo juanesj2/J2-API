@@ -106,6 +106,42 @@ class AuthController extends Controller
         ]);
     }
 
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(\Illuminate\Support\Str::random(60));
+
+                $user->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            // Si es API, en teoría no deberíamos redirigir, pero como estamos llamando a esto desde una vista HTML:
+            if ($request->wantsJson()) {
+                return response()->json(['message' => __($status)]);
+            }
+            return redirect()->route('login')->with('status', __($status));
+        }
+
+        if ($request->wantsJson()) {
+            throw ValidationException::withMessages([
+                'email' => [__($status)],
+            ]);
+        }
+        
+        return back()->withErrors(['email' => [__($status)]]);
+    }
+
     public function testResetLink($email)
     {
         $user = User::where('email', $email)->first();

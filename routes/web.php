@@ -8,6 +8,15 @@ use App\Http\Middleware\HubAuthMiddleware;
 Route::get("/", function () { return redirect('/hub'); });
 
 // ============================
+//     RECUPERAR CONTRASEÑA
+// ============================
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->name('password.reset');
+
+Route::post('/reset-password', [\App\Http\Controllers\Api\AuthController::class, 'resetPassword'])->name('password.update');
+
+// ============================
 //           J2 HUB
 // ============================
 Route::prefix('hub')->group(function () {
