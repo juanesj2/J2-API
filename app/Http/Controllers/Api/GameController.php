@@ -137,7 +137,9 @@ class GameController extends Controller
                 $fcm->sendToToken(
                     $partner->fcm_token,
                     "Tinder de Pareja 🔥",
-                    "{$user->name} está respondiendo cartas. ¡Entra para ver si tenéis coincidencias!"
+                    "{$user->name} está respondiendo cartas. ¡Entra para ver si tenéis coincidencias!",
+                    [],
+                    $partner->notification_sound
                 );
                 
                 // Evitamos volver a enviar durante 1 hora
@@ -326,13 +328,17 @@ class GameController extends Controller
                     $fcm->sendToToken(
                         $partner->fcm_token,
                         "¡Obras de arte listas! 🖼️",
-                        "{$user->name} ha completado su dibujo. ¡Entra a ver el resultado!"
+                        "{$user->name} ha completado su dibujo. ¡Entra a ver el resultado!",
+                        [],
+                        $partner->notification_sound
                     );
                 } else {
                     $fcm->sendToToken(
                         $partner->fcm_token,
                         "¡Nuevo reto de dibujo! 🎨",
-                        "{$user->name} ha dibujado. ¡Te toca a ti para poder verlo!"
+                        "{$user->name} ha dibujado. ¡Te toca a ti para poder verlo!",
+                        [],
+                        $partner->notification_sound
                     );
                 }
                 \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(1));

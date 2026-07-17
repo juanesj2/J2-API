@@ -36,7 +36,7 @@ class FcmService
         }
     }
 
-    public function sendToToken($token, $title, $body, $data = [])
+    public function sendToToken($token, $title, $body, $data = [], $sound = 'default')
     {
         if (!$token) {
             $this->lastError = 'Token is missing';
@@ -48,6 +48,8 @@ class FcmService
         }
 
         try {
+            $channelId = 'love_app_channel_' . ($sound && $sound !== 'default' && $sound !== 'none' ? $sound : 'default');
+            
             $messageArray = [
                 'token' => $token,
                 'notification' => [
@@ -55,7 +57,10 @@ class FcmService
                     'body' => $body,
                 ],
                 'android' => [
-                    'priority' => 'high'
+                    'priority' => 'high',
+                    'notification' => [
+                        'channel_id' => $channelId
+                    ]
                 ],
                 'apns' => [
                     'headers' => [

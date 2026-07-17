@@ -81,7 +81,9 @@ class CoupleChatController extends Controller
             $fcm->sendToToken(
                 $partner->fcm_token,
                 "Nuevo mensaje de {$user->name} 💌",
-                $body
+                $body,
+                [],
+                $partner->notification_sound
             );
         }
 

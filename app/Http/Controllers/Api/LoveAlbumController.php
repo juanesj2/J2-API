@@ -211,7 +211,9 @@ class LoveAlbumController extends Controller
                 $fcm->sendToToken(
                     $partner->fcm_token,
                     "Cambio de humor 🎭",
-                    "{$user->name} se siente ahora: {$request->current_mood}."
+                    "{$user->name} se siente ahora: {$request->current_mood}.",
+                    ['type' => 'mood_update', 'mood' => $request->current_mood],
+                    $partner->notification_sound
                 );
             }
         }
@@ -286,12 +288,13 @@ class LoveAlbumController extends Controller
             }
 
             $randomMessage = $messages[array_rand($messages)];
-            $data = ['type' => ($isSuper && $hasSecretSpammer) ? 'super_poke' : 'poke'];
+            $dataPayload = ['type' => ($isSuper && $hasSecretSpammer) ? 'super_poke' : 'poke'];
             $success = $fcm->sendToToken(
                 $partner->fcm_token,
                 $title,
                 $randomMessage,
-                $data
+                $dataPayload,
+                $partner->notification_sound
             );
             
             $debug['fcm_success'] = $success;
@@ -332,7 +335,9 @@ class LoveAlbumController extends Controller
             $fcm->sendToToken(
                 $partner->fcm_token,
                 "¡Alerta de Racha! 🔥",
-                $randomMessage
+                $randomMessage,
+                ['type' => 'streak_reminder'],
+                $partner->notification_sound
             );
         }
 
@@ -361,7 +366,9 @@ class LoveAlbumController extends Controller
             $fcm->sendToToken(
                 $partner->fcm_token,
                 $request->input('title'),
-                $request->input('body')
+                $request->input('body'),
+                ['type' => 'custom'],
+                $partner->notification_sound
             );
         }
 
@@ -944,7 +951,9 @@ class LoveAlbumController extends Controller
                 $fcm->sendToToken(
                     $partner->fcm_token,
                     "¡Nueva respuesta! 👀",
-                    "{$user->name} ha respondido una pregunta. ¡Te toca a ti!"
+                    "{$user->name} ha respondido una pregunta. ¡Te toca a ti!",
+                    ['type' => 'question_answered'],
+                    $partner->notification_sound
                 );
                 \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(1));
             }
@@ -958,6 +967,17 @@ class LoveAlbumController extends Controller
         $user = Auth::user();
         if ($user) {
             $user->fcm_token = $request->input('token');
+            $user->save();
+        }
+        return response()->json(['success' => true]);
+    }
+
+    public function updateNotificationSound(Request $request)
+    {
+        $request->validate(['sound' => 'required|string']);
+        $user = Auth::user();
+        if ($user) {
+            $user->notification_sound = $request->input('sound');
             $user->save();
         }
         return response()->json(['success' => true]);
