@@ -25,6 +25,9 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::get('/secret-notes', [\App\Http\Controllers\Api\SecretNoteController::class, 'index']);
     Route::post('/secret-notes', [\App\Http\Controllers\Api\SecretNoteController::class, 'store']);
     Route::delete('/secret-notes/{id}', [\App\Http\Controllers\Api\SecretNoteController::class, 'destroy']);
+    
+    // Estadísticas Secretas
+    Route::get('/secret-stats', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getSecretStats']);
 
     // Widget Extras
     Route::get('/widget/food-places', [\App\Http\Controllers\Api\WidgetController::class, 'getFoodPlaces']);

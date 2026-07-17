@@ -258,6 +258,11 @@ class LoveAlbumController extends Controller
 
         $couple->last_poke_at = now();
         $couple->poke_count = $couple->poke_count + 1;
+        if ($couple->user1_id == $user->id) {
+            $couple->user1_poke_count = $couple->user1_poke_count + 1;
+        } else {
+            $couple->user2_poke_count = $couple->user2_poke_count + 1;
+        }
         $couple->save();
 
         // Notify partner
@@ -1096,5 +1101,32 @@ class LoveAlbumController extends Controller
         if ($wish) $wish->delete();
         
         return response()->json(['message' => 'Deseo eliminado']);
+    }
+    public function getSecretStats(Request $request)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        // Obtener cantidad de mensajes por usuario
+        $user1MessageCount = \App\Models\CoupleMessage::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user1_id)
+            ->count();
+            
+        $user2MessageCount = \App\Models\CoupleMessage::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user2_id)
+            ->count();
+
+        return response()->json([
+            'user1_id' => $couple->user1_id,
+            'user2_id' => $couple->user2_id,
+            'user1_poke_count' => $couple->user1_poke_count,
+            'user2_poke_count' => $couple->user2_poke_count,
+            'user1_message_count' => $user1MessageCount,
+            'user2_message_count' => $user2MessageCount,
+        ]);
     }
 }
