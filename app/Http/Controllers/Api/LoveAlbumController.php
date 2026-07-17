@@ -1146,6 +1146,21 @@ class LoveAlbumController extends Controller
             $u2Pokes = floor($couple->poke_count / 2);
         }
 
+        // Obtener estadísticas de juegos
+        $user1QuestionCount = \App\Models\QuestionAnswer::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user1_id)
+            ->count();
+        $user2QuestionCount = \App\Models\QuestionAnswer::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user2_id)
+            ->count();
+
+        $user1SwipeCount = \App\Models\SwipeAnswer::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user1_id)
+            ->count();
+        $user2SwipeCount = \App\Models\SwipeAnswer::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user2_id)
+            ->count();
+
         return response()->json([
             'user1_id' => $couple->user1_id,
             'user2_id' => $couple->user2_id,
@@ -1157,6 +1172,10 @@ class LoveAlbumController extends Controller
             'user2_photo_count' => $user2PhotoCount,
             'user1_reaction_count' => $user1ReactionCount,
             'user2_reaction_count' => $user2ReactionCount,
+            'user1_question_count' => $user1QuestionCount,
+            'user2_question_count' => $user2QuestionCount,
+            'user1_swipe_count' => $user1SwipeCount,
+            'user2_swipe_count' => $user2SwipeCount,
         ]);
     }
 }
