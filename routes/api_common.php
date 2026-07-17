@@ -37,6 +37,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/usuario', [UserController::class, 'update']);
     Route::delete('/usuario', [UserController::class, 'destroySelf']);
     Route::get('/usuarios/buscar', [UserController::class, 'search']);
+    
+    // Map Location endpoints
+    Route::post('/location', [UserController::class, 'updateLocation']);
+    Route::get('/location/partner', [UserController::class, 'getPartnerLocation']);
 
     // Admin routes (Usuarios)
     Route::get('/admin/usuarios', [UserController::class, 'index']);
