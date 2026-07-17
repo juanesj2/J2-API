@@ -157,7 +157,17 @@ class LoveAlbumController extends Controller
                 'diff_in_days' => $lastStreakDate ? $today->diffInDays($lastStreakDate) : null,
                 'db_last_photo_date' => $couple->last_photo_date,
                 'db_current_streak' => $couple->current_streak
-            ]
+            ],
+            'my_location' => [
+                'latitude' => (float) $user->latitude,
+                'longitude' => (float) $user->longitude,
+                'is_sharing' => (bool) $user->is_sharing_location
+            ],
+            'partner_location' => $partner ? [
+                'latitude' => (float) $partner->latitude,
+                'longitude' => (float) $partner->longitude,
+                'is_sharing' => (bool) $partner->is_sharing_location
+            ] : null,
         ]);
     }
 
