@@ -70,10 +70,18 @@ class CoupleChatController extends Controller
         
         if ($partner && $partner->fcm_token) {
             $fcm = new FcmService();
+            $body = $request->mensaje;
+            
+            if (str_starts_with($body, '[GRAFFITI:')) {
+                $body = 'Ha enviado un dibujito 🎨';
+            } elseif (str_starts_with($body, '[AUDIO:')) {
+                $body = 'Ha enviado un audio 🎵';
+            }
+
             $fcm->sendToToken(
                 $partner->fcm_token,
                 "Nuevo mensaje de {$user->name} 💌",
-                $request->mensaje
+                $body
             );
         }
 
