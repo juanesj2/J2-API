@@ -169,6 +169,8 @@ class UserController extends Controller
             ->get();
 
         return UserResource::collection($users);
+    }
+
     public function updateLocation(Request $request)
     {
         try {
@@ -190,7 +192,7 @@ class UserController extends Controller
             $user->save();
 
             return response()->json(['message' => 'Ubicación actualizada correctamente']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
         }
     }
@@ -226,7 +228,7 @@ class UserController extends Controller
                 'name' => $partner->name,
                 'avatar' => $partner->avatar_url
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
         }
     }
