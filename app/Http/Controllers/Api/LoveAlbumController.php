@@ -1120,13 +1120,43 @@ class LoveAlbumController extends Controller
             ->where('user_id', $couple->user2_id)
             ->count();
 
+        // Obtener cantidad de fotos subidas por usuario
+        $user1PhotoCount = \App\Models\LovePhoto::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user1_id)
+            ->count();
+        $user2PhotoCount = \App\Models\LovePhoto::where('couple_id', $couple->id)
+            ->where('user_id', $couple->user2_id)
+            ->count();
+
+        // Obtener cantidad de reacciones
+        $user1ReactionCount = \App\Models\LovePhotoReaction::where('user_id', $couple->user1_id)
+            ->whereHas('photo', function($q) use ($couple) {
+                $q->where('couple_id', $couple->id);
+            })->count();
+        $user2ReactionCount = \App\Models\LovePhotoReaction::where('user_id', $couple->user2_id)
+            ->whereHas('photo', function($q) use ($couple) {
+                $q->where('couple_id', $couple->id);
+            })->count();
+
+        // Ajuste de pokes si hay antiguos
+        $u1Pokes = $couple->user1_poke_count;
+        $u2Pokes = $couple->user2_poke_count;
+        if ($u1Pokes == 0 && $u2Pokes == 0 && $couple->poke_count > 0) {
+            $u1Pokes = ceil($couple->poke_count / 2);
+            $u2Pokes = floor($couple->poke_count / 2);
+        }
+
         return response()->json([
             'user1_id' => $couple->user1_id,
             'user2_id' => $couple->user2_id,
-            'user1_poke_count' => $couple->user1_poke_count,
-            'user2_poke_count' => $couple->user2_poke_count,
+            'user1_poke_count' => $u1Pokes,
+            'user2_poke_count' => $u2Pokes,
             'user1_message_count' => $user1MessageCount,
             'user2_message_count' => $user2MessageCount,
+            'user1_photo_count' => $user1PhotoCount,
+            'user2_photo_count' => $user2PhotoCount,
+            'user1_reaction_count' => $user1ReactionCount,
+            'user2_reaction_count' => $user2ReactionCount,
         ]);
     }
 }
