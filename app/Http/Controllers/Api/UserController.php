@@ -171,58 +171,63 @@ class UserController extends Controller
         return UserResource::collection($users);
     public function updateLocation(Request $request)
     {
-        $request->validate([
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'is_sharing_location' => 'sometimes|boolean'
-        ]);
+        try {
+            $request->validate([
+                'latitude' => 'required|numeric',
+                'longitude' => 'required|numeric',
+                'is_sharing_location' => 'sometimes|boolean'
+            ]);
 
-        $user = $request->user();
-        $user->latitude = $request->latitude;
-        $user->longitude = $request->longitude;
-        $user->location_updated_at = now();
-        
-        if ($request->has('is_sharing_location')) {
-            $user->is_sharing_location = $request->is_sharing_location;
+            $user = $request->user();
+            $user->latitude = $request->latitude;
+            $user->longitude = $request->longitude;
+            $user->location_updated_at = now();
+            
+            if ($request->has('is_sharing_location')) {
+                $user->is_sharing_location = $request->is_sharing_location;
+            }
+            
+            $user->save();
+
+            return response()->json(['message' => 'Ubicación actualizada correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
         }
-        
-        $user->save();
-
-        return response()->json(['message' => 'Ubicación actualizada correctamente']);
     }
 
     public function getPartnerLocation(Request $request)
     {
-        $user = $request->user();
-        
-        // Asumiendo que el usuario tiene un couple asignado.
-        // En love_widget, la pareja se guarda en la BD, buscaremos a la otra persona en la relación.
-        // Si no tenemos tabla directa, o si usamos el modelo Couple:
-        $couple = \App\Models\Couple::where('user1_id', $user->id)
-            ->orWhere('user2_id', $user->id)
-            ->first();
+        try {
+            $user = $request->user();
+            
+            $couple = \App\Models\Couple::where('user1_id', $user->id)
+                ->orWhere('user2_id', $user->id)
+                ->first();
 
-        if (!$couple) {
-            return response()->json(['error' => 'No tienes pareja asignada'], 404);
+            if (!$couple) {
+                return response()->json(['error' => 'No tienes pareja asignada'], 404);
+            }
+
+            $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
+            $partner = User::find($partnerId);
+
+            if (!$partner) {
+                return response()->json(['error' => 'Pareja no encontrada'], 404);
+            }
+
+            if (!$partner->is_sharing_location || !$partner->latitude || !$partner->longitude) {
+                 return response()->json(['error' => 'La pareja no está compartiendo su ubicación'], 403);
+            }
+
+            return response()->json([
+                'latitude' => (float) $partner->latitude,
+                'longitude' => (float) $partner->longitude,
+                'updated_at' => $partner->location_updated_at,
+                'name' => $partner->name,
+                'avatar' => $partner->avatar_url
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
         }
-
-        $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
-        $partner = User::find($partnerId);
-
-        if (!$partner) {
-            return response()->json(['error' => 'Pareja no encontrada'], 404);
-        }
-
-        if (!$partner->is_sharing_location || !$partner->latitude || !$partner->longitude) {
-             return response()->json(['error' => 'La pareja no está compartiendo su ubicación'], 403);
-        }
-
-        return response()->json([
-            'latitude' => (float) $partner->latitude,
-            'longitude' => (float) $partner->longitude,
-            'updated_at' => $partner->location_updated_at,
-            'name' => $partner->name,
-            'avatar' => $partner->avatar_url
-        ]);
     }
 }
