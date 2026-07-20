@@ -494,7 +494,7 @@ class LoveAlbumController extends Controller
 
         $photos = $query->orderBy('fecha_recuerdo', 'desc')
             ->orderBy('created_at', 'desc')
-            ->paginate(100);
+            ->paginate(5);
 
         return response()->json($photos);
     }
