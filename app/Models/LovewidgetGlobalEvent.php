@@ -12,6 +12,7 @@ class LovewidgetGlobalEvent extends Model
     protected $table = 'lovewidget_global_events';
 
     protected $fillable = [
+        'target_user_id',
         'title',
         'message',
         'confetti_enabled',
@@ -30,4 +31,9 @@ class LovewidgetGlobalEvent extends Model
         'confetti_colors' => 'array',
         'expires_at' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'target_user_id');
+    }
 }

@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function getAllUsers(Request $request)
+    {
+        if ($request->user()->rol !== 'SuperAdmin') {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+        $users = User::select('id', 'name', 'email')->get();
+        return response()->json($users);
+    }
+
     /**
      * Display a listing of the resource.
      */

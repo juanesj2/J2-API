@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::get('/roulette', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getRouletteOptions']);
     Route::post('/roulette', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateRouletteOptions']);
     // Global Events (God Mode)
+    Route::get('/global-events/users', [\App\Http\Controllers\Api\UserController::class, 'getAllUsers']);
     Route::get('/global-events/active', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'getActive']);
     Route::post('/global-events', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'store']);
     Route::post('/global-events/stop', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'stop']);
