@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\LovewidgetGlobalEvent;
+use App\Models\User;
+use App\Services\FcmService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -70,6 +72,41 @@ class LovewidgetGlobalEventController extends Controller
         }
 
         $event->save();
+
+        // Send Push Notifications
+        $fcm = new FcmService();
+        $title = $event->title ?: '¡Nuevo Evento!';
+        $body = $event->message ?: 'Abre la app para verlo';
+
+        if ($event->target_user_id) {
+            // Send only to the target user
+            $targetUser = User::find($event->target_user_id);
+            if ($targetUser && $targetUser->fcm_token) {
+                $fcm->sendToToken(
+                    $targetUser->fcm_token,
+                    $title,
+                    $body,
+                    ['type' => 'global_event'],
+                    $targetUser->notification_sound ?? 'default'
+                );
+            }
+        } else {
+            // Send to all LoveWidget users
+            $users = User::where('app', 'love_widget')
+                         ->whereNotNull('fcm_token')
+                         ->where('fcm_token', '!=', '')
+                         ->get();
+            
+            foreach ($users as $u) {
+                $fcm->sendToToken(
+                    $u->fcm_token,
+                    $title,
+                    $body,
+                    ['type' => 'global_event'],
+                    $u->notification_sound ?? 'default'
+                );
+            }
+        }
 
         return response()->json($event);
     }
