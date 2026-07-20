@@ -23,7 +23,7 @@ return new class extends Migration
         });
 
         // 2. Insert the achievement for discovering secret stats
-        DB::table('achievements')->updateOrInsert(
+        DB::table('lovewidget_achievements')->updateOrInsert(
             ['id' => 'secret_stats_unlocked'],
             [
                 'title' => 'Caja Fuerte Abierta',
@@ -51,6 +51,6 @@ return new class extends Migration
             $table->dropColumn(['user1_poke_count', 'user2_poke_count']);
         });
 
-        DB::table('achievements')->where('id', 'secret_stats_unlocked')->delete();
+        DB::table('lovewidget_achievements')->where('id', 'secret_stats_unlocked')->delete();
     }
 };
