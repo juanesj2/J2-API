@@ -15,7 +15,7 @@ class UserController extends Controller
         if ($request->user()->rol !== 'SuperAdmin') {
             return response()->json(['error' => 'No autorizado'], 403);
         }
-        $users = User::select('id', 'name', 'email')->get();
+        $users = User::where('app', 'love_widget')->select('id', 'name', 'email')->get();
         return response()->json($users);
     }
 
