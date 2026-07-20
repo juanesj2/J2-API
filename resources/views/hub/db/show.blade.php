@@ -139,7 +139,7 @@
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                     </button>
                                     @if($table === 'lovewidget_couples')
-                                        <button @click='resetStreakRow = @json($row); resetStreakModalOpen = true' class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Restablecer Racha">
+                                        <button @click='resetStreakRow = JSON.parse(JSON.stringify(@json($row))); resetStreakRow.last_photo_date = "{{ now()->subDay()->format("Y-m-d") }}"; resetStreakModalOpen = true' class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Restablecer Racha">
                                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /></svg>
                                         </button>
                                     @endif
@@ -266,7 +266,7 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-400 mb-1">Fecha Última Foto (last_photo_date)</label>
                                         <input type="date" name="last_photo_date" x-model="resetStreakRow.last_photo_date" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-gray-300 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-colors">
-                                        <p class="text-xs text-gray-500 mt-1">Asegúrate de que sea la fecha de hoy para que no se reinicie a cero a las 00:00.</p>
+                                        <p class="text-xs text-gray-500 mt-1">Por defecto se pone la fecha de <strong>ayer</strong> para que deban subir una foto hoy y mantener la racha.</p>
                                     </div>
                                 </div>
                                 <div class="px-6 py-4 bg-gray-800/50 border-t border-gray-800 flex justify-end gap-3">
