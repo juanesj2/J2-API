@@ -146,6 +146,7 @@ class LoveAlbumController extends Controller
             'partner_birth_date' => $partner ? $partner->birth_date : null,
             'my_name' => $user->name,
             'partner_name' => $partner ? $partner->name : null,
+            'my_role' => $user->rol,
             'my_avatar' => $user->avatar_url ? url('storage/' . $user->avatar_url) : null,
             'partner_avatar' => ($partner && $partner->avatar_url) ? url('storage/' . $partner->avatar_url) : null,
             'my_photo_today' => $myPhotoToday,
