@@ -121,4 +121,69 @@ class LovewidgetGlobalEventController extends Controller
 
         return response()->json(['message' => 'Eventos detenidos.']);
     }
+
+    // =============================================
+    // PURCHASE EVENT - Cualquier usuario puede usarlo
+    // Siempre va dirigido a la pareja, siempre 24h
+    // =============================================
+    public function purchaseEvent(Request $request)
+    {
+        $user = $request->user();
+
+        // Require a couple relationship
+        $couple = \App\Models\Couple::where('user1_id', $user->id)
+                    ->orWhere('user2_id', $user->id)
+                    ->first();
+
+        if (!$couple) {
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        // Determine partner
+        $partnerId = $couple->user1_id === $user->id ? $couple->user2_id : $couple->user1_id;
+        $partner = User::find($partnerId);
+
+        if (!$partner) {
+            return response()->json(['error' => 'No se encontró la pareja.'], 404);
+        }
+
+        $validated = $request->validate([
+            'title'            => 'required|string|max:255',
+            'message'          => 'required|string',
+            'confetti_enabled' => 'boolean',
+            'confetti_colors'  => 'nullable|array',
+            'emojis_enabled'   => 'boolean',
+            'emojis_list'      => 'nullable|string',
+            'top_bar_color'    => 'nullable|string',
+        ]);
+
+        // Disable any existing targeted event for this partner
+        LovewidgetGlobalEvent::where('is_active', true)
+            ->where('target_user_id', $partnerId)
+            ->update(['is_active' => false]);
+
+        // Always force: directed to partner, exactly 24 hours
+        $event = new LovewidgetGlobalEvent($validated);
+        $event->is_active       = true;
+        $event->target_user_id  = $partnerId;
+        $event->expires_at      = Carbon::now()->addHours(24);
+        $event->save();
+
+        // Send push notification to partner only
+        if ($partner->fcm_token) {
+            $fcm = new FcmService();
+            $fcm->sendToToken(
+                $partner->fcm_token,
+                $event->title,
+                $event->message,
+                ['type' => 'global_event'],
+                $partner->notification_sound ?? 'default'
+            );
+        }
+
+        return response()->json([
+            'message' => '¡Evento enviado a tu pareja!',
+            'event'   => $event,
+        ], 201);
+    }
 }

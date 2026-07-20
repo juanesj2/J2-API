@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::get('/global-events/active', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'getActive']);
     Route::post('/global-events', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'store']);
     Route::post('/global-events/stop', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'stop']);
+    Route::post('/global-events/purchase', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'purchaseEvent']);
 
     // Timeline y Planes (Sustituye a Hitos y Deseos)
     Route::get('/plans', [\App\Http\Controllers\Api\CouplePlanController::class, 'index']);
