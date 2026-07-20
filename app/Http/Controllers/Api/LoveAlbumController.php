@@ -428,6 +428,39 @@ class LoveAlbumController extends Controller
         return response()->json(['message' => 'Fotos quitadas del álbum con éxito']);
     }
 
+    public function timeline(Request $request)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $query = LovePhoto::where('couple_id', $couple->id);
+
+        if ($request->has('album_id')) {
+            $query->where('album_id', $request->album_id);
+        } else {
+            $query->where(function ($q) {
+                $q->whereNull('description')
+                  ->orWhere(function ($sub) {
+                      $sub->where('description', 'NOT LIKE', '[DOODLE]%')
+                          ->where('description', 'NOT LIKE', '[AUDIO]%')
+                          ->where('description', 'NOT LIKE', '[GIF]%')
+                          ->where('description', 'NOT LIKE', '[GRAFFITI:%');
+                  });
+            });
+        }
+
+        $dates = $query->select(DB::raw("DATE_FORMAT(COALESCE(fecha_recuerdo, created_at), '%Y-%m') as month_year"), DB::raw("COUNT(*) as count"))
+                       ->groupBy('month_year')
+                       ->orderBy('month_year', 'desc')
+                       ->get();
+
+        return response()->json($dates);
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -452,6 +485,11 @@ class LoveAlbumController extends Controller
                           ->where('description', 'NOT LIKE', '[GRAFFITI:%');
                   });
             });
+        }
+
+        if ($request->has('target_month')) {
+            $lastDay = date('Y-m-t 23:59:59', strtotime($request->target_month . '-01'));
+            $query->whereRaw("COALESCE(fecha_recuerdo, created_at) <= ?", [$lastDay]);
         }
 
         $photos = $query->orderBy('fecha_recuerdo', 'desc')

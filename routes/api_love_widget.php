@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
 
     // Fotos
     Route::get('/photos', [\App\Http\Controllers\Api\LoveAlbumController::class, 'index']);
+    Route::get('/photos/timeline', [\App\Http\Controllers\Api\LoveAlbumController::class, 'timeline']);
     Route::post('/photos', [\App\Http\Controllers\Api\LoveAlbumController::class, 'store']);
     Route::get('/photos/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'show']);
     Route::get('/photos/{id}/download', [\App\Http\Controllers\Api\LoveAlbumController::class, 'download']);
