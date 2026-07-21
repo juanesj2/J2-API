@@ -89,6 +89,18 @@ class LoveAlbumController extends Controller
             return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
         }
 
+        // Self-heal inventory format if it's using old booleans
+        $inventory = $couple->inventory ?? ['gifts' => false, 'letters' => [], 'spicy_pack' => false];
+        $changed = false;
+        if (!isset($inventory['letters']) || !is_array($inventory['letters'])) {
+            $inventory['letters'] = [];
+            $changed = true;
+        }
+        if ($changed) {
+            $couple->inventory = $inventory;
+            $couple->save();
+        }
+
         // Return couple info plus partner's mood
         $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
         $partner = \App\Models\User::find($partnerId);
@@ -534,13 +546,31 @@ class LoveAlbumController extends Controller
         }
 
         $request->validate([
-            'item' => 'required|string|in:gifts,letters,spicy_pack'
+            'item' => 'required|string|in:gifts,letters,spicy_pack',
+            'title' => 'nullable|string|max:100',
+            'subject' => 'nullable|string|max:100',
+            'content' => 'nullable|string',
         ]);
 
         $item = $request->input('item');
-        $inventory = $couple->inventory ?? ['gifts' => false, 'letters' => false, 'spicy_pack' => false];
+        $inventory = $couple->inventory ?? ['gifts' => false, 'letters' => [], 'spicy_pack' => false];
 
-        $inventory[$item] = true;
+        // Ensure letters is an array if we are transitioning from the old boolean format
+        if (!isset($inventory['letters']) || !is_array($inventory['letters'])) {
+            $inventory['letters'] = [];
+        }
+
+        if ($item === 'letters') {
+            $inventory['letters'][] = [
+                'id' => uniqid('let_'),
+                'title' => $request->input('title', 'Carta de Amor'),
+                'subject' => $request->input('subject', 'Para ti'),
+                'content' => $request->input('content', ''),
+                'created_at' => now()->toIso8601String(),
+            ];
+        } else {
+            $inventory[$item] = true;
+        }
         
         $couple->inventory = $inventory;
         $couple->save();
