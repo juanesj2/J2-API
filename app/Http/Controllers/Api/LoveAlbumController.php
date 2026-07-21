@@ -108,6 +108,20 @@ class LoveAlbumController extends Controller
             $couple->save();
         }
 
+        // Fetch received gifts from chat history
+        $receivedGifts = \App\Models\CoupleMessage::where('couple_id', $couple->id)
+            ->where('user_id', '!=', $user->id)
+            ->where('mensaje', 'LIKE', '[GIFT]%')
+            ->where('meta', 'LIKE', '%"opened":true%')
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'mensaje', 'meta', 'created_at']);
+        
+        $inventory['received_gifts'] = $receivedGifts;
+
+        // Assign back to the model instance so it is serialized in the JSON response
+        // Note: we don't call save() unless $changed is true, because we don't want to persist received_gifts in the JSON column
+        $couple->inventory = $inventory;
+
         // Return couple info plus partner's mood
         $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
         $partner = \App\Models\User::find($partnerId);
