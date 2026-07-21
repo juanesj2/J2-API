@@ -96,6 +96,13 @@ class LoveAlbumController extends Controller
             $inventory['letters'] = [];
             $changed = true;
         }
+        
+        // Convert old boolean gifts to integers
+        if (isset($inventory['gifts']) && is_bool($inventory['gifts'])) {
+            $inventory['gifts'] = $inventory['gifts'] ? 1 : 0;
+            $changed = true;
+        }
+
         if ($changed) {
             $couple->inventory = $inventory;
             $couple->save();
@@ -568,6 +575,9 @@ class LoveAlbumController extends Controller
                 'content' => $request->input('content', ''),
                 'created_at' => now()->toIso8601String(),
             ];
+        } else if ($item === 'gifts') {
+            $currentGifts = is_numeric($inventory['gifts'] ?? null) ? (int)$inventory['gifts'] : (($inventory['gifts'] ?? false) ? 1 : 0);
+            $inventory['gifts'] = $currentGifts + 1;
         } else {
             $inventory[$item] = true;
         }
@@ -579,6 +589,40 @@ class LoveAlbumController extends Controller
             'message'   => '¡Compra realizada con éxito!',
             'inventory' => $inventory,
         ]);
+    }
+
+    public function consumeStoreItem(Request $request)
+    {
+        $request->validate([
+            'item' => 'required|string',
+        ]);
+
+        $user = auth()->user();
+        $couple = \App\Models\Couple::where('user1_id', $user->id)
+                                    ->orWhere('user2_id', $user->id)
+                                    ->first();
+
+        if (!$couple) return response()->json(['error' => 'No tienes pareja.'], 400);
+
+        $item = $request->input('item');
+        $inventory = $couple->inventory ?? [];
+
+        if ($item === 'gifts') {
+             $currentGifts = is_numeric($inventory['gifts'] ?? null) ? (int)$inventory['gifts'] : (($inventory['gifts'] ?? false) ? 1 : 0);
+             if ($currentGifts <= 0) {
+                 return response()->json(['error' => 'No tienes regalos en el inventario.'], 400);
+             }
+             $inventory['gifts'] = $currentGifts - 1;
+             $couple->inventory = $inventory;
+             $couple->save();
+             
+             return response()->json([
+                 'success' => true, 
+                 'inventory' => $inventory
+             ]);
+        }
+
+        return response()->json(['error' => 'Item no consumible o no soportado.'], 400);
     }
 
     public function customNotification(Request $request)
