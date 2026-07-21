@@ -14,12 +14,13 @@ class Couple extends Model
     protected $fillable = [
         'user1_id', 'user2_id', 'relationship_start_date',
         'last_poke_at', 'poke_count', 'premium_until',
-        'streak_broken_at', 'free_revivals', 'paid_revivals', 'free_revivals_reset_month',
+        'streak_broken_at', 'free_revivals', 'paid_revivals', 'free_revivals_reset_month', 'inventory',
     ];
 
     protected $casts = [
         'premium_until'    => 'datetime',
         'streak_broken_at' => 'datetime',
+        'inventory'        => 'array',
     ];
 
     public function user1()

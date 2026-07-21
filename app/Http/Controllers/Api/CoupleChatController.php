@@ -54,7 +54,8 @@ class CoupleChatController extends Controller
         $request->validate([
             'mensaje' => 'required|string',
             'love_photo_id' => 'nullable|exists:lovewidget_love_photos,id',
-            'reply_to' => 'nullable|array'
+            'reply_to' => 'nullable|array',
+            'meta' => 'nullable|array'
         ]);
 
         $message = CoupleMessage::create([
@@ -63,6 +64,7 @@ class CoupleChatController extends Controller
             'mensaje' => $request->mensaje,
             'love_photo_id' => $request->love_photo_id,
             'reply_to' => $request->reply_to,
+            'meta' => $request->meta,
         ]);
 
         $partnerId = $couple->user1_id === $user->id ? $couple->user2_id : $couple->user1_id;
@@ -102,16 +104,25 @@ class CoupleChatController extends Controller
             return response()->json(['message' => 'Mensaje no encontrado.'], 404);
         }
 
+        $request->validate([
+            'mensaje' => 'required|string',
+            'meta' => 'nullable|array'
+        ]);
+
         if ($message->user_id !== $user->id) {
+            // Allow partner to open gifts/letters
+            if (str_starts_with($message->mensaje, '[GIFT]') || str_starts_with($message->mensaje, '[LETTER]')) {
+                if ($request->has('meta') && is_array($request->meta) && !empty($request->meta['opened'])) {
+                    $message->update(['meta' => $request->meta]);
+                    return response()->json(['message' => 'Abierto exitosamente', 'data' => $message]);
+                }
+            }
             return response()->json(['message' => 'No puedes editar un mensaje que no es tuyo.'], 403);
         }
 
-        $request->validate([
-            'mensaje' => 'required|string',
-        ]);
-
         $message->update([
             'mensaje' => $request->mensaje,
+            'meta' => $request->has('meta') ? $request->meta : $message->meta,
             'is_edited' => true
         ]);
 

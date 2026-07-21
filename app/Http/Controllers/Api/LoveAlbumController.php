@@ -521,6 +521,36 @@ class LoveAlbumController extends Controller
         ]);
     }
 
+    // =============================================
+    // STORE PURCHASE - Comprar ítems en la tienda
+    // =============================================
+    public function storePurchase(Request $request)
+    {
+        $user   = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $request->validate([
+            'item' => 'required|string|in:gifts,letters,spicy_pack'
+        ]);
+
+        $item = $request->input('item');
+        $inventory = $couple->inventory ?? ['gifts' => false, 'letters' => false, 'spicy_pack' => false];
+
+        $inventory[$item] = true;
+        
+        $couple->inventory = $inventory;
+        $couple->save();
+
+        return response()->json([
+            'message'   => '¡Compra realizada con éxito!',
+            'inventory' => $inventory,
+        ]);
+    }
+
     public function customNotification(Request $request)
     {
         $request->validate([
