@@ -11,10 +11,15 @@ class Couple extends Model
 
     protected $table = 'lovewidget_couples';
 
-    protected $fillable = ['user1_id', 'user2_id', 'relationship_start_date', 'last_poke_at', 'poke_count', 'premium_until'];
+    protected $fillable = [
+        'user1_id', 'user2_id', 'relationship_start_date',
+        'last_poke_at', 'poke_count', 'premium_until',
+        'streak_broken_at', 'free_revivals', 'paid_revivals', 'free_revivals_reset_month',
+    ];
 
     protected $casts = [
-        'premium_until' => 'datetime',
+        'premium_until'    => 'datetime',
+        'streak_broken_at' => 'datetime',
     ];
 
     public function user1()

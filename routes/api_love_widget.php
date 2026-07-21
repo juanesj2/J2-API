@@ -8,6 +8,8 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::put('/info', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateCoupleInfo']);
     Route::post('/poke', [\App\Http\Controllers\Api\LoveAlbumController::class, 'poke']);
     Route::post('/remind-streak', [\App\Http\Controllers\Api\LoveAlbumController::class, 'remindStreak']);
+    Route::post('/revive-streak', [\App\Http\Controllers\Api\LoveAlbumController::class, 'reviveStreak']);
+    Route::post('/purchase-revival-pack', [\App\Http\Controllers\Api\LoveAlbumController::class, 'purchaseRevivalPack']);
     Route::post('/custom-notification', [\App\Http\Controllers\Api\LoveAlbumController::class, 'customNotification']);
     Route::post('/save-fcm-token', [\App\Http\Controllers\Api\LoveAlbumController::class, 'saveFcmToken']);
     Route::post('/notification-sound', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateNotificationSound']);

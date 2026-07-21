@@ -96,20 +96,58 @@ class LoveAlbumController extends Controller
         $localDateStr = $request->query('local_date');
         $today = $localDateStr ? \Carbon\Carbon::parse($localDateStr)->startOfDay() : \Carbon\Carbon::now()->startOfDay();
 
-        // Control de ruptura de racha al vuelo
+        // === RESET MENSUAL DE REVIVIDORES GRATIS ===
+        $currentMonth = \Carbon\Carbon::now()->format('Y-m');
+        if ($couple->free_revivals_reset_month !== $currentMonth) {
+            $couple->free_revivals = 3;
+            $couple->free_revivals_reset_month = $currentMonth;
+            $couple->save();
+        }
+
+        // === CONTROL DE RACHA CON PERÍODO DE GRACIA ===
         $lastStreakDate = $couple->last_photo_date ? \Carbon\Carbon::parse($couple->last_photo_date)->startOfDay() : null;
-        
+        $streakInGrace  = false;
+        $graceExpiresAt = null;
+        $graceHoursLeft = null;
+
         if ($couple->current_streak > 0) {
             if (!$lastStreakDate) {
-                // Estado inconsistente: tiene racha pero no hay fecha de última foto
                 $couple->current_streak = 0;
+                $couple->streak_broken_at = null;
                 $couple->save();
             } else {
                 $diffInDays = $today->diffInDays($lastStreakDate);
                 if (abs($diffInDays) > 1) {
-                    // Racha rota (ayer nadie o sólo uno subió foto)
-                    $couple->current_streak = 0;
-                    $couple->save();
+                    // La racha debería haberse roto - activar/comprobar período de gracia
+                    if (!$couple->streak_broken_at) {
+                        // Primera vez que detectamos la rotura → activar gracia
+                        $couple->streak_broken_at = \Carbon\Carbon::now();
+                        $couple->save();
+
+                        // Notificar a AMBOS miembros de la pareja que la racha está en peligro
+                        $this->notifyStreakInDanger($couple, $partner, $user);
+                    }
+
+                    $graceExpiresAt = $couple->streak_broken_at->addHours(12);
+                    $hoursLeft = \Carbon\Carbon::now()->diffInMinutes($graceExpiresAt, false);
+
+                    if ($hoursLeft <= 0) {
+                        // Las 12h han pasado → racha muerta definitivamente
+                        $couple->current_streak = 0;
+                        $couple->streak_broken_at = null;
+                        $couple->save();
+                    } else {
+                        // Aún dentro de la gracia
+                        $streakInGrace  = true;
+                        $graceHoursLeft = round($hoursLeft / 60, 1);
+                        $graceExpiresAt = $graceExpiresAt->toIso8601String();
+                    }
+                } else {
+                    // Racha viva → limpiar streak_broken_at por si acaso
+                    if ($couple->streak_broken_at) {
+                        $couple->streak_broken_at = null;
+                        $couple->save();
+                    }
                 }
             }
         }
@@ -131,37 +169,42 @@ class LoveAlbumController extends Controller
             ->toArray();
 
         return response()->json([
-            'my_id' => (string) $user->id,
-            'partner_id' => (string) $partnerId,
-            'couple' => $couple,
-            'is_premium' => $couple && $couple->premium_until && $couple->premium_until->isFuture(),
-            'current_streak' => $couple->current_streak,
-            'my_mood' => $user->current_mood,
-            'partner_mood' => $partner ? $partner->current_mood : null,
-            'my_bubble_shape' => $user->bubble_shape,
+            'my_id'                => (string) $user->id,
+            'partner_id'           => (string) $partnerId,
+            'couple'               => $couple,
+            'is_premium'           => $couple && $couple->premium_until && $couple->premium_until->isFuture(),
+            'current_streak'       => $couple->current_streak,
+            'streak_in_grace'      => $streakInGrace,
+            'grace_expires_at'     => $graceExpiresAt,
+            'grace_hours_left'     => $graceHoursLeft,
+            'free_revivals'        => $couple->free_revivals,
+            'paid_revivals'        => $couple->paid_revivals,
+            'my_mood'              => $user->current_mood,
+            'partner_mood'         => $partner ? $partner->current_mood : null,
+            'my_bubble_shape'      => $user->bubble_shape,
             'partner_bubble_shape' => $partner ? $partner->bubble_shape : null,
-            'my_avatar_frame' => $user->avatar_frame,
+            'my_avatar_frame'      => $user->avatar_frame,
             'partner_avatar_frame' => $partner ? $partner->avatar_frame : null,
-            'my_birth_date' => $user->birth_date,
-            'partner_birth_date' => $partner ? $partner->birth_date : null,
-            'my_name' => $user->name,
-            'partner_name' => $partner ? $partner->name : null,
-            'my_role' => $user->rol,
-            'my_avatar' => $user->avatar_url ? url('storage/' . $user->avatar_url) : null,
-            'partner_avatar' => ($partner && $partner->avatar_url) ? url('storage/' . $partner->avatar_url) : null,
-            'my_photo_today' => $myPhotoToday,
-            'partner_photo_today' => $partnerPhotoToday,
-            'unlocked_achievements' => $unlockedAchievements,
+            'my_birth_date'        => $user->birth_date,
+            'partner_birth_date'   => $partner ? $partner->birth_date : null,
+            'my_name'              => $user->name,
+            'partner_name'         => $partner ? $partner->name : null,
+            'my_role'              => $user->rol,
+            'my_avatar'            => $user->avatar_url ? url('storage/' . $user->avatar_url) : null,
+            'partner_avatar'       => ($partner && $partner->avatar_url) ? url('storage/' . $partner->avatar_url) : null,
+            'my_photo_today'       => $myPhotoToday,
+            'partner_photo_today'  => $partnerPhotoToday,
+            'unlocked_achievements'=> $unlockedAchievements,
             'debug_streak' => [
-                'today' => $today->format('Y-m-d H:i:s'),
-                'last_streak_date' => $lastStreakDate ? $lastStreakDate->format('Y-m-d H:i:s') : null,
-                'diff_in_days' => $lastStreakDate ? $today->diffInDays($lastStreakDate) : null,
+                'today'           => $today->format('Y-m-d H:i:s'),
+                'last_streak_date'=> $lastStreakDate ? $lastStreakDate->format('Y-m-d H:i:s') : null,
+                'diff_in_days'    => $lastStreakDate ? $today->diffInDays($lastStreakDate) : null,
                 'db_last_photo_date' => $couple->last_photo_date,
-                'db_current_streak' => $couple->current_streak
+                'db_current_streak'  => $couple->current_streak,
             ],
             'my_location' => [
-                'latitude' => (float) $user->latitude,
-                'longitude' => (float) $user->longitude,
+                'latitude'   => (float) $user->latitude,
+                'longitude'  => (float) $user->longitude,
                 'is_sharing' => (bool) $user->is_sharing_location
             ],
             'partner_location' => $partner ? [
@@ -348,6 +391,134 @@ class LoveAlbumController extends Controller
         }
 
         return response()->json(['message' => 'Recordatorio enviado']);
+    }
+
+    // =============================================
+    // PRIVATE HELPER: Notificar racha en peligro
+    // =============================================
+    private function notifyStreakInDanger($couple, $partner, $user)
+    {
+        $fcm = new FcmService();
+        $partnerId = ($couple->user1_id == $user->id) ? $couple->user2_id : $couple->user1_id;
+        $user1 = \App\Models\User::find($couple->user1_id);
+        $user2 = \App\Models\User::find($couple->user2_id);
+
+        $title = '🔥 ¡Tu racha está en peligro!';
+        $body  = "Tienes 12 horas para revivir vuestra racha de {$couple->current_streak} días antes de que desaparezca para siempre.";
+
+        foreach ([$user1, $user2] as $member) {
+            if ($member && $member->fcm_token) {
+                $fcm->sendToToken(
+                    $member->fcm_token,
+                    $title,
+                    $body,
+                    ['type' => 'streak_danger'],
+                    $member->notification_sound ?? 'default'
+                );
+            }
+        }
+    }
+
+    // =============================================
+    // REVIVE STREAK - Usar un revividor
+    // =============================================
+    public function reviveStreak(Request $request)
+    {
+        $user   = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        // Verificar que la racha esté en período de gracia
+        if (!$couple->streak_broken_at) {
+            return response()->json(['error' => 'La racha no está en período de gracia.'], 422);
+        }
+
+        $graceExpiresAt = $couple->streak_broken_at->addHours(12);
+        if (\Carbon\Carbon::now()->isAfter($graceExpiresAt)) {
+            // La gracia ha expirado → matar racha definitivamente
+            $couple->current_streak   = 0;
+            $couple->streak_broken_at = null;
+            $couple->save();
+            return response()->json(['error' => 'El período de gracia ha expirado. La racha se ha perdido.'], 422);
+        }
+
+        // Tipo de revival a usar (primero gratis, luego de pago)
+        $request->validate(['use_paid' => 'boolean']);
+        $usePaid = $request->boolean('use_paid', false);
+
+        if ($usePaid) {
+            if ($couple->paid_revivals <= 0) {
+                return response()->json(['error' => 'No tienes revividores de pago disponibles.'], 422);
+            }
+            $couple->paid_revivals -= 1;
+            $typeUsed = 'paid';
+        } else {
+            if ($couple->free_revivals <= 0) {
+                return response()->json(['error' => 'No tienes revividores gratuitos disponibles este mes.'], 422);
+            }
+            $couple->free_revivals -= 1;
+            $typeUsed = 'free';
+        }
+
+        // Restaurar racha
+        $streakSaved          = $couple->current_streak;
+        $couple->streak_broken_at = null;
+        // Actualizar last_photo_date a ayer para que mañana puedan continuar
+        $couple->last_photo_date = \Carbon\Carbon::yesterday()->format('Y-m-d');
+        $couple->save();
+
+        // Notificar a AMBOS miembros
+        $fcm   = new FcmService();
+        $user1 = \App\Models\User::find($couple->user1_id);
+        $user2 = \App\Models\User::find($couple->user2_id);
+
+        $title = '🔥 ¡Racha revivida!';
+        $body  = "{$user->name} ha usado un revividor y habéis salvado vuestra racha de {$streakSaved} días 💪";
+
+        foreach ([$user1, $user2] as $member) {
+            if ($member && $member->fcm_token) {
+                $fcm->sendToToken(
+                    $member->fcm_token,
+                    $title,
+                    $body,
+                    ['type' => 'streak_revived'],
+                    $member->notification_sound ?? 'default'
+                );
+            }
+        }
+
+        return response()->json([
+            'message'       => '¡Racha revivida con éxito!',
+            'streak_saved'  => $streakSaved,
+            'type_used'     => $typeUsed,
+            'free_revivals' => $couple->free_revivals,
+            'paid_revivals' => $couple->paid_revivals,
+        ]);
+    }
+
+    // =============================================
+    // PURCHASE REVIVAL PACK - Comprar 3 revividores de pago
+    // =============================================
+    public function purchaseRevivalPack(Request $request)
+    {
+        $user   = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        // Simulado: en producción aquí va la verificación del recibo de RevenueCat
+        $couple->paid_revivals += 3;
+        $couple->save();
+
+        return response()->json([
+            'message'       => '¡Pack de 3 revividores añadido a tu pareja!',
+            'paid_revivals' => $couple->paid_revivals,
+        ]);
     }
 
     public function customNotification(Request $request)
