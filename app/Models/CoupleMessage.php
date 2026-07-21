@@ -18,14 +18,14 @@ class CoupleMessage extends Model
         'mensaje',
         'reply_to',
         'reactions',
-        'is_edited',
+        'is_edited', 'meta',
         'status'
     ];
 
     protected $casts = [
         'reply_to' => 'array',
         'reactions' => 'array',
-        'is_edited' => 'boolean'
+        'is_edited' => 'boolean', 'meta' => 'array'
     ];
 
     public function couple()
