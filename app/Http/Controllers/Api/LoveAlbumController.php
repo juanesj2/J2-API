@@ -576,12 +576,16 @@ class LoveAlbumController extends Controller
         }
 
         $request->validate([
-            'item' => 'required|string|in:gifts,letters,spicy_pack,bundle',
+            'item' => 'required|string|in:gifts,letters,spicy_pack,bundle,cart',
             'gift_type' => 'nullable|string|in:teddy,rose,ring',
             'quantity' => 'nullable|integer|min:1',
             'title' => 'nullable|string|max:100',
             'subject' => 'nullable|string|max:100',
             'content' => 'nullable|string',
+            'cart' => 'nullable|array',
+            'cart.*.item' => 'required|string|in:gifts,bundle',
+            'cart.*.gift_type' => 'nullable|string|in:teddy,rose,ring',
+            'cart.*.quantity' => 'required|integer|min:1',
         ]);
 
         $item = $request->input('item');
@@ -602,7 +606,20 @@ class LoveAlbumController extends Controller
             unset($inventory['gifts']);
         }
 
-        if ($item === 'letters') {
+        if ($item === 'cart') {
+            foreach ($request->input('cart', []) as $cartItem) {
+                $qty = $cartItem['quantity'];
+                if ($cartItem['item'] === 'bundle') {
+                    $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $qty;
+                    $inventory['gift_rose'] = ($inventory['gift_rose'] ?? 0) + $qty;
+                    $inventory['gift_ring'] = ($inventory['gift_ring'] ?? 0) + $qty;
+                } else if ($cartItem['item'] === 'gifts') {
+                    $giftType = $cartItem['gift_type'] ?? 'teddy';
+                    $inventoryKey = 'gift_' . $giftType;
+                    $inventory[$inventoryKey] = ($inventory[$inventoryKey] ?? 0) + $qty;
+                }
+            }
+        } else if ($item === 'letters') {
             $inventory['letters'][] = [
                 'id' => uniqid('let_'),
                 'title' => $request->input('title', 'Carta de Amor'),
