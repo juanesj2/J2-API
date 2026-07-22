@@ -576,14 +576,16 @@ class LoveAlbumController extends Controller
         }
 
         $request->validate([
-            'item' => 'required|string|in:gifts,letters,spicy_pack',
+            'item' => 'required|string|in:gifts,letters,spicy_pack,bundle',
             'gift_type' => 'nullable|string|in:teddy,rose,ring',
+            'quantity' => 'nullable|integer|min:1',
             'title' => 'nullable|string|max:100',
             'subject' => 'nullable|string|max:100',
             'content' => 'nullable|string',
         ]);
 
         $item = $request->input('item');
+        $quantity = $request->input('quantity', 1);
         $inventory = $couple->inventory ?? ['gifts' => false, 'letters' => [], 'spicy_pack' => false];
 
         // Ensure letters is an array if we are transitioning from the old boolean format
@@ -608,10 +610,14 @@ class LoveAlbumController extends Controller
                 'content' => $request->input('content', ''),
                 'created_at' => now()->toIso8601String(),
             ];
+        } else if ($item === 'bundle') {
+            $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $quantity;
+            $inventory['gift_rose'] = ($inventory['gift_rose'] ?? 0) + $quantity;
+            $inventory['gift_ring'] = ($inventory['gift_ring'] ?? 0) + $quantity;
         } else if ($item === 'gifts') {
             $giftType = $request->input('gift_type', 'teddy'); // Default to teddy if not specified
             $inventoryKey = 'gift_' . $giftType;
-            $inventory[$inventoryKey] = ($inventory[$inventoryKey] ?? 0) + 1;
+            $inventory[$inventoryKey] = ($inventory[$inventoryKey] ?? 0) + $quantity;
         } else {
             $inventory[$item] = true;
         }
