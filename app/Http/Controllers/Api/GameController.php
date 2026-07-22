@@ -259,6 +259,21 @@ class GameController extends Controller
 
         $partnerId = $couple->user1_id === $user->id ? $couple->user2_id : $couple->user1_id;
         $category = $request->query('category');
+        $excludeStr = $request->query('exclude', '');
+        $excludeIds = $excludeStr ? explode(',', $excludeStr) : [];
+        
+        $hasSpicy = isset($couple->inventory) && is_array($couple->inventory) && !empty($couple->inventory['spicy_pack']);
+
+        $applyFilters = function($query) use ($category, $excludeIds, $hasSpicy) {
+            if ($category) {
+                $query->where('category', $category);
+            } else if (!$hasSpicy) {
+                $query->whereNotIn('category', ['Picante', 'Picantes']);
+            }
+            if (!empty($excludeIds)) {
+                $query->whereNotIn('id', $excludeIds);
+            }
+        };
 
         // Buscar un prompt que la pareja haya empezado o respondido y yo no
         $partnerDrawings = Drawing::where('user_id', $partnerId)->pluck('drawing_prompt_id')->toArray();
@@ -270,9 +285,7 @@ class GameController extends Controller
 
         if (count($promptsPartnerDidButINot) > 0) {
             $query = DrawingPrompt::whereIn('id', $promptsPartnerDidButINot);
-            if ($category) {
-                $query->where('category', $category);
-            }
+            $applyFilters($query);
             $prompt = $query->first();
         } 
         
@@ -280,9 +293,7 @@ class GameController extends Controller
             // Buscar un prompt nuevo que ninguno haya hecho
             $allDone = array_merge($partnerDrawings, $myDrawings);
             $query = DrawingPrompt::whereNotIn('id', $allDone);
-            if ($category) {
-                $query->where('category', $category);
-            }
+            $applyFilters($query);
             $prompt = $query->inRandomOrder()->first();
         }
 
