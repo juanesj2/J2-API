@@ -577,6 +577,7 @@ class LoveAlbumController extends Controller
 
         $request->validate([
             'item' => 'required|string|in:gifts,letters,spicy_pack',
+            'gift_type' => 'nullable|string|in:teddy,rose,ring',
             'title' => 'nullable|string|max:100',
             'subject' => 'nullable|string|max:100',
             'content' => 'nullable|string',
@@ -590,6 +591,15 @@ class LoveAlbumController extends Controller
             $inventory['letters'] = [];
         }
 
+        // Migrate old generic gifts to teddy
+        if (isset($inventory['gifts'])) {
+            $currentGifts = is_numeric($inventory['gifts']) ? (int)$inventory['gifts'] : ($inventory['gifts'] ? 1 : 0);
+            if ($currentGifts > 0) {
+                $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $currentGifts;
+            }
+            unset($inventory['gifts']);
+        }
+
         if ($item === 'letters') {
             $inventory['letters'][] = [
                 'id' => uniqid('let_'),
@@ -599,8 +609,9 @@ class LoveAlbumController extends Controller
                 'created_at' => now()->toIso8601String(),
             ];
         } else if ($item === 'gifts') {
-            $currentGifts = is_numeric($inventory['gifts'] ?? null) ? (int)$inventory['gifts'] : (($inventory['gifts'] ?? false) ? 1 : 0);
-            $inventory['gifts'] = $currentGifts + 1;
+            $giftType = $request->input('gift_type', 'teddy'); // Default to teddy if not specified
+            $inventoryKey = 'gift_' . $giftType;
+            $inventory[$inventoryKey] = ($inventory[$inventoryKey] ?? 0) + 1;
         } else {
             $inventory[$item] = true;
         }
@@ -618,6 +629,7 @@ class LoveAlbumController extends Controller
     {
         $request->validate([
             'item' => 'required|string',
+            'gift_type' => 'nullable|string|in:teddy,rose,ring'
         ]);
 
         $user = auth()->user();
@@ -630,12 +642,24 @@ class LoveAlbumController extends Controller
         $item = $request->input('item');
         $inventory = $couple->inventory ?? [];
 
+        // Migrate old generic gifts to teddy on consumption as well, just in case
+        if (isset($inventory['gifts'])) {
+            $currentGifts = is_numeric($inventory['gifts']) ? (int)$inventory['gifts'] : ($inventory['gifts'] ? 1 : 0);
+            if ($currentGifts > 0) {
+                $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $currentGifts;
+            }
+            unset($inventory['gifts']);
+        }
+
         if ($item === 'gifts') {
-             $currentGifts = is_numeric($inventory['gifts'] ?? null) ? (int)$inventory['gifts'] : (($inventory['gifts'] ?? false) ? 1 : 0);
+             $giftType = $request->input('gift_type', 'teddy'); // Default to teddy
+             $inventoryKey = 'gift_' . $giftType;
+             
+             $currentGifts = (int)($inventory[$inventoryKey] ?? 0);
              if ($currentGifts <= 0) {
-                 return response()->json(['error' => 'No tienes regalos en el inventario.'], 400);
+                 return response()->json(['error' => 'No tienes este regalo en el inventario.'], 400);
              }
-             $inventory['gifts'] = $currentGifts - 1;
+             $inventory[$inventoryKey] = $currentGifts - 1;
              $couple->inventory = $inventory;
              $couple->save();
              
