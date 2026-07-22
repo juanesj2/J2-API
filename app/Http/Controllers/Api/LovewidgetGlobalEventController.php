@@ -117,7 +117,9 @@ class LovewidgetGlobalEventController extends Controller
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
-        LovewidgetGlobalEvent::where('is_active', true)->update(['is_active' => false]);
+        LovewidgetGlobalEvent::where('is_active', true)
+            ->whereNull('target_user_id')
+            ->update(['is_active' => false]);
 
         return response()->json(['message' => 'Eventos detenidos.']);
     }
