@@ -14,14 +14,6 @@ Route::get('/test', function () {
     ]);
 });
 
-Route::get('/chivato', function () {
-    \Illuminate\Support\Facades\Artisan::call('config:clear');
-    return response()->json([
-        'URL_LEIDA_DEL_ENV' => env('FRONTEND_URL'),
-        'ORIGENES_PERMITIDOS' => config('cors.allowed_origins')
-    ]);
-});
-
 // ============================
 //       LOGIN / REGISTER
 // ============================
