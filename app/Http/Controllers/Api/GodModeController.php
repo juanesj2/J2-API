@@ -70,7 +70,8 @@ class GodModeController extends Controller
         $this->isAdmin($request);
         $request->validate([
             'email' => 'nullable|email', // Optional, defaults to self
-            'type' => 'required|string|in:all,teddy,rose,ring'
+            'type' => 'required|string|in:all,teddy,rose,ring,letters',
+            'amount' => 'nullable|integer|min:1'
         ]);
 
         if ($request->email) {
@@ -84,23 +85,25 @@ class GodModeController extends Controller
         if (!$couple) return response()->json(['error' => 'No tienes pareja'], 404);
 
         $inventory = $couple->inventory ?? [];
+        $amount = $request->amount ?: 999;
         
         if ($request->type === 'all') {
-            $inventory['gifts'] = ($inventory['gifts'] ?? 0) + 999;
-            $inventory['gift_rose'] = ($inventory['gift_rose'] ?? 0) + 999;
-            $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + 999;
-            $inventory['gift_ring'] = ($inventory['gift_ring'] ?? 0) + 999;
+            $inventory['gifts'] = ($inventory['gifts'] ?? 0) + $amount;
+            $inventory['gift_rose'] = ($inventory['gift_rose'] ?? 0) + $amount;
+            $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $amount;
+            $inventory['gift_ring'] = ($inventory['gift_ring'] ?? 0) + $amount;
+            $inventory['letters'] = ($inventory['letters'] ?? 0) + $amount;
         } else {
             $key = 'gift_' . $request->type;
             if ($request->type === 'letters') $key = 'letters';
-            $inventory[$key] = ($inventory[$key] ?? 0) + 999;
+            $inventory[$key] = ($inventory[$key] ?? 0) + $amount;
         }
         
         $couple->inventory = $inventory;
         $couple->save();
 
         return response()->json([
-            'message' => 'Magia divina aplicada: +999 regalos añadidos.',
+            'message' => 'Magia divina aplicada: +' . $amount . ' regalos añadidos.',
             'inventory' => $inventory
         ]);
     }
