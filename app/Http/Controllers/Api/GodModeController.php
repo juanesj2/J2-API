@@ -116,6 +116,21 @@ class GodModeController extends Controller
         $couple->inventory = $inventory;
         $couple->save();
 
+        if ($request->type !== 'all' || $amount > 0) {
+            \App\Models\CoupleMessage::create([
+                'couple_id' => $couple->id,
+                'user_id' => $user->id,
+                'mensaje' => '[ADMIN_GIFT]',
+                'meta' => [
+                    'opened' => false,
+                    'gifts' => [
+                        'type' => $request->type,
+                        'amount' => $amount
+                    ]
+                ]
+            ]);
+        }
+
         return response()->json([
             'message' => 'Magia divina aplicada: +' . $amount . ' regalos añadidos.',
             'inventory' => $inventory
