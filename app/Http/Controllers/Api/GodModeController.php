@@ -62,7 +62,7 @@ class GodModeController extends Controller
         $couple->premium_until = Carbon::create(2099, 12, 31, 23, 59, 59);
         $couple->save();
 
-        return response()->json(['message' => 'Suscripción VIP "Amor Ilimitado" concedida a ' . $targetUser->name]);
+        return response()->json(['message' => 'Suscripcion VIP "Amor Ilimitado" concedida a ' . $targetUser->name]);
     }
 
     public function grantGifts(Request $request)
@@ -85,7 +85,7 @@ class GodModeController extends Controller
         if (!$couple) return response()->json(['error' => 'No tienes pareja'], 404);
 
         $inventory = $couple->inventory ?? [];
-        $amount = $request->amount ?: 999;
+        $amount = (int) ($request->amount ?: 999);
         
         if ($request->type === 'all') {
             $inventory['gifts'] = ($inventory['gifts'] ?? 0) + $amount;
@@ -146,6 +146,6 @@ class GodModeController extends Controller
         $theme = $request->theme;
         Cache::put('love_widget_global_theme', $theme, now()->addDays(30)); 
 
-        return response()->json(['message' => 'Temática global forzada a: ' . $theme]);
+        return response()->json(['message' => 'Tematica global forzada a: ' . $theme]);
     }
 }
