@@ -88,15 +88,15 @@ class GodModeController extends Controller
         $amount = (int) ($request->amount ?: 999);
         
         if ($request->type === 'all') {
-            $inventory['gifts'] = ($inventory['gifts'] ?? 0) + $amount;
-            $inventory['gift_rose'] = ($inventory['gift_rose'] ?? 0) + $amount;
-            $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $amount;
-            $inventory['gift_ring'] = ($inventory['gift_ring'] ?? 0) + $amount;
-            $inventory['letters'] = ($inventory['letters'] ?? 0) + $amount;
+            $inventory['gifts'] = (int)($inventory['gifts'] ?? 0) + $amount;
+            $inventory['gift_rose'] = (int)($inventory['gift_rose'] ?? 0) + $amount;
+            $inventory['gift_teddy'] = (int)($inventory['gift_teddy'] ?? 0) + $amount;
+            $inventory['gift_ring'] = (int)($inventory['gift_ring'] ?? 0) + $amount;
+            $inventory['letters'] = (int)($inventory['letters'] ?? 0) + $amount;
         } else {
             $key = 'gift_' . $request->type;
             if ($request->type === 'letters') $key = 'letters';
-            $inventory[$key] = ($inventory[$key] ?? 0) + $amount;
+            $inventory[$key] = (int)($inventory[$key] ?? 0) + $amount;
         }
         
         $couple->inventory = $inventory;
