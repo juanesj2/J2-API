@@ -71,7 +71,10 @@ class GodModeController extends Controller
         $request->validate([
             'email' => 'nullable|email', // Optional, defaults to self
             'type' => 'required|string|in:all,teddy,rose,ring,letters',
-            'amount' => 'nullable|integer|min:1'
+            'amount' => 'nullable|integer|min:1',
+            'title' => 'nullable|string',
+            'subject' => 'nullable|string',
+            'content' => 'nullable|string'
         ]);
 
         if ($request->email) {
@@ -92,10 +95,21 @@ class GodModeController extends Controller
             $inventory['gift_rose'] = (int)($inventory['gift_rose'] ?? 0) + $amount;
             $inventory['gift_teddy'] = (int)($inventory['gift_teddy'] ?? 0) + $amount;
             $inventory['gift_ring'] = (int)($inventory['gift_ring'] ?? 0) + $amount;
-            $inventory['letters'] = (int)($inventory['letters'] ?? 0) + $amount;
+            // 'all' does not grant letters since they require content
+        } else if ($request->type === 'letters') {
+            if (!isset($inventory['letters']) || !is_array($inventory['letters'])) {
+                $inventory['letters'] = [];
+            }
+            $inventory['letters'][] = [
+                'id' => uniqid('let_'),
+                'title' => $request->input('title', 'Carta Divina'),
+                'subject' => $request->input('subject', 'De los dioses'),
+                'content' => $request->input('content', 'Bendiciones infinitas para tu relación.'),
+                'created_at' => now()->toIso8601String(),
+            ];
+            $amount = 1;
         } else {
             $key = 'gift_' . $request->type;
-            if ($request->type === 'letters') $key = 'letters';
             $inventory[$key] = (int)($inventory[$key] ?? 0) + $amount;
         }
         
