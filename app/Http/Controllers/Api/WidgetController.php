@@ -70,7 +70,7 @@ class WidgetController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('food_places', $filename, 'public');
+            $path = $file->storeAs('food_places', $filename, 'local');
             $place->image_url = $path;
             $place->save();
         }
@@ -110,7 +110,7 @@ class WidgetController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('food-places', 'public');
+            $path = $request->file('image')->store('food-places', 'local');
             $place->update(['image_url' => $path]);
         }
 
@@ -124,8 +124,8 @@ class WidgetController extends Controller
 
         $place = CoupleFoodPlace::where('couple_id', $couple->id)->find($id);
         if ($place) {
-            if ($place->image_url && \Storage::disk('public')->exists($place->image_url)) {
-                \Storage::disk('public')->delete($place->image_url);
+            if ($place->image_url && \Storage::disk('local')->exists($place->image_url)) {
+                \Storage::disk('local')->delete($place->image_url);
             }
             $place->delete();
         }
@@ -158,7 +158,7 @@ class WidgetController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('food_dishes', $filename, 'public');
+            $path = $file->storeAs('food_dishes', $filename, 'local');
             $dish->image_url = $path;
             $dish->save();
         }
@@ -196,7 +196,7 @@ class WidgetController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('food_dishes', $filename, 'public');
+            $path = $file->storeAs('food_dishes', $filename, 'local');
             $dish->image_url = $path;
             $dish->save();
         }
@@ -218,8 +218,8 @@ class WidgetController extends Controller
 
         $dish = CoupleFoodDish::where('food_place_id', $place->id)->find($dishId);
         if ($dish) {
-            if ($dish->image_url && \Storage::disk('public')->exists($dish->image_url)) {
-                \Storage::disk('public')->delete($dish->image_url);
+            if ($dish->image_url && \Storage::disk('local')->exists($dish->image_url)) {
+                \Storage::disk('local')->delete($dish->image_url);
             }
             $dish->delete();
         }
@@ -275,7 +275,7 @@ class WidgetController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('movies', $filename, 'public');
+            $path = $file->storeAs('movies', $filename, 'local');
             $movie->image_url = $path;
             $movie->save();
         }
@@ -316,9 +316,9 @@ class WidgetController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->storeAs('movies', time() . '_' . $request->file('image')->getClientOriginalName(), 'public');
-            if ($movie->image_url && \Storage::disk('public')->exists($movie->image_url)) {
-                \Storage::disk('public')->delete($movie->image_url);
+            $path = $request->file('image')->storeAs('movies', time() . '_' . $request->file('image')->getClientOriginalName(), 'local');
+            if ($movie->image_url && \Storage::disk('local')->exists($movie->image_url)) {
+                \Storage::disk('local')->delete($movie->image_url);
             }
             $movie->update(['image_url' => $path]);
         }
@@ -333,8 +333,8 @@ class WidgetController extends Controller
 
         $movie = CoupleMovie::where('couple_id', $couple->id)->find($id);
         if ($movie) {
-            if ($movie->image_url && \Storage::disk('public')->exists($movie->image_url)) {
-                \Storage::disk('public')->delete($movie->image_url);
+            if ($movie->image_url && \Storage::disk('local')->exists($movie->image_url)) {
+                \Storage::disk('local')->delete($movie->image_url);
             }
             $movie->delete();
         }

@@ -879,9 +879,9 @@ class LoveAlbumController extends Controller
             
             // Guardar imagen
             if ($isGraffiti) {
-                \Illuminate\Support\Facades\Storage::disk('public')->put($imagePath, $image->toPng()->toString());
+                \Illuminate\Support\Facades\Storage::disk('local')->put($imagePath, $image->toPng()->toString());
             } else {
-                \Illuminate\Support\Facades\Storage::disk('public')->put($imagePath, $image->toJpeg(90)->toString());
+                \Illuminate\Support\Facades\Storage::disk('local')->put($imagePath, $image->toJpeg(90)->toString());
             }
 
             // --- Calcular racha dual ---
@@ -1067,8 +1067,8 @@ class LoveAlbumController extends Controller
             }
         }
 
-        if (Storage::disk('public')->exists($photo->image_path)) {
-            Storage::disk('public')->delete($photo->image_path);
+        if (Storage::disk('local')->exists($photo->image_path)) {
+            Storage::disk('local')->delete($photo->image_path);
         }
 
         $photo->delete();
@@ -1156,7 +1156,7 @@ class LoveAlbumController extends Controller
             $imageBase64 = base64_decode($imageParts[1]);
             $fileName = uniqid() . '.png';
             $path = 'love_album/covers/' . $fileName;
-            Storage::disk('public')->put($path, $imageBase64);
+            Storage::disk('local')->put($path, $imageBase64);
 
             $album->cover_image = $path;
             $album->save();
@@ -1244,11 +1244,11 @@ class LoveAlbumController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('milestones', $filename, 'public');
+            $path = $file->storeAs('milestones', $filename, 'local');
             
             // Delete old image if exists
-            if ($milestone->image_url && \Storage::disk('public')->exists($milestone->image_url)) {
-                \Storage::disk('public')->delete($milestone->image_url);
+            if ($milestone->image_url && \Storage::disk('local')->exists($milestone->image_url)) {
+                \Storage::disk('local')->delete($milestone->image_url);
             }
             
             $milestone->image_url = $path;

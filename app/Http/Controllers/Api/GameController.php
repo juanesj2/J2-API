@@ -320,7 +320,7 @@ class GameController extends Controller
         $imageData = str_replace(' ', '+', $imageData);
         $imageName = 'drawings/' . Str::random(10) . '_' . time() . '.png';
         
-        Storage::disk('public')->put($imageName, base64_decode($imageData));
+        Storage::disk('local')->put($imageName, base64_decode($imageData));
 
         $drawing = Drawing::updateOrCreate(
             ['user_id' => $user->id, 'drawing_prompt_id' => $request->prompt_id],

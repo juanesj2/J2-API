@@ -2,6 +2,9 @@
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
+    // Media Segura
+    Route::get('/media/{path}', [\App\Http\Controllers\Api\LoveMediaController::class, 'serveMedia'])->where('path', '.*');
+
     Route::post('/pair', [\App\Http\Controllers\Api\LoveAlbumController::class, 'pair']);
     Route::post('/unpair', [\App\Http\Controllers\Api\LoveAlbumController::class, 'unpair']);
     Route::get('/info', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getCoupleInfo']);
