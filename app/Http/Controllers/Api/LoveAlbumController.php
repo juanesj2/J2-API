@@ -237,6 +237,7 @@ class LoveAlbumController extends Controller
             'my_photo_today'       => $myPhotoToday,
             'partner_photo_today'  => $partnerPhotoToday,
             'unlocked_achievements'=> $unlockedAchievements,
+            'global_theme'         => \Illuminate\Support\Facades\Cache::get('love_widget_global_theme', 'default'),
             'debug_streak' => [
                 'today'           => $today->format('Y-m-d H:i:s'),
                 'last_streak_date'=> $lastStreakDate ? $lastStreakDate->format('Y-m-d H:i:s') : null,

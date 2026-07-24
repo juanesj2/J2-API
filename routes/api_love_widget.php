@@ -21,7 +21,13 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::post('/avatar', [\App\Http\Controllers\Api\LoveAlbumController::class, 'uploadAvatar']);
     Route::get('/roulette', [\App\Http\Controllers\Api\LoveAlbumController::class, 'getRouletteOptions']);
     Route::post('/roulette', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateRouletteOptions']);
-    // Global Events (God Mode)
+    // Global Events & God Mode
+    Route::get('/god-mode/stats', [\App\Http\Controllers\Api\GodModeController::class, 'getStats']);
+    Route::post('/god-mode/grant-premium', [\App\Http\Controllers\Api\GodModeController::class, 'grantPremium']);
+    Route::post('/god-mode/grant-gifts', [\App\Http\Controllers\Api\GodModeController::class, 'grantGifts']);
+    Route::post('/god-mode/set-streak', [\App\Http\Controllers\Api\GodModeController::class, 'setStreak']);
+    Route::post('/god-mode/set-theme', [\App\Http\Controllers\Api\GodModeController::class, 'setGlobalTheme']);
+
     Route::get('/global-events/users', [\App\Http\Controllers\Api\UserController::class, 'getAllUsers']);
     Route::get('/global-events/active', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'getActive']);
     Route::post('/global-events', [\App\Http\Controllers\Api\LovewidgetGlobalEventController::class, 'store']);
