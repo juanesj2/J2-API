@@ -35,7 +35,14 @@ class LoveMediaController extends Controller
             abort(400, 'Invalid path');
         }
 
-        if (!Storage::disk('local')->exists($path)) {
+        $absolutePath = null;
+        if (Storage::disk('local')->exists($path)) {
+            $absolutePath = storage_path('app/' . $path);
+        } elseif (Storage::disk('public')->exists($path)) {
+            $absolutePath = storage_path('app/public/' . $path);
+        }
+
+        if (!$absolutePath) {
             abort(404, 'File not found');
         }
 
@@ -78,8 +85,6 @@ class LoveMediaController extends Controller
             abort(403, 'No tienes permiso para ver esta imagen.');
         }
 
-        $absolutePath = storage_path('app/' . $path);
-        
         $mimeType = mime_content_type($absolutePath);
         
         return response()->file($absolutePath, [
