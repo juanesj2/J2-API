@@ -155,6 +155,68 @@ class UserController extends Controller
             ]);
         }
 
+        // 1. Delete user avatar
+        if ($user->avatar_url && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar_url)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar_url);
+        }
+
+        // 2. Find associated Couple and physically delete all their data
+        $couple = \App\Models\Couple::where('user1_id', $user->id)
+            ->orWhere('user2_id', $user->id)
+            ->first();
+
+        if ($couple) {
+            // Delete LovePhotos (doodles, shared photos)
+            $photos = \App\Models\LovePhoto::where('couple_id', $couple->id)->get();
+            foreach ($photos as $p) {
+                if ($p->image_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($p->image_path)) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->delete($p->image_path);
+                }
+            }
+
+            // Delete LoveAlbumMilestones
+            $milestones = \App\Models\LoveAlbumMilestone::where('couple_id', $couple->id)->get();
+            foreach ($milestones as $m) {
+                if ($m->image_url && \Illuminate\Support\Facades\Storage::disk('local')->exists($m->image_url)) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->delete($m->image_url);
+                }
+            }
+
+            // Delete CouplePlans
+            $plans = \App\Models\CouplePlan::where('couple_id', $couple->id)->get();
+            foreach ($plans as $p) {
+                if ($p->image_url && \Illuminate\Support\Facades\Storage::disk('local')->exists($p->image_url)) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->delete($p->image_url);
+                }
+            }
+
+            // Delete FoodPlaces
+            $places = \App\Models\FoodPlace::where('couple_id', $couple->id)->get();
+            foreach ($places as $p) {
+                if ($p->image_url && \Illuminate\Support\Facades\Storage::disk('local')->exists($p->image_url)) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->delete($p->image_url);
+                }
+            }
+
+            // Delete FoodDishes
+            $dishes = \App\Models\FoodDish::whereIn('food_place_id', $places->pluck('id'))->get();
+            foreach ($dishes as $d) {
+                if ($d->image_url && \Illuminate\Support\Facades\Storage::disk('local')->exists($d->image_url)) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->delete($d->image_url);
+                }
+            }
+
+            // Delete Movies
+            $movies = \App\Models\Movie::where('couple_id', $couple->id)->get();
+            foreach ($movies as $m) {
+                if ($m->image_url && \Illuminate\Support\Facades\Storage::disk('local')->exists($m->image_url)) {
+                    \Illuminate\Support\Facades\Storage::disk('local')->delete($m->image_url);
+                }
+            }
+
+            $couple->delete();
+        }
+
         // Logout the user and delete the account
         $user->tokens()->delete();
         $user->delete();
