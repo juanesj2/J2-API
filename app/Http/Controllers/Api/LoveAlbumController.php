@@ -866,7 +866,7 @@ class LoveAlbumController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $isGraffiti = str_contains($request->description ?? '', '[GRAFFITI:');
+            $isGraffiti = str_contains($request->description ?? '', '[GRAFFITI:') || str_contains($request->description ?? '', '[DOODLE]');
             $extension = $isGraffiti ? '.png' : '.jpg';
             $filename = uniqid() . $extension;
             $imagePath = 'love_album/' . $filename;
