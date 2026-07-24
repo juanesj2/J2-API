@@ -78,7 +78,7 @@ class GodModeController extends Controller
             $user = User::where('email', $request->email)->first();
             if (!$user) return response()->json(['error' => 'Usuario no encontrado'], 404);
         } else {
-            $user = Auth::user();
+            $user = $request->user();
         }
 
         $couple = Couple::where('user1_id', $user->id)->orWhere('user2_id', $user->id)->first();
@@ -113,7 +113,7 @@ class GodModeController extends Controller
         $this->isAdmin($request);
         $request->validate(['streak' => 'required|integer|min:0']);
 
-        $user = Auth::user();
+        $user = $request->user();
         $couple = Couple::where('user1_id', $user->id)->orWhere('user2_id', $user->id)->first();
         if (!$couple) return response()->json(['error' => 'No tienes pareja'], 404);
 
