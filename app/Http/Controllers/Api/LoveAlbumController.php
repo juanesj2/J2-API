@@ -1600,4 +1600,29 @@ class LoveAlbumController extends Controller
         }
         return response()->json(['message' => 'Error al guardar la carta'], 500);
     }
+
+    public function deleteInventoryLetter(Request $request, $id) {
+        $user = Auth::user();
+        if ($user->rol !== 'admin' && $user->rol !== 'superadmin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $couple = $this->getCoupleForUser($user->id);
+        if (!$couple) return response()->json(['message' => 'Not found'], 404);
+
+        $inventory = $couple->inventory ?? [];
+        if (!isset($inventory['letters'])) {
+            return response()->json(['success' => true, 'inventory' => $inventory]);
+        }
+
+        $filtered = array_values(array_filter($inventory['letters'], function($l) use ($id) {
+            return $l['id'] !== $id;
+        }));
+
+        $inventory['letters'] = $filtered;
+        $couple->inventory = $inventory;
+        $couple->save();
+
+        return response()->json(['success' => true, 'inventory' => $inventory]);
+    }
 }

@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::post('/store/purchase', [\App\Http\Controllers\Api\LoveAlbumController::class, 'storePurchase']);
     Route::post('/store/consume', [\App\Http\Controllers\Api\LoveAlbumController::class, 'consumeStoreItem']);
     Route::put('/store/letters/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateInventoryLetter']);
+    Route::delete('/store/letters/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'deleteInventoryLetter']);
     Route::post('/custom-notification', [\App\Http\Controllers\Api\LoveAlbumController::class, 'customNotification']);
     Route::post('/save-fcm-token', [\App\Http\Controllers\Api\LoveAlbumController::class, 'saveFcmToken']);
     Route::post('/notification-sound', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateNotificationSound']);
