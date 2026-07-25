@@ -1603,7 +1603,7 @@ class LoveAlbumController extends Controller
 
     public function deleteInventoryLetter(Request $request, $id) {
         $user = Auth::user();
-        if ($user->rol !== 'admin' && $user->rol !== 'superadmin') {
+        if (!$user || !in_array($user->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
