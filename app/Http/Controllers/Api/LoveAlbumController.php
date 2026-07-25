@@ -1582,11 +1582,22 @@ class LoveAlbumController extends Controller
             }
         }
 
+        if (!$found) {
+            $inventory['letters'][] = [
+                'id' => $id,
+                'title' => $request->input('title', 'Carta de Amor'),
+                'subject' => $request->input('subject', 'Para ti'),
+                'content' => $request->input('content', ''),
+                'created_at' => now()->toIso8601String(),
+            ];
+            $found = true;
+        }
+
         if ($found) {
             $couple->inventory = $inventory;
             $couple->save();
             return response()->json(['success' => true, 'inventory' => $inventory]);
         }
-        return response()->json(['message' => 'Carta no encontrada en el inventario'], 404);
+        return response()->json(['message' => 'Error al guardar la carta'], 500);
     }
 }

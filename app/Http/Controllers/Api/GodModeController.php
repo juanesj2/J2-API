@@ -101,13 +101,6 @@ class GodModeController extends Controller
                 $inventory['letters'] = [];
             }
             $letterId = uniqid('let_');
-            $inventory['letters'][] = [
-                'id' => $letterId,
-                'title' => $request->input('title', 'Carta Divina'),
-                'subject' => $request->input('subject', 'De los dioses'),
-                'content' => $request->input('content', 'Bendiciones infinitas para tu relación.'),
-                'created_at' => now()->toIso8601String(),
-            ];
             $amount = 1;
         } else {
             $key = 'gift_' . $request->type;
@@ -132,7 +125,8 @@ class GodModeController extends Controller
                 'mensaje' => '[ADMIN_GIFT]',
                 'meta' => [
                     'opened' => false,
-                    'gifts' => $metaGifts
+                    'gifts' => $metaGifts,
+                    'target_user_id' => $user->id
                 ]
             ]);
         }
