@@ -1563,4 +1563,30 @@ class LoveAlbumController extends Controller
             'user2_swipe_count' => $user2SwipeCount,
         ]);
     }
+    public function updateInventoryLetter(Request $request, $id) {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+        if (!$couple) return response()->json(['message' => 'Not found'], 404);
+
+        $inventory = $couple->inventory ?? [];
+        if (!isset($inventory['letters'])) $inventory['letters'] = [];
+
+        $found = false;
+        foreach($inventory['letters'] as &$letter) {
+            if ($letter['id'] === $id) {
+                $letter['title'] = $request->input('title', $letter['title']);
+                $letter['subject'] = $request->input('subject', $letter['subject']);
+                $letter['content'] = $request->input('content', $letter['content']);
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            $couple->inventory = $inventory;
+            $couple->save();
+            return response()->json(['success' => true, 'inventory' => $inventory]);
+        }
+        return response()->json(['message' => 'Carta no encontrada en el inventario'], 404);
+    }
 }

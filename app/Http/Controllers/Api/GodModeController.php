@@ -100,8 +100,9 @@ class GodModeController extends Controller
             if (!isset($inventory['letters']) || !is_array($inventory['letters'])) {
                 $inventory['letters'] = [];
             }
+            $letterId = uniqid('let_');
             $inventory['letters'][] = [
-                'id' => uniqid('let_'),
+                'id' => $letterId,
                 'title' => $request->input('title', 'Carta Divina'),
                 'subject' => $request->input('subject', 'De los dioses'),
                 'content' => $request->input('content', 'Bendiciones infinitas para tu relación.'),
@@ -117,16 +118,21 @@ class GodModeController extends Controller
         $couple->save();
 
         if ($request->type !== 'all' || $amount > 0) {
+            $metaGifts = [
+                'type' => $request->type,
+                'amount' => $amount
+            ];
+            if ($request->type === 'letters' && isset($letterId)) {
+                $metaGifts['letter_id'] = $letterId;
+            }
+
             \App\Models\CoupleMessage::create([
                 'couple_id' => $couple->id,
                 'user_id' => $user->id,
                 'mensaje' => '[ADMIN_GIFT]',
                 'meta' => [
                     'opened' => false,
-                    'gifts' => [
-                        'type' => $request->type,
-                        'amount' => $amount
-                    ]
+                    'gifts' => $metaGifts
                 ]
             ]);
         }
