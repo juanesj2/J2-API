@@ -37,9 +37,9 @@ class LoveMediaController extends Controller
 
         $absolutePath = null;
         if (Storage::disk('local')->exists($path)) {
-            $absolutePath = storage_path('app/' . $path);
+            $absolutePath = Storage::disk('local')->path($path);
         } elseif (Storage::disk('public')->exists($path)) {
-            $absolutePath = storage_path('app/public/' . $path);
+            $absolutePath = Storage::disk('public')->path($path);
         }
 
         if (!$absolutePath) {
@@ -85,7 +85,23 @@ class LoveMediaController extends Controller
             abort(403, 'No tienes permiso para ver esta imagen.');
         }
 
-        $mimeType = mime_content_type($absolutePath);
+        $extension = pathinfo($absolutePath, PATHINFO_EXTENSION);
+        $mimeTypes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'mp4' => 'video/mp4',
+            'mp3' => 'audio/mpeg',
+            'm4a' => 'audio/mp4',
+            'wav' => 'audio/wav',
+        ];
+        $mimeType = $mimeTypes[strtolower($extension)] ?? 'application/octet-stream';
+        
+        if (function_exists('mime_content_type')) {
+            $mimeType = @mime_content_type($absolutePath) ?: $mimeType;
+        }
         
         return response()->file($absolutePath, [
             'Content-Type' => $mimeType,
