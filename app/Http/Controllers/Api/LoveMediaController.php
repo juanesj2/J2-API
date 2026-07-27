@@ -46,40 +46,37 @@ class LoveMediaController extends Controller
             abort(404, 'File not found');
         }
 
-        // Validación de propiedad estricta para evitar IDOR
-        $isOwner = false;
-
-        if (str_starts_with($path, 'love_album/covers/')) {
-            $isOwner = \App\Models\LoveAlbum::where('cover_image', $path)
-                            ->where('couple_id', $couple->id)
-                            ->exists();
-        } else if (str_starts_with($path, 'love_album/')) {
-            $isOwner = LovePhoto::where('image_path', $path)
-                            ->where('couple_id', $couple->id)
-                            ->exists();
-        } else if (str_starts_with($path, 'milestones/')) {
-            $isOwner = CoupleMilestone::where('image_url', $path)
-                            ->where('couple_id', $couple->id)
-                            ->exists();
-        } else if (str_starts_with($path, 'food_places/')) {
-            $isOwner = \App\Models\CoupleFoodPlace::where('image_url', $path)
-                            ->where('couple_id', $couple->id)
-                            ->exists();
-        } else if (str_starts_with($path, 'food_dishes/')) {
-            $isOwner = \App\Models\CoupleFoodDish::where('image_url', $path)
-                            ->where('couple_id', $couple->id)
-                            ->exists();
-        } else if (str_starts_with($path, 'movies/')) {
-            $isOwner = \App\Models\CoupleMovie::where('image_url', $path)
-                            ->where('couple_id', $couple->id)
-                            ->exists();
-        } else {
-            // Otros archivos generados por juegos/dibujos que no guardan ruta en BD,
-            // pero que usan uniqid() y son accedidos a través del componente seguro.
-            // Para estos, el solo hecho de estar logueado y tener pareja permite acceder,
-            // ya que su nombre es un hash impredecible (uniqid).
-            $isOwner = true;
-        }
+        // Validación de propiedad estricta para evitar IDOR (Cacheada para velocidad)
+        $cacheKey = 'media_access_' . $user->id . '_' . md5($path);
+        $isOwner = \Illuminate\Support\Facades\Cache::remember($cacheKey, 86400, function() use ($path, $couple) {
+            if (str_starts_with($path, 'love_album/covers/')) {
+                return \App\Models\LoveAlbum::where('cover_image', $path)
+                                ->where('couple_id', $couple->id)
+                                ->exists();
+            } else if (str_starts_with($path, 'love_album/')) {
+                return \App\Models\LovePhoto::where('image_path', $path)
+                                ->where('couple_id', $couple->id)
+                                ->exists();
+            } else if (str_starts_with($path, 'milestones/')) {
+                return \App\Models\CoupleMilestone::where('image_url', $path)
+                                ->where('couple_id', $couple->id)
+                                ->exists();
+            } else if (str_starts_with($path, 'food_places/')) {
+                return \App\Models\CoupleFoodPlace::where('image_url', $path)
+                                ->where('couple_id', $couple->id)
+                                ->exists();
+            } else if (str_starts_with($path, 'food_dishes/')) {
+                return \App\Models\CoupleFoodDish::where('image_url', $path)
+                                ->where('couple_id', $couple->id)
+                                ->exists();
+            } else if (str_starts_with($path, 'movies/')) {
+                return \App\Models\CoupleMovie::where('image_url', $path)
+                                ->where('couple_id', $couple->id)
+                                ->exists();
+            } else {
+                return true;
+            }
+        });
 
         if (!$isOwner) {
             abort(403, 'No tienes permiso para ver esta imagen.');
