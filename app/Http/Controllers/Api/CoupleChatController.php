@@ -19,7 +19,7 @@ class CoupleChatController extends Controller
             ->first();
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $couple = $this->getCoupleForUser($user->id);
@@ -29,17 +29,30 @@ class CoupleChatController extends Controller
         }
 
         // Marcar como leídos los mensajes que no sean del usuario actual
-        CoupleMessage::where('couple_id', $couple->id)
-            ->where('user_id', '!=', $user->id)
-            ->where('status', '!=', 'read')
-            ->update(['status' => 'read']);
+        // Solo si no es una petición de paginación antigua
+        if (!$request->has('before_id')) {
+            CoupleMessage::where('couple_id', $couple->id)
+                ->where('user_id', '!=', $user->id)
+                ->where('status', '!=', 'read')
+                ->update(['status' => 'read']);
+        }
 
-        $messages = CoupleMessage::where('couple_id', $couple->id)
+        $query = CoupleMessage::where('couple_id', $couple->id)
             ->with(['user:id,name', 'photo'])
-            ->orderBy('created_at', 'asc')
-            ->get();
+            ->orderBy('id', 'desc'); // Order by ID is safer than created_at for pagination
 
-        return response()->json($messages);
+        if ($request->has('before_id')) {
+            $query->where('id', '<', $request->input('before_id'));
+        }
+
+        if ($request->has('after_id')) {
+            $query->where('id', '>', $request->input('after_id'));
+        }
+
+        $messages = $query->limit(30)->get();
+
+        // Devolvemos el array invertido (del más antiguo al más nuevo en este bloque)
+        return response()->json($messages->reverse()->values());
     }
 
     public function store(Request $request)

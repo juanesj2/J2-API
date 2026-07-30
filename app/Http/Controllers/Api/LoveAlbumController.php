@@ -25,59 +25,30 @@ class LoveAlbumController extends Controller
             ->first();
     }
 
-    public function pair(Request $request)
+    public function pair(Request $request, \App\Services\CouplePairingService $pairingService)
     {
         $request->validate([
             'pairing_code' => 'required|string|size:6'
         ]);
 
-        $user = Auth::user();
-
-        // Limite 1: Verificar que el usuario no tiene pareja ya
-        if ($this->getCoupleForUser($user->id)) {
-            return response()->json(['message' => 'Ya estás vinculado a una pareja.'], 400);
+        try {
+            $pairingService->pair(Auth::user(), $request->pairing_code);
+            return response()->json(['message' => '¡Vinculación exitosa!'], 200);
+        } catch (\Exception $e) {
+            $status = $e->getCode() > 0 ? $e->getCode() : 400;
+            return response()->json(['message' => $e->getMessage()], $status);
         }
-
-        // Limite 3: No emparejarse consigo mismo
-        if (strtoupper($request->pairing_code) === strtoupper($user->pairing_code)) {
-            return response()->json(['message' => 'No puedes vincularte contigo mismo.'], 400);
-        }
-
-        // Buscar pareja por código
-        $partner = \App\Models\User::where('pairing_code', strtoupper($request->pairing_code))->first();
-
-        if (!$partner) {
-            return response()->json(['message' => 'Código de vinculación inválido.'], 404);
-        }
-
-        // Limite 2: Verificar que el dueño del código no tiene pareja ya
-        if ($this->getCoupleForUser($partner->id)) {
-            return response()->json(['message' => 'Ese usuario ya está vinculado a otra persona.'], 400);
-        }
-
-        // Todo correcto, crear el vínculo
-        Couple::create([
-            'user1_id' => $user->id,
-            'user2_id' => $partner->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return response()->json(['message' => '¡Vinculación exitosa!'], 200);
     }
 
-    public function unpair()
+    public function unpair(\App\Services\CouplePairingService $pairingService)
     {
-        $user = Auth::user();
-        $couple = $this->getCoupleForUser($user->id);
-
-        if (!$couple) {
-            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        try {
+            $pairingService->unpair(Auth::user());
+            return response()->json(['message' => 'Pareja desvinculada con éxito.']);
+        } catch (\Exception $e) {
+            $status = $e->getCode() > 0 ? $e->getCode() : 403;
+            return response()->json(['message' => $e->getMessage()], $status);
         }
-
-        $couple->delete();
-
-        return response()->json(['message' => 'Pareja desvinculada con éxito.']);
     }
 
     public function getCoupleInfo(Request $request)
@@ -89,24 +60,7 @@ class LoveAlbumController extends Controller
             return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
         }
 
-        // Self-heal inventory format if it's using old booleans
-        $inventory = $couple->inventory ?? ['gifts' => false, 'letters' => [], 'spicy_pack' => false];
-        $changed = false;
-        if (!isset($inventory['letters']) || !is_array($inventory['letters'])) {
-            $inventory['letters'] = [];
-            $changed = true;
-        }
-        
-        // Convert old boolean gifts to integers
-        if (isset($inventory['gifts']) && is_bool($inventory['gifts'])) {
-            $inventory['gifts'] = $inventory['gifts'] ? 1 : 0;
-            $changed = true;
-        }
-
-        if ($changed) {
-            $couple->inventory = $inventory;
-            $couple->save();
-        }
+        $inventory = $couple->inventory;
 
         // Fetch received gifts from chat history
         $receivedGifts = \App\Models\CoupleMessage::where('couple_id', $couple->id)
@@ -116,7 +70,7 @@ class LoveAlbumController extends Controller
             ->orderBy('created_at', 'desc')
             ->get(['id', 'mensaje', 'meta', 'created_at']);
         
-        $inventory['received_gifts'] = $receivedGifts;
+        $inventory->received_gifts = $receivedGifts->toArray();
 
         // Fetch sent gifts from chat history
         $sentGifts = \App\Models\CoupleMessage::where('couple_id', $couple->id)
@@ -125,10 +79,7 @@ class LoveAlbumController extends Controller
             ->orderBy('created_at', 'desc')
             ->get(['id', 'mensaje', 'meta', 'created_at']);
         
-        $inventory['sent_gifts'] = $sentGifts;
-
-        // Assign back to the model instance so it is serialized in the JSON response
-        // Note: we don't call save() unless $changed is true, because we don't want to persist received_gifts in the JSON column
+        $inventory->sent_gifts = $sentGifts->toArray();
         $couple->inventory = $inventory;
 
         // Return couple info plus partner's mood
@@ -591,53 +542,41 @@ class LoveAlbumController extends Controller
 
         $item = $request->input('item');
         $quantity = $request->input('quantity', 1);
-        $inventory = $couple->inventory ?? ['gifts' => false, 'letters' => [], 'spicy_pack' => false];
-
-        // Ensure letters is an array if we are transitioning from the old boolean format
-        if (!isset($inventory['letters']) || !is_array($inventory['letters'])) {
-            $inventory['letters'] = [];
-        }
-
-        // Migrate old generic gifts to teddy
-        if (isset($inventory['gifts'])) {
-            $currentGifts = is_numeric($inventory['gifts']) ? (int)$inventory['gifts'] : ($inventory['gifts'] ? 1 : 0);
-            if ($currentGifts > 0) {
-                $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $currentGifts;
-            }
-            unset($inventory['gifts']);
-        }
+        $inventory = $couple->inventory;
 
         if ($item === 'cart') {
             foreach ($request->input('cart', []) as $cartItem) {
                 $qty = $cartItem['quantity'];
                 if ($cartItem['item'] === 'bundle') {
-                    $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $qty;
-                    $inventory['gift_rose'] = ($inventory['gift_rose'] ?? 0) + $qty;
-                    $inventory['gift_ring'] = ($inventory['gift_ring'] ?? 0) + $qty;
+                    $inventory->gift_teddy += $qty;
+                    $inventory->gift_rose += $qty;
+                    $inventory->gift_ring += $qty;
                 } else if ($cartItem['item'] === 'gifts') {
                     $giftType = $cartItem['gift_type'] ?? 'teddy';
                     $inventoryKey = 'gift_' . $giftType;
-                    $inventory[$inventoryKey] = ($inventory[$inventoryKey] ?? 0) + $qty;
+                    $inventory->$inventoryKey += $qty;
                 }
             }
         } else if ($item === 'letters') {
-            $inventory['letters'][] = [
+            $letters = $inventory->letters;
+            $letters[] = [
                 'id' => uniqid('let_'),
                 'title' => $request->input('title', 'Carta de Amor'),
                 'subject' => $request->input('subject', 'Para ti'),
                 'content' => $request->input('content', ''),
                 'created_at' => now()->toIso8601String(),
             ];
+            $inventory->letters = $letters;
         } else if ($item === 'bundle') {
-            $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $quantity;
-            $inventory['gift_rose'] = ($inventory['gift_rose'] ?? 0) + $quantity;
-            $inventory['gift_ring'] = ($inventory['gift_ring'] ?? 0) + $quantity;
+            $inventory->gift_teddy += $quantity;
+            $inventory->gift_rose += $quantity;
+            $inventory->gift_ring += $quantity;
         } else if ($item === 'gifts') {
             $giftType = $request->input('gift_type', 'teddy'); // Default to teddy if not specified
             $inventoryKey = 'gift_' . $giftType;
-            $inventory[$inventoryKey] = ($inventory[$inventoryKey] ?? 0) + $quantity;
-        } else {
-            $inventory[$item] = true;
+            $inventory->$inventoryKey += $quantity;
+        } else if ($item === 'spicy_pack') {
+            $inventory->spicy_pack = true;
         }
         
         $couple->inventory = $inventory;
@@ -664,32 +603,23 @@ class LoveAlbumController extends Controller
         if (!$couple) return response()->json(['error' => 'No tienes pareja.'], 400);
 
         $item = $request->input('item');
-        $inventory = $couple->inventory ?? [];
-
-        // Migrate old generic gifts to teddy on consumption as well, just in case
-        if (isset($inventory['gifts'])) {
-            $currentGifts = is_numeric($inventory['gifts']) ? (int)$inventory['gifts'] : ($inventory['gifts'] ? 1 : 0);
-            if ($currentGifts > 0) {
-                $inventory['gift_teddy'] = ($inventory['gift_teddy'] ?? 0) + $currentGifts;
-            }
-            unset($inventory['gifts']);
-        }
+        $inventory = $couple->inventory;
 
         if ($item === 'gifts') {
              $giftType = $request->input('gift_type', 'teddy'); // Default to teddy
              $inventoryKey = 'gift_' . $giftType;
              
-             $currentGifts = (int)($inventory[$inventoryKey] ?? 0);
+             $currentGifts = (int)$inventory->$inventoryKey;
              if ($currentGifts <= 0) {
                  return response()->json(['error' => 'No tienes este regalo en el inventario.'], 400);
              }
-             $inventory[$inventoryKey] = $currentGifts - 1;
+             $inventory->$inventoryKey = $currentGifts - 1;
              $couple->inventory = $inventory;
              $couple->save();
              
              return response()->json([
                  'success' => true, 
-                 'inventory' => $inventory
+                 'inventory' => $inventory->toArray()
              ]);
         }
 

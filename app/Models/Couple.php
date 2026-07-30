@@ -20,7 +20,7 @@ class Couple extends Model
     protected $casts = [
         'premium_until'    => 'datetime',
         'streak_broken_at' => 'datetime',
-        'inventory'        => 'array',
+        'inventory'        => \App\Casts\InventoryCast::class,
     ];
 
     public function user1()
