@@ -172,6 +172,7 @@ class LoveAlbumController extends Controller
             'grace_hours_left'     => $graceHoursLeft,
             'free_revivals'        => $couple->free_revivals,
             'paid_revivals'        => $couple->paid_revivals,
+            'pet_decorations'      => $couple->pet_decorations,
             'my_mood'              => $user->current_mood,
             'partner_mood'         => $partner ? $partner->current_mood : null,
             'my_bubble_shape'      => $user->bubble_shape,
@@ -264,6 +265,11 @@ class LoveAlbumController extends Controller
         if ($request->has('avatar_frame')) {
             $user->avatar_frame = $request->avatar_frame;
             $user->save();
+        }
+
+        if ($request->has('pet_decorations')) {
+            $couple->pet_decorations = $request->pet_decorations;
+            $couple->save();
         }
 
         return response()->json(['message' => 'Información actualizada con éxito']);
