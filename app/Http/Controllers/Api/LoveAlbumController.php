@@ -173,6 +173,7 @@ class LoveAlbumController extends Controller
             'free_revivals'        => $couple->free_revivals,
             'paid_revivals'        => $couple->paid_revivals,
             'pet_decorations'      => $couple->pet_decorations,
+            'pet_name'             => $couple->pet_name,
             'my_mood'              => $user->current_mood,
             'partner_mood'         => $partner ? $partner->current_mood : null,
             'my_bubble_shape'      => $user->bubble_shape,
@@ -269,6 +270,11 @@ class LoveAlbumController extends Controller
 
         if ($request->has('pet_decorations')) {
             $couple->pet_decorations = $request->pet_decorations;
+            $couple->save();
+        }
+
+        if ($request->has('pet_name')) {
+            $couple->pet_name = $request->pet_name;
             $couple->save();
         }
 
