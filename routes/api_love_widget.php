@@ -13,6 +13,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::post('/remind-streak', [\App\Http\Controllers\Api\LoveAlbumController::class, 'remindStreak']);
     Route::post('/revive-streak', [\App\Http\Controllers\Api\LoveAlbumController::class, 'reviveStreak']);
     Route::post('/purchase-revival-pack', [\App\Http\Controllers\Api\LoveAlbumController::class, 'purchaseRevivalPack']);
+    Route::post('/pet/hatch', [\App\Http\Controllers\Api\LoveAlbumController::class, 'hatchPet']);
     Route::post('/store/purchase', [\App\Http\Controllers\Api\LoveAlbumController::class, 'storePurchase']);
     Route::post('/store/consume', [\App\Http\Controllers\Api\LoveAlbumController::class, 'consumeStoreItem']);
     Route::put('/store/letters/{id}', [\App\Http\Controllers\Api\LoveAlbumController::class, 'updateInventoryLetter']);

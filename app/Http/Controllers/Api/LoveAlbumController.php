@@ -518,6 +518,53 @@ class LoveAlbumController extends Controller
     // =============================================
     // STORE PURCHASE - Comprar ítems en la tienda
     // =============================================
+    public function hatchPet(Request $request)
+    {
+        $user   = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado con nadie.'], 403);
+        }
+
+        if ($couple->current_streak <= 0) {
+            return response()->json(['message' => 'Necesitas una racha activa para eclosionar el huevo.'], 400);
+        }
+
+        $inventory = $couple->inventory;
+        if ($inventory->pet && ($inventory->pet['hatched'] ?? false)) {
+            return response()->json(['message' => 'Ya tienes una mascota eclosionada.'], 400);
+        }
+
+        // Gacha logic
+        $type = rand(1, 100) <= 50 ? 'Dog' : 'Cat';
+        $randRarity = rand(1, 100);
+        
+        if ($randRarity <= 60) {
+            $rarity = 'comun';
+        } elseif ($randRarity <= 90) {
+            $rarity = 'raro';
+        } else {
+            $rarity = 'legendario';
+        }
+
+        $petData = [
+            'type' => $type,
+            'rarity' => $rarity,
+            'hatched' => true,
+            'hatched_at' => now()->toDateTimeString()
+        ];
+
+        $inventory->pet = $petData;
+        $couple->inventory = $inventory;
+        $couple->save();
+
+        return response()->json([
+            'message' => '¡Huevo eclosionado!',
+            'pet' => $petData
+        ]);
+    }
+
     public function storePurchase(Request $request)
     {
         $user   = Auth::user();
