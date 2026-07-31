@@ -31,7 +31,7 @@ class CoupleInventory
         $this->letters = is_array($data['letters'] ?? null) ? $data['letters'] : [];
         $this->spicy_pack = (bool)($data['spicy_pack'] ?? false);
         $this->pet = is_array($data['pet'] ?? null) ? $data['pet'] : null;
-        $this->coins = (int)($data['coins'] ?? 500); // Give 500 starting coins
+        $this->coins = (int)($data['coins'] ?? 0); // Give 0 starting coins
         $this->unlocked_pets = is_array($data['unlocked_pets'] ?? null) ? $data['unlocked_pets'] : [];
         
         $this->received_gifts = is_array($data['received_gifts'] ?? null) ? $data['received_gifts'] : [];
