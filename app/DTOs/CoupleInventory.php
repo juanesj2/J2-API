@@ -10,6 +10,8 @@ class CoupleInventory
     public array $letters;
     public bool $spicy_pack;
     public ?array $pet;
+    public int $coins;
+    public array $unlocked_pets;
     
     // Virtual properties populated on-the-fly
     public array $received_gifts;
@@ -29,6 +31,8 @@ class CoupleInventory
         $this->letters = is_array($data['letters'] ?? null) ? $data['letters'] : [];
         $this->spicy_pack = (bool)($data['spicy_pack'] ?? false);
         $this->pet = is_array($data['pet'] ?? null) ? $data['pet'] : null;
+        $this->coins = (int)($data['coins'] ?? 500); // Give 500 starting coins
+        $this->unlocked_pets = is_array($data['unlocked_pets'] ?? null) ? $data['unlocked_pets'] : [];
         
         $this->received_gifts = is_array($data['received_gifts'] ?? null) ? $data['received_gifts'] : [];
         $this->sent_gifts = is_array($data['sent_gifts'] ?? null) ? $data['sent_gifts'] : [];
@@ -43,6 +47,8 @@ class CoupleInventory
             'letters' => $this->letters,
             'spicy_pack' => $this->spicy_pack,
             'pet' => $this->pet,
+            'coins' => $this->coins,
+            'unlocked_pets' => $this->unlocked_pets,
             'received_gifts' => $this->received_gifts,
             'sent_gifts' => $this->sent_gifts,
         ];
