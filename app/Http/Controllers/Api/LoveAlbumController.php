@@ -1928,3 +1928,4 @@ class LoveAlbumController extends Controller
         ]);
     }
 
+}
