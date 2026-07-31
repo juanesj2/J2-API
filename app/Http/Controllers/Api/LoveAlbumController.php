@@ -89,6 +89,15 @@ class LoveAlbumController extends Controller
         $localDateStr = $request->query('local_date');
         $today = $localDateStr ? \Carbon\Carbon::parse($localDateStr)->startOfDay() : \Carbon\Carbon::now()->startOfDay();
 
+        // === CONTROL DE MONEDA DIARIA ===
+        $todayString = $today->format('Y-m-d');
+        if ($inventory->daily_coin_date !== $todayString) {
+            $inventory->coins += 1;
+            $inventory->daily_coin_date = $todayString;
+            $couple->inventory = $inventory;
+            $couple->save();
+        }
+
         // === RESET MENSUAL DE REVIVIDORES GRATIS ===
         $currentMonth = \Carbon\Carbon::now()->format('Y-m');
         if ($couple->free_revivals_reset_month !== $currentMonth) {
@@ -1676,7 +1685,49 @@ class LoveAlbumController extends Controller
             'unlocked_pets' => $inventory->unlocked_pets
         ]);
     }
-}
+
+    public function buyPetDecoration(Request $request)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['message' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $request->validate([
+            'id' => 'required|string',
+            'price' => 'required|integer|min:0'
+        ]);
+
+        $itemId = $request->id;
+        $price = $request->price;
+
+        $inventory = $couple->inventory;
+
+        if ($inventory->coins < $price) {
+            return response()->json(['message' => 'No tienes suficientes monedas.'], 400);
+        }
+
+        // Check if already owned
+        if (in_array($itemId, $inventory->owned_decorations)) {
+            return response()->json(['message' => 'Ya posees este objeto.', 'coins' => $inventory->coins], 200);
+        }
+
+        $inventory->coins -= $price;
+        $owned = $inventory->owned_decorations;
+        $owned[] = $itemId;
+        $inventory->owned_decorations = $owned;
+
+        $couple->inventory = $inventory;
+        $couple->save();
+
+        return response()->json([
+            'message' => 'Compra exitosa',
+            'coins' => $inventory->coins,
+            'owned_decorations' => $inventory->owned_decorations
+        ]);
+    }
 
     // --- TIENDA Y PREMIUM ---
 
@@ -1694,13 +1745,13 @@ class LoveAlbumController extends Controller
 
         switch ($packId) {
             case "small":
-                $coinsToAdd = 100;
+                $coinsToAdd = 10;
                 break;
             case "medium":
-                $coinsToAdd = 500;
+                $coinsToAdd = 50;
                 break;
             case "large":
-                $coinsToAdd = 1200;
+                $coinsToAdd = 100;
                 break;
             default:
                 return response()->json(["message" => "Pack de monedas no válido."], 400);

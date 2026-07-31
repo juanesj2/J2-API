@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->prefix('love-album')->group(function () {
     Route::post('/purchase-revival-pack', [\App\Http\Controllers\Api\LoveAlbumController::class, 'purchaseRevivalPack']);
     Route::post('/pet/hatch', [\App\Http\Controllers\Api\LoveAlbumController::class, 'hatchPet']);
     Route::post('/pet/buy-egg', [\App\Http\Controllers\Api\LoveAlbumController::class, 'buyEgg']);
+    Route::post('/pet/buy-decoration', [\App\Http\Controllers\Api\LoveAlbumController::class, 'buyPetDecoration']);
     Route::post('/store/buy-coins', [\App\Http\Controllers\Api\LoveAlbumController::class, 'buyCoins']);
     Route::post('/store/subscribe-premium', [\App\Http\Controllers\Api\LoveAlbumController::class, 'subscribePremium']);
     Route::post('/store/purchase', [\App\Http\Controllers\Api\LoveAlbumController::class, 'storePurchase']);
