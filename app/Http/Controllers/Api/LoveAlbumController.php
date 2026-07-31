@@ -1677,3 +1677,73 @@ class LoveAlbumController extends Controller
         ]);
     }
 }
+
+    // --- TIENDA Y PREMIUM ---
+
+    public function buyCoins(Request $request)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(["message" => "No estás vinculado a ninguna pareja."], 403);
+        }
+
+        $packId = $request->input("pack_id", "small");
+        $coinsToAdd = 0;
+
+        switch ($packId) {
+            case "small":
+                $coinsToAdd = 100;
+                break;
+            case "medium":
+                $coinsToAdd = 500;
+                break;
+            case "large":
+                $coinsToAdd = 1200;
+                break;
+            default:
+                return response()->json(["message" => "Pack de monedas no válido."], 400);
+        }
+
+        $inventory = $couple->inventory;
+        $inventory->coins += $coinsToAdd;
+        $couple->inventory = $inventory;
+        $couple->save();
+
+        return response()->json([
+            "message" => "¡Has comprado $coinsToAdd monedas!",
+            "coins" => $inventory->coins
+        ]);
+    }
+
+    public function subscribePremium(Request $request)
+    {
+        $user = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(["message" => "No estás vinculado a ninguna pareja."], 403);
+        }
+
+        // Add 30 days to premium_until
+        if ($couple->premium_until && $couple->premium_until->isFuture()) {
+            $couple->premium_until = $couple->premium_until->addDays(30);
+        } else {
+            $couple->premium_until = \Carbon\Carbon::now()->addDays(30);
+        }
+
+        // Bonus: 10 coins
+        $inventory = $couple->inventory;
+        $inventory->coins += 10;
+        $couple->inventory = $inventory;
+        
+        $couple->save();
+
+        return response()->json([
+            "message" => "¡Te has suscrito a Love App VIP por 30 días! Has recibido 10 monedas de bonificación.",
+            "premium_until" => $couple->premium_until->toIso8601String(),
+            "coins" => $inventory->coins
+        ]);
+    }
+
