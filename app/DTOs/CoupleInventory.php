@@ -11,6 +11,7 @@ class CoupleInventory
     public bool $spicy_pack;
     public ?array $pet;
     public int $coins;
+    public int $eggs;
     public array $unlocked_pets;
     public array $owned_decorations;
     public ?string $daily_coin_date;
@@ -34,6 +35,7 @@ class CoupleInventory
         $this->spicy_pack = (bool)($data['spicy_pack'] ?? false);
         $this->pet = is_array($data['pet'] ?? null) ? $data['pet'] : null;
         $this->coins = (int)($data['coins'] ?? 0); // Give 0 starting coins
+        $this->eggs = (int)($data['eggs'] ?? 0);
         $this->unlocked_pets = is_array($data['unlocked_pets'] ?? null) ? $data['unlocked_pets'] : [];
         $this->owned_decorations = is_array($data['owned_decorations'] ?? null) ? $data['owned_decorations'] : [];
         $this->daily_coin_date = $data['daily_coin_date'] ?? null;
@@ -52,6 +54,7 @@ class CoupleInventory
             'spicy_pack' => $this->spicy_pack,
             'pet' => $this->pet,
             'coins' => $this->coins,
+            'eggs' => $this->eggs,
             'unlocked_pets' => $this->unlocked_pets,
             'owned_decorations' => $this->owned_decorations,
             'daily_coin_date' => $this->daily_coin_date,

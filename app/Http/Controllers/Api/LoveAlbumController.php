@@ -174,6 +174,7 @@ class LoveAlbumController extends Controller
             'my_id'                => (string) $user->id,
             'partner_id'           => (string) $partnerId,
             'couple'               => $couple,
+            'pets'                 => $couple->pets,
             'is_premium'           => $couple && $couple->premium_until && $couple->premium_until->isFuture(),
             'current_streak'       => $couple->current_streak,
             'streak_in_grace'      => $streakInGrace,
@@ -539,52 +540,181 @@ class LoveAlbumController extends Controller
     // =============================================
     // STORE PURCHASE - Comprar ítems en la tienda
     // =============================================
-    public function hatchPet(Request $request)
+    public function buyEgg(Request $request)
     {
         $user   = Auth::user();
         $couple = $this->getCoupleForUser($user->id);
 
         if (!$couple) {
-            return response()->json(['message' => 'No estás vinculado con nadie.'], 403);
-        }
-
-        if ($couple->current_streak <= 0) {
-            return response()->json(['message' => 'Necesitas una racha activa para eclosionar el huevo.'], 400);
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
         }
 
         $inventory = $couple->inventory;
-        if ($inventory->pet && ($inventory->pet['hatched'] ?? false)) {
-            return response()->json(['message' => 'Ya tienes una mascota eclosionada.'], 400);
+        if ($inventory->coins < 10) {
+            return response()->json(['error' => 'No tienes suficientes monedas (Cuesta 10).'], 400);
         }
 
-        // Gacha logic
-        $type = rand(1, 100) <= 50 ? 'Dog' : 'Cat';
-        $randRarity = rand(1, 100);
-        
-        if ($randRarity <= 60) {
-            $rarity = 'comun';
-        } elseif ($randRarity <= 90) {
-            $rarity = 'raro';
-        } else {
-            $rarity = 'legendario';
-        }
-
-        $petData = [
-            'type' => $type,
-            'rarity' => $rarity,
-            'hatched' => true,
-            'hatched_at' => now()->toDateTimeString()
-        ];
-
-        $inventory->pet = $petData;
+        $inventory->coins -= 10;
+        $inventory->eggs += 1;
         $couple->inventory = $inventory;
         $couple->save();
 
         return response()->json([
-            'message' => '¡Huevo eclosionado!',
-            'pet' => $petData
+            'message' => '¡Huevo comprado con éxito!',
+            'inventory' => $inventory->toArray()
         ]);
     }
+
+    public function openEgg(Request $request)
+    {
+        $user   = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $inventory = $couple->inventory;
+        if ($inventory->eggs <= 0) {
+            return response()->json(['error' => 'No tienes huevos para abrir.'], 400);
+        }
+
+        // Restar huevo
+        $inventory->eggs -= 1;
+        $couple->inventory = $inventory;
+        $couple->save();
+
+        // Lógica de Gacha: 3 tipos de mascotas
+        $petTypes = ['dragon', 'cat', 'dog'];
+        $rolledType = $petTypes[array_rand($petTypes)];
+
+        $existingPet = \App\Models\LovewidgetCouplePet::where('couple_id', $couple->id)
+            ->where('pet_type', $rolledType)
+            ->first();
+
+        if (!$existingPet) {
+            // Es nueva
+            $isActive = \App\Models\LovewidgetCouplePet::where('couple_id', $couple->id)->count() === 0;
+
+            $newPet = \App\Models\LovewidgetCouplePet::create([
+                'couple_id' => $couple->id,
+                'pet_type' => $rolledType,
+                'evolution_phase' => 1,
+                'is_active' => $isActive,
+            ]);
+
+            return response()->json([
+                'status' => 'new',
+                'message' => '¡Has conseguido una nueva mascota!',
+                'pet' => $newPet,
+                'inventory' => $inventory->toArray()
+            ]);
+        } else {
+            // Ya la tiene, devolver para que el usuario elija (vender o evolucionar)
+            // Lógica de si puede evolucionar: Solo el dragón evoluciona (hasta fase 3)
+            $canEvolve = false;
+            if ($rolledType === 'dragon' && $existingPet->evolution_phase < 3) {
+                $canEvolve = true;
+            }
+
+            return response()->json([
+                'status' => 'duplicate',
+                'message' => '¡Ya tienes esta mascota!',
+                'pet_type' => $rolledType,
+                'can_evolve' => $canEvolve,
+                'inventory' => $inventory->toArray()
+            ]);
+        }
+    }
+
+    public function resolveDuplicatePet(Request $request)
+    {
+        $user   = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $request->validate([
+            'pet_type' => 'required|string|in:dragon,cat,dog',
+            'action' => 'required|string|in:evolve,sell'
+        ]);
+
+        $petType = $request->input('pet_type');
+        $action = $request->input('action');
+
+        $existingPet = \App\Models\LovewidgetCouplePet::where('couple_id', $couple->id)
+            ->where('pet_type', $petType)
+            ->first();
+
+        if (!$existingPet) {
+            return response()->json(['error' => 'No tienes esta mascota.'], 400);
+        }
+
+        $inventory = $couple->inventory;
+
+        if ($action === 'evolve') {
+            if ($petType !== 'dragon') {
+                return response()->json(['error' => 'Esta mascota no puede evolucionar.'], 400);
+            }
+            if ($existingPet->evolution_phase >= 3) {
+                return response()->json(['error' => 'La mascota ya está en su fase máxima.'], 400);
+            }
+            $existingPet->evolution_phase += 1;
+            $existingPet->save();
+
+            return response()->json([
+                'message' => '¡Mascota evolucionada!',
+                'pet' => $existingPet,
+                'inventory' => $inventory->toArray()
+            ]);
+        } else if ($action === 'sell') {
+            // Da 7 monedas al vender
+            $inventory->coins += 7;
+            $couple->inventory = $inventory;
+            $couple->save();
+
+            return response()->json([
+                'message' => 'Mascota vendida por 7 monedas.',
+                'inventory' => $inventory->toArray()
+            ]);
+        }
+    }
+
+    public function setActivePet(Request $request)
+    {
+        $user   = Auth::user();
+        $couple = $this->getCoupleForUser($user->id);
+
+        if (!$couple) {
+            return response()->json(['error' => 'No estás vinculado a ninguna pareja.'], 403);
+        }
+
+        $request->validate([
+            'pet_id' => 'required|integer'
+        ]);
+
+        $petId = $request->input('pet_id');
+
+        $pet = \App\Models\LovewidgetCouplePet::where('couple_id', $couple->id)->where('id', $petId)->first();
+        if (!$pet) {
+            return response()->json(['error' => 'Mascota no encontrada.'], 404);
+        }
+
+        // Desactivar todas
+        \App\Models\LovewidgetCouplePet::where('couple_id', $couple->id)->update(['is_active' => false]);
+
+        // Activar la seleccionada
+        $pet->is_active = true;
+        $pet->save();
+
+        return response()->json([
+            'message' => 'Mascota activa actualizada',
+            'active_pet' => $pet
+        ]);
+    }
+
 
     public function storePurchase(Request $request)
     {

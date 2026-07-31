@@ -37,4 +37,9 @@ class Couple extends Model
     {
         return $this->hasMany(LovePhoto::class);
     }
+
+    public function pets()
+    {
+        return $this->hasMany(LovewidgetCouplePet::class, 'couple_id');
+    }
 }
