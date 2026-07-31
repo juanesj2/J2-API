@@ -1754,67 +1754,7 @@ class LoveAlbumController extends Controller
         return response()->json(['message' => 'Huevo eclosionado con éxito.', 'pet' => $inventory->pet]);
     }
 
-    public function buyEgg(Request $request)
-    {
-        $user   = Auth::user();
-        $couple = $this->getCoupleForUser($user->id);
 
-        if (!$couple) {
-            return response()->json(['message' => 'No estás vinculado con nadie.'], 403);
-        }
-
-        $inventory = $couple->inventory;
-        $cost = 50;
-
-        if ($inventory->coins < $cost) {
-            return response()->json(['message' => 'No tienes suficientes monedas.'], 400);
-        }
-
-        $inventory->coins -= $cost;
-
-        // Gacha logic
-        $type = rand(1, 100) <= 50 ? 'Dog' : 'Cat';
-        $randRarity = rand(1, 100);
-        
-        if ($randRarity <= 60) {
-            $rarity = 'comun';
-        } elseif ($randRarity <= 90) {
-            $rarity = 'raro';
-        } else {
-            $rarity = 'legendario';
-        }
-
-        $petId = $type . '_' . $rarity;
-        
-        $isDuplicate = false;
-        $coinsReward = 0;
-
-        if (in_array($petId, $inventory->unlocked_pets)) {
-            $isDuplicate = true;
-            $coinsReward = 20;
-            if ($rarity === 'raro') $coinsReward = 50;
-            if ($rarity === 'legendario') $coinsReward = 200;
-            $inventory->coins += $coinsReward;
-        } else {
-            $unlocked = $inventory->unlocked_pets;
-            $unlocked[] = $petId;
-            $inventory->unlocked_pets = $unlocked;
-        }
-
-        $couple->inventory = $inventory;
-        $couple->save();
-
-        return response()->json([
-            'pet' => [
-                'type' => $type,
-                'rarity' => $rarity
-            ],
-            'is_duplicate' => $isDuplicate,
-            'coins_reward' => $coinsReward,
-            'coins' => $inventory->coins,
-            'unlocked_pets' => $inventory->unlocked_pets
-        ]);
-    }
 
     public function buyPetDecoration(Request $request)
     {
