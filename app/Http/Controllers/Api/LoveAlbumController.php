@@ -171,23 +171,29 @@ class LoveAlbumController extends Controller
             ->toArray();
 
         // Auto-migrate legacy pet if pets table is empty
-        if ($couple->pets->isEmpty() && isset($couple->inventory->pet)) {
-            $legacyPet = $couple->inventory->pet;
-            if (isset($legacyPet['type'])) {
-                $couple->pets()->create([
-                    'pet_type' => strtolower($legacyPet['type']),
-                    'evolution_phase' => 1,
-                    'is_active' => true,
-                ]);
-                $couple->load('pets');
+        $petsList = collect([]);
+        try {
+            if ($couple->pets->isEmpty() && isset($couple->inventory->pet)) {
+                $legacyPet = $couple->inventory->pet;
+                if (isset($legacyPet['type'])) {
+                    $couple->pets()->create([
+                        'pet_type' => strtolower($legacyPet['type']),
+                        'evolution_phase' => 1,
+                        'is_active' => true,
+                    ]);
+                    $couple->load('pets');
+                }
             }
+            $petsList = $couple->pets;
+        } catch (\Exception $e) {
+            // Si la tabla no existe, ignorar el error por ahora
         }
 
         return response()->json([
             'my_id'                => (string) $user->id,
             'partner_id'           => (string) $partnerId,
             'couple'               => $couple,
-            'pets'                 => $couple->pets,
+            'pets'                 => $petsList,
             'is_premium'           => $couple && $couple->premium_until && $couple->premium_until->isFuture(),
             'current_streak'       => $couple->current_streak,
             'streak_in_grace'      => $streakInGrace,
