@@ -170,6 +170,19 @@ class LoveAlbumController extends Controller
             ->pluck('achievement_id')
             ->toArray();
 
+        // Auto-migrate legacy pet if pets table is empty
+        if ($couple->pets->isEmpty() && isset($couple->inventory['pet'])) {
+            $legacyPet = $couple->inventory['pet'];
+            if (isset($legacyPet['type'])) {
+                $couple->pets()->create([
+                    'pet_type' => strtolower($legacyPet['type']),
+                    'evolution_phase' => 1,
+                    'is_active' => true,
+                ]);
+                $couple->load('pets');
+            }
+        }
+
         return response()->json([
             'my_id'                => (string) $user->id,
             'partner_id'           => (string) $partnerId,
