@@ -171,8 +171,8 @@ class LoveAlbumController extends Controller
             ->toArray();
 
         // Auto-migrate legacy pet if pets table is empty
-        if ($couple->pets->isEmpty() && isset($couple->inventory['pet'])) {
-            $legacyPet = $couple->inventory['pet'];
+        if ($couple->pets->isEmpty() && isset($couple->inventory->pet)) {
+            $legacyPet = $couple->inventory->pet;
             if (isset($legacyPet['type'])) {
                 $couple->pets()->create([
                     'pet_type' => strtolower($legacyPet['type']),
