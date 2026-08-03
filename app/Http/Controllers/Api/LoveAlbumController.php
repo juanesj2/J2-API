@@ -724,7 +724,8 @@ class LoveAlbumController extends Controller
 
         return response()->json([
             'message' => 'Mascota activa actualizada',
-            'active_pet' => $pet
+            'active_pet' => $pet,
+            'pets' => \App\Models\LovewidgetCouplePet::where('couple_id', $couple->id)->get()
         ]);
     }
 
