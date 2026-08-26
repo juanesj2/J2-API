@@ -6,3 +6,4 @@
 require __DIR__.'/api_common.php';
 require __DIR__.'/api_enfoca.php';
 require __DIR__.'/api_love_widget.php';
+require __DIR__.'/api_j2_bot.php';
