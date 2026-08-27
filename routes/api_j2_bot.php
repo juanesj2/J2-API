@@ -17,6 +17,9 @@ Route::prefix('bot')->group(function () {
     Route::get('/chats', [BotController::class, 'getChats']);
     Route::get('/messages/{phone}', [BotController::class, 'getMessages']);
     Route::post('/web-send', [BotController::class, 'sendWebMessage']);
+    Route::post('/approve-draft', [BotController::class, 'approveDraft']);
+    Route::get('/settings', [BotController::class, 'getSettings']);
+    Route::post('/settings/toggle', [BotController::class, 'toggleSettings']);
 
     // Endpoints para el Polling del Bot Node.js
     Route::get('/pending-messages', [BotController::class, 'getPendingMessages']);

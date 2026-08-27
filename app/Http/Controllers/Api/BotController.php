@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\BotMessage;
 use Illuminate\Support\Facades\Http;
 
+use Illuminate\Support\Facades\Cache;
+
 class BotController extends Controller
 {
     public function handleWebhook(Request $request)
@@ -44,16 +46,34 @@ class BotController extends Controller
                 break;
         }
 
-        // Guardar respuesta del bot en BD
+        // Revisar si está activada la "Acción Humana"
+        $humanActionRequired = Cache::get('bot_human_action', false);
+
+        if ($humanActionRequired) {
+            // Guardar como BORRADOR (draft), no se enviará automáticamente
+            BotMessage::create([
+                'app_source' => $appSource,
+                'phone_number' => $from,
+                'contact_name' => 'Bot (Borrador)',
+                'body' => $reply,
+                'is_from_bot' => true,
+                'status' => 'draft'
+            ]);
+
+            return response()->json(['success' => true]); // No devolvemos 'reply' para evitar envío inmediato
+        }
+
+        // Si la Acción Humana está APAGADA, responder y guardar como 'sent'
         BotMessage::create([
             'app_source' => $appSource,
             'phone_number' => $from,
-            'contact_name' => 'Bot',
+            'contact_name' => 'Bot (Auto)',
             'body' => $reply,
             'is_from_bot' => true,
+            'status' => 'sent'
         ]);
 
-        // 3. Le devolvemos la respuesta al Gateway correspondiente
+        // 3. Le devolvemos la respuesta al Gateway para envío inmediato
         return response()->json([
             'success' => true,
             'reply' => $reply
@@ -133,5 +153,35 @@ class BotController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    // Endpoint web: Aprobar un borrador para que sea enviado
+    public function approveDraft(Request $request)
+    {
+        $request->validate(['id' => 'required']);
+        $msg = BotMessage::find($request->id);
+        
+        if ($msg && $msg->status === 'draft') {
+            $msg->update(['status' => 'pending']); // Pasará a pending para que el Polling lo envíe
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 400);
+    }
+
+    // Endpoint web: Obtener estado de configuración
+    public function getSettings()
+    {
+        return response()->json([
+            'human_action' => Cache::get('bot_human_action', false)
+        ]);
+    }
+
+    // Endpoint web: Cambiar configuración
+    public function toggleSettings(Request $request)
+    {
+        $current = Cache::get('bot_human_action', false);
+        Cache::put('bot_human_action', !$current);
+        
+        return response()->json(['success' => true, 'human_action' => !$current]);
     }
 }

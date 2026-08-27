@@ -3,15 +3,33 @@
 @section('content')
 <div class="container mx-auto px-4 py-8" x-data="botDashboard()">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Panel de Control de Bots</h1>
+        <h1 class="text-3xl font-bold text-gray-200">Panel de Control de Bots</h1>
+        
+        <!-- Toggle Acción Humana -->
+        <div class="flex items-center space-x-3 bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
+            <span class="text-sm font-medium" :class="humanAction ? 'text-blue-400' : 'text-gray-400'">
+                Acción Humana
+            </span>
+            <button 
+                @click="toggleSettings()"
+                type="button" 
+                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                :class="humanAction ? 'bg-blue-600' : 'bg-gray-600'">
+                <span 
+                    class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                    :class="humanAction ? 'translate-x-5' : 'translate-x-0'">
+                </span>
+            </button>
+            <span class="text-xs" :class="humanAction ? 'text-green-400' : 'text-red-400'" x-text="humanAction ? 'Requerida' : 'Auto'"></span>
+        </div>
     </div>
 
     <!-- Pestañas de Aplicación -->
-    <div class="flex space-x-2 border-b border-gray-200 mb-6">
+    <div class="flex space-x-2 border-b border-slate-700 mb-6">
         <template x-for="app in apps" :key="app.id">
             <button 
                 @click="selectApp(app.id)"
-                :class="{'border-b-2 border-blue-500 text-blue-600': currentApp === app.id, 'text-gray-500 hover:text-gray-700': currentApp !== app.id}"
+                :class="{'border-b-2 border-blue-500 text-blue-400': currentApp === app.id, 'text-gray-400 hover:text-gray-200': currentApp !== app.id}"
                 class="py-2 px-4 text-sm font-medium focus:outline-none transition-colors"
                 x-text="app.name">
             </button>
@@ -21,9 +39,9 @@
     <div class="flex flex-col md:flex-row gap-6 h-[700px]">
         
         <!-- Lista de Chats -->
-        <div class="w-full md:w-1/3 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col">
-            <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-                <h2 class="text-lg font-semibold text-gray-700">Chats Activos</h2>
+        <div class="w-full md:w-1/3 bg-slate-900 rounded-lg shadow-sm border border-slate-700 flex flex-col">
+            <div class="p-4 border-b border-slate-700 bg-slate-800 rounded-t-lg">
+                <h2 class="text-lg font-semibold text-gray-200">Chats Activos</h2>
             </div>
             <div class="flex-1 overflow-y-auto p-2">
                 <template x-if="chats.length === 0">
@@ -32,14 +50,14 @@
                 <template x-for="chat in chats" :key="chat.phone_number">
                     <div 
                         @click="selectChat(chat.phone_number)"
-                        :class="{'bg-blue-50 border-blue-200': currentChat === chat.phone_number, 'hover:bg-gray-50 border-transparent': currentChat !== chat.phone_number}"
+                        :class="{'bg-slate-800 border-slate-600': currentChat === chat.phone_number, 'hover:bg-slate-800 border-transparent': currentChat !== chat.phone_number}"
                         class="p-3 mb-2 rounded-lg cursor-pointer border transition-all flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold">
+                        <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-gray-300 font-bold">
                             <span x-text="chat.contact_name ? chat.contact_name.charAt(0).toUpperCase() : '?'"></span>
                         </div>
                         <div>
-                            <p class="font-medium text-gray-800" x-text="chat.contact_name || 'Desconocido'"></p>
-                            <p class="text-xs text-gray-500" x-text="chat.phone_number"></p>
+                            <p class="font-medium text-gray-200" x-text="chat.contact_name || 'Desconocido'"></p>
+                            <p class="text-xs text-gray-400" x-text="chat.phone_number"></p>
                         </div>
                     </div>
                 </template>
@@ -47,9 +65,9 @@
         </div>
 
         <!-- Área de Mensajes -->
-        <div class="w-full md:w-2/3 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col relative">
+        <div class="w-full md:w-2/3 bg-slate-900 rounded-lg shadow-sm border border-slate-700 flex flex-col relative">
             <template x-if="!currentChat">
-                <div class="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+                <div class="absolute inset-0 flex items-center justify-center bg-slate-900 rounded-lg">
                     <p class="text-gray-500">Selecciona un chat para ver los mensajes.</p>
                 </div>
             </template>
@@ -57,8 +75,8 @@
             <template x-if="currentChat">
                 <div class="flex flex-col h-full">
                     <!-- Header Chat -->
-                    <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-                        <h2 class="text-lg font-semibold text-gray-700" x-text="'Chat con ' + currentChat"></h2>
+                    <div class="p-4 border-b border-slate-700 bg-slate-800 rounded-t-lg">
+                        <h2 class="text-lg font-semibold text-gray-200" x-text="'Chat con ' + currentChat"></h2>
                     </div>
 
                     <!-- Mensajes -->
@@ -68,24 +86,41 @@
                         </template>
                         <template x-for="msg in messages" :key="msg.id">
                             <div :class="{'flex justify-end': msg.is_from_bot, 'flex justify-start': !msg.is_from_bot}">
-                                <div 
-                                    :class="{'bg-blue-600 text-white': msg.is_from_bot, 'bg-gray-100 text-gray-800': !msg.is_from_bot}"
-                                    class="max-w-[70%] rounded-2xl px-4 py-2 shadow-sm">
-                                    <p class="text-sm" x-text="msg.body"></p>
-                                    <p :class="{'text-blue-200': msg.is_from_bot, 'text-gray-400': !msg.is_from_bot}" class="text-xs mt-1 text-right" x-text="new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></p>
+                                <div class="flex flex-col" :class="{'items-end': msg.is_from_bot, 'items-start': !msg.is_from_bot}">
+                                    <div 
+                                        :class="{
+                                            'bg-blue-600 text-white': msg.is_from_bot && msg.status !== 'draft', 
+                                            'bg-yellow-600 text-white border-2 border-yellow-500': msg.is_from_bot && msg.status === 'draft', 
+                                            'bg-slate-700 text-gray-200': !msg.is_from_bot
+                                        }"
+                                        class="max-w-xl rounded-2xl px-4 py-2 shadow-sm relative">
+                                        <p class="text-sm" x-text="msg.body"></p>
+                                        <div class="flex items-center gap-2 mt-1 justify-end">
+                                            <span x-show="msg.status === 'draft'" class="text-[10px] bg-yellow-800 px-1 rounded font-bold uppercase">Borrador IA</span>
+                                            <p :class="{'text-blue-200': msg.is_from_bot, 'text-gray-400': !msg.is_from_bot}" class="text-xs text-right" x-text="new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Botón Aprobar si es borrador -->
+                                    <template x-if="msg.status === 'draft'">
+                                        <button @click="approveDraft(msg.id)" class="mt-1 text-xs bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded-full flex items-center gap-1 transition-colors">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            Aprobar y Enviar
+                                        </button>
+                                    </template>
                                 </div>
                             </div>
                         </template>
                     </div>
 
                     <!-- Input Mensaje -->
-                    <div class="p-4 border-t border-gray-200 bg-white rounded-b-lg">
+                    <div class="p-4 border-t border-slate-700 bg-slate-800 rounded-b-lg">
                         <form @submit.prevent="sendMessage" class="flex gap-2">
                             <input 
                                 type="text" 
                                 x-model="newMessage" 
                                 placeholder="Escribe un mensaje..." 
-                                class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                class="flex-1 bg-slate-700 text-gray-100 border border-slate-600 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 :disabled="sending">
                             <button 
                                 type="submit" 
@@ -104,7 +139,6 @@
 </div>
 
 <script>
-    // Usamos AlpineJS que probablemente ya está en el hub, si no lo cargamos
     if (typeof Alpine === 'undefined') {
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js';
@@ -126,16 +160,37 @@
             newMessage: '',
             sending: false,
             pollInterval: null,
+            humanAction: false,
 
             init() {
+                this.loadSettings();
                 this.loadChats();
                 
-                // Refrescar mensajes cada 5 segundos
                 this.pollInterval = setInterval(() => {
                     if (this.currentChat) {
                         this.loadMessages(this.currentChat, true);
                     }
+                    // También actualizar los chats
+                    if(document.visibilityState === 'visible') {
+                        this.loadChats();
+                    }
                 }, 5000);
+            },
+
+            async loadSettings() {
+                try {
+                    const res = await fetch('/api/bot/settings');
+                    const data = await res.json();
+                    this.humanAction = data.human_action;
+                } catch (e) {}
+            },
+
+            async toggleSettings() {
+                try {
+                    const res = await fetch('/api/bot/settings/toggle', { method: 'POST' });
+                    const data = await res.json();
+                    this.humanAction = data.human_action;
+                } catch (e) {}
             },
 
             selectApp(appId) {
@@ -149,9 +204,7 @@
                 try {
                     const res = await fetch(`/api/bot/chats?app=${this.currentApp}`);
                     this.chats = await res.json();
-                } catch (error) {
-                    console.error('Error cargando chats:', error);
-                }
+                } catch (error) {}
             },
 
             selectChat(phone) {
@@ -170,8 +223,19 @@
                     if (isNewMessage && !isPolling) {
                         this.scrollToBottom();
                     }
+                } catch (error) {}
+            },
+
+            async approveDraft(id) {
+                try {
+                    await fetch('/api/bot/approve-draft', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    });
+                    await this.loadMessages(this.currentChat);
                 } catch (error) {
-                    console.error('Error cargando mensajes:', error);
+                    alert("Error al aprobar.");
                 }
             },
 
@@ -182,22 +246,10 @@
                 const body = this.newMessage;
                 this.newMessage = '';
 
-                // Añadir a UI optimísticamente
-                this.messages.push({
-                    id: Date.now(),
-                    body: body,
-                    is_from_bot: true,
-                    created_at: new Date().toISOString()
-                });
-                this.scrollToBottom();
-
                 try {
                     await fetch('/api/bot/web-send', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                         body: JSON.stringify({
                             app: this.currentApp,
                             phone_number: this.currentChat,
@@ -205,10 +257,9 @@
                         })
                     });
                     
-                    // Recargar real tras confirmar
                     await this.loadMessages(this.currentChat);
+                    this.scrollToBottom();
                 } catch (error) {
-                    console.error('Error enviando mensaje:', error);
                     alert("Hubo un error al enviar el mensaje.");
                 } finally {
                     this.sending = false;
@@ -227,4 +278,3 @@
     });
 </script>
 @endsection
-
