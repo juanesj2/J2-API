@@ -15,5 +15,7 @@ class BotMessage extends Model
         'contact_name',
         'body',
         'is_from_bot',
+        'status',
     ];
 }
+

@@ -88,7 +88,7 @@ class BotController extends Controller
         return response()->json($messages);
     }
 
-    // Endpoint para el panel web: enviar mensaje manualmente
+    // Endpoint para el panel web: enviar mensaje manualmente (se queda en cola)
     public function sendWebMessage(Request $request)
     {
         $request->validate([
@@ -97,28 +97,41 @@ class BotController extends Controller
             'message' => 'required'
         ]);
 
-        // Guardar en BD
+        // Guardar en BD como pendiente
         $msg = BotMessage::create([
             'app_source' => $request->app,
             'phone_number' => $request->phone_number,
             'contact_name' => 'Bot (Web)',
             'body' => $request->message,
             'is_from_bot' => true,
+            'status' => 'pending' // Importante para el Polling
         ]);
 
-        // Enviar a Node.js (asegúrate de que Node corre en localhost:3000 o la URL correspondiente)
-        // Por ahora asumimos localhost:3000
-        try {
-            // Nota: Aquí se debería usar la IP/Dominio real donde corre el Node.js
-            $nodeUrl = env('NODE_BOT_URL', 'http://localhost:3000');
-            Http::post("{$nodeUrl}/api/send", [
-                'number' => str_replace('@c.us', '', $request->phone_number),
-                'message' => $request->message
-            ]);
-        } catch (\Exception $e) {
-            Log::error("Error conectando con Node.js: " . $e->getMessage());
+        return response()->json(['success' => true, 'message' => $msg]);
+    }
+
+    // Endpoint para el Bot Node.js: Obtener mensajes pendientes
+    public function getPendingMessages(Request $request)
+    {
+        $appSource = $request->input('app', 'whatsapp');
+
+        $pending = BotMessage::where('app_source', $appSource)
+            ->where('is_from_bot', true)
+            ->where('status', 'pending')
+            ->get();
+
+        return response()->json($pending);
+    }
+
+    // Endpoint para el Bot Node.js: Marcar como enviados
+    public function markMessagesSent(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        
+        if (!empty($ids)) {
+            BotMessage::whereIn('id', $ids)->update(['status' => 'sent']);
         }
 
-        return response()->json(['success' => true, 'message' => $msg]);
+        return response()->json(['success' => true]);
     }
 }
