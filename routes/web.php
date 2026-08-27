@@ -39,6 +39,11 @@ Route::prefix('hub')->group(function () {
         Route::get('/logs', [HubController::class, 'logs'])->name('hub.logs');
         Route::post('/logs/clear', [HubController::class, 'clearLogs'])->name('hub.logs.clear');
         
+        // Bot Dashboard
+        Route::get('/bot-dashboard', function () {
+            return view('hub.bot-dashboard');
+        })->name('hub.bot');
+
         Route::post('/profile/update', [HubController::class, 'updateProfile'])->name('hub.profile.update');
 
         // Env Editor

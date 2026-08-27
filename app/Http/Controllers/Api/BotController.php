@@ -5,18 +5,29 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Models\BotMessage;
+use Illuminate\Support\Facades\Http;
 
 class BotController extends Controller
 {
     public function handleWebhook(Request $request)
     {
         // 1. Recibimos la carga útil
-        $appSource = $request->input('app', 'desconocida'); // Ej: 'whatsapp', 'telegram', etc.
+        $appSource = $request->input('app', 'desconocida');
         $from = $request->input('from');
         $body = $request->input('body');
         $name = $request->input('pushname') ?? 'Usuario';
 
         Log::info("🤖 Webhook [{$appSource}] -> {$name} ({$from}): {$body}");
+
+        // Guardar mensaje entrante en BD
+        BotMessage::create([
+            'app_source' => $appSource,
+            'phone_number' => $from,
+            'contact_name' => $name,
+            'body' => $body,
+            'is_from_bot' => false,
+        ]);
 
         // 2. Lógica dinámica según la app de origen
         $reply = "";
@@ -33,10 +44,81 @@ class BotController extends Controller
                 break;
         }
 
+        // Guardar respuesta del bot en BD
+        BotMessage::create([
+            'app_source' => $appSource,
+            'phone_number' => $from,
+            'contact_name' => 'Bot',
+            'body' => $reply,
+            'is_from_bot' => true,
+        ]);
+
         // 3. Le devolvemos la respuesta al Gateway correspondiente
         return response()->json([
             'success' => true,
             'reply' => $reply
         ]);
+    }
+
+    // Endpoint para el panel web: obtener lista de chats agrupados
+    public function getChats(Request $request)
+    {
+        $appSource = $request->input('app', 'whatsapp');
+        
+        $chats = BotMessage::where('app_source', $appSource)
+            ->select('phone_number', 'contact_name')
+            ->selectRaw('MAX(created_at) as last_message_at')
+            ->groupBy('phone_number', 'contact_name')
+            ->orderByDesc('last_message_at')
+            ->get();
+            
+        return response()->json($chats);
+    }
+
+    // Endpoint para el panel web: obtener historial de un chat
+    public function getMessages(Request $request, $phone)
+    {
+        $appSource = $request->input('app', 'whatsapp');
+        
+        $messages = BotMessage::where('app_source', $appSource)
+            ->where('phone_number', $phone)
+            ->orderBy('created_at', 'asc')
+            ->get();
+            
+        return response()->json($messages);
+    }
+
+    // Endpoint para el panel web: enviar mensaje manualmente
+    public function sendWebMessage(Request $request)
+    {
+        $request->validate([
+            'app' => 'required',
+            'phone_number' => 'required',
+            'message' => 'required'
+        ]);
+
+        // Guardar en BD
+        $msg = BotMessage::create([
+            'app_source' => $request->app,
+            'phone_number' => $request->phone_number,
+            'contact_name' => 'Bot (Web)',
+            'body' => $request->message,
+            'is_from_bot' => true,
+        ]);
+
+        // Enviar a Node.js (asegúrate de que Node corre en localhost:3000 o la URL correspondiente)
+        // Por ahora asumimos localhost:3000
+        try {
+            // Nota: Aquí se debería usar la IP/Dominio real donde corre el Node.js
+            $nodeUrl = env('NODE_BOT_URL', 'http://localhost:3000');
+            Http::post("{$nodeUrl}/api/send", [
+                'number' => str_replace('@c.us', '', $request->phone_number),
+                'message' => $request->message
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error conectando con Node.js: " . $e->getMessage());
+        }
+
+        return response()->json(['success' => true, 'message' => $msg]);
     }
 }
