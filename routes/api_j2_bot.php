@@ -18,6 +18,7 @@ Route::prefix('bot')->group(function () {
     Route::get('/messages/{phone}', [BotController::class, 'getMessages']);
     Route::post('/web-send', [BotController::class, 'sendWebMessage']);
     Route::post('/approve-draft', [BotController::class, 'approveDraft']);
+    Route::delete('/messages/{id}', [BotController::class, 'deleteMessage']);
     Route::get('/settings', [BotController::class, 'getSettings']);
     Route::post('/settings/toggle', [BotController::class, 'toggleSettings']);
 

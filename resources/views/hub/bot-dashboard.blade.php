@@ -85,20 +85,28 @@
                             <div class="text-center text-gray-500 p-4">No hay mensajes.</div>
                         </template>
                         <template x-for="msg in messages" :key="msg.id">
-                            <div :class="{'flex justify-end': msg.is_from_bot, 'flex justify-start': !msg.is_from_bot}">
+                            <div :class="{'flex justify-end': msg.is_from_bot, 'flex justify-start': !msg.is_from_bot}" class="group relative">
                                 <div class="flex flex-col" :class="{'items-end': msg.is_from_bot, 'items-start': !msg.is_from_bot}">
-                                    <div 
-                                        :class="{
-                                            'bg-blue-600 text-white': msg.is_from_bot && msg.status !== 'draft', 
-                                            'bg-yellow-600 text-white border-2 border-yellow-500': msg.is_from_bot && msg.status === 'draft', 
-                                            'bg-slate-700 text-gray-200': !msg.is_from_bot
-                                        }"
-                                        class="max-w-xl rounded-2xl px-4 py-2 shadow-sm relative">
-                                        <p class="text-sm" x-text="msg.body"></p>
-                                        <div class="flex items-center gap-2 mt-1 justify-end">
-                                            <span x-show="msg.status === 'draft'" class="text-[10px] bg-yellow-800 px-1 rounded font-bold uppercase">Borrador IA</span>
-                                            <p :class="{'text-blue-200': msg.is_from_bot, 'text-gray-400': !msg.is_from_bot}" class="text-xs text-right" x-text="new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></p>
+                                    
+                                    <div class="flex items-center gap-2" :class="{'flex-row-reverse': !msg.is_from_bot}">
+                                        <div 
+                                            :class="{
+                                                'bg-blue-600 text-white': msg.is_from_bot && msg.status !== 'draft', 
+                                                'bg-yellow-600 text-white border-2 border-yellow-500': msg.is_from_bot && msg.status === 'draft', 
+                                                'bg-slate-700 text-gray-200': !msg.is_from_bot
+                                            }"
+                                            class="max-w-xl rounded-2xl px-4 py-2 shadow-sm relative">
+                                            <p class="text-sm" x-text="msg.body"></p>
+                                            <div class="flex items-center gap-2 mt-1 justify-end">
+                                                <span x-show="msg.status === 'draft'" class="text-[10px] bg-yellow-800 px-1 rounded font-bold uppercase">Borrador IA</span>
+                                                <p :class="{'text-blue-200': msg.is_from_bot, 'text-gray-400': !msg.is_from_bot}" class="text-xs text-right" x-text="new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})"></p>
+                                            </div>
                                         </div>
+
+                                        <!-- Botón Eliminar -->
+                                        <button @click="deleteMessage(msg.id)" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity p-1 bg-slate-800 rounded-full" title="Eliminar mensaje">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
                                     </div>
                                     
                                     <!-- Botón Aprobar si es borrador -->
@@ -236,6 +244,24 @@
                     await this.loadMessages(this.currentChat);
                 } catch (error) {
                     alert("Error al aprobar.");
+                }
+            },
+
+            async deleteMessage(id) {
+                if (!confirm('¿Seguro que quieres eliminar este mensaje?')) return;
+                
+                try {
+                    await fetch(`/api/bot/messages/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    // Recargar mensajes
+                    if (this.currentChat) {
+                        await this.loadMessages(this.currentChat);
+                    }
+                } catch (error) {
+                    alert("Error al eliminar.");
                 }
             },
 

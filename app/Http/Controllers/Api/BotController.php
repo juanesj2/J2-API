@@ -184,4 +184,15 @@ class BotController extends Controller
         
         return response()->json(['success' => true, 'human_action' => !$current]);
     }
+
+    // Endpoint web: Eliminar un mensaje del historial (o borrar un borrador)
+    public function deleteMessage($id)
+    {
+        $msg = BotMessage::find($id);
+        if ($msg) {
+            $msg->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 404);
+    }
 }
