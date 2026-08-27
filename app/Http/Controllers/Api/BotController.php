@@ -10,18 +10,30 @@ class BotController extends Controller
 {
     public function handleWebhook(Request $request)
     {
-        // 1. Recibimos la carga útil desde nuestro Gateway en Node.js
+        // 1. Recibimos la carga útil
+        $appSource = $request->input('app', 'desconocida'); // Ej: 'whatsapp', 'telegram', etc.
         $from = $request->input('from');
         $body = $request->input('body');
         $name = $request->input('pushname') ?? 'Usuario';
 
-        Log::info("🤖 Webhook J2-Bot -> {$name} ({$from}): {$body}");
+        Log::info("🤖 Webhook [{$appSource}] -> {$name} ({$from}): {$body}");
 
-        // 2. Aquí es donde conectaremos la IA (Gemini).
-        // Por ahora, simulamos la respuesta del "Cerebro".
-        $reply = "¡Hola {$name}! Tu mensaje ha viajado de WhatsApp a Node, y de Node a Laravel. He recibido: '{$body}'";
+        // 2. Lógica dinámica según la app de origen
+        $reply = "";
 
-        // 3. Le devolvemos la respuesta al Gateway para que la envíe por WhatsApp
+        switch ($appSource) {
+            case 'whatsapp':
+                $reply = "¡Hola {$name} desde WhatsApp! 🟩 He recibido tu mensaje: '{$body}'";
+                break;
+            case 'telegram':
+                $reply = "¡Hola {$name} desde Telegram! 🟦 He recibido tu mensaje: '{$body}'";
+                break;
+            default:
+                $reply = "¡Hola {$name}! Mensaje recibido desde una app desconocida: '{$body}'";
+                break;
+        }
+
+        // 3. Le devolvemos la respuesta al Gateway correspondiente
         return response()->json([
             'success' => true,
             'reply' => $reply
