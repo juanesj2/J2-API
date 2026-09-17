@@ -12,8 +12,21 @@ use Illuminate\Support\Facades\Cache;
 
 class BotController extends Controller
 {
+    private function verifyBotSecret(Request $request)
+    {
+        $secretKey = env('BOT_SECRET_KEY');
+        if (!empty($secretKey)) {
+            $provided = $request->header('X-Bot-Token') ?? $request->bearerToken() ?? $request->input('bot_secret');
+            if ($provided !== $secretKey) {
+                abort(403, 'Acceso denegado: Token de Bot inválido o no proporcionado.');
+            }
+        }
+    }
+
     public function handleWebhook(Request $request)
     {
+        $this->verifyBotSecret($request);
+
         // 1. Recibimos la carga útil
         $appSource = $request->input('app', 'desconocida');
         $from = $request->input('from');
@@ -133,6 +146,8 @@ class BotController extends Controller
     // Endpoint para el Bot Node.js: Obtener mensajes pendientes
     public function getPendingMessages(Request $request)
     {
+        $this->verifyBotSecret($request);
+
         $appSource = $request->input('app', 'whatsapp');
 
         $pending = BotMessage::where('app_source', $appSource)
@@ -146,6 +161,8 @@ class BotController extends Controller
     // Endpoint para el Bot Node.js: Marcar como enviados
     public function markMessagesSent(Request $request)
     {
+        $this->verifyBotSecret($request);
+
         $ids = $request->input('ids', []);
         
         if (!empty($ids)) {

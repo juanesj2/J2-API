@@ -262,7 +262,7 @@ class GameController extends Controller
         $excludeStr = $request->query('exclude', '');
         $excludeIds = $excludeStr ? explode(',', $excludeStr) : [];
         
-        $hasSpicy = isset($couple->inventory) && is_array($couple->inventory) && !empty($couple->inventory['spicy_pack']);
+        $hasSpicy = !empty($couple->inventory?->spicy_pack);
 
         $applyFilters = function($query) use ($category, $excludeIds, $hasSpicy) {
             if ($category) {

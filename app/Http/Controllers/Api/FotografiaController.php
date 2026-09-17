@@ -30,7 +30,7 @@ class FotografiaController extends Controller
     // Listar TODAS las fotos para admin (incluidas vetadas)
     public function adminIndex(Request $request)
     {
-        if ($request->user()->rol !== 'admin') {
+        if (!in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -48,9 +48,10 @@ class FotografiaController extends Controller
         if (!$foto) return response()->json(['error' => 'Foto no encontrada'], 404);
 
         $user = $request->user();
+        $isAdmin = in_array($user->rol, ['admin', 'SuperAdmin']);
         
         // Solo admin o el dueño pueden editar
-        if ($user->id !== $foto->usuario_id && $user->rol !== 'admin') {
+        if ($user->id !== $foto->usuario_id && !$isAdmin) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -60,13 +61,9 @@ class FotografiaController extends Controller
             'vetada' => 'sometimes|boolean',
         ]);
 
-        // Si es admin puede tocar 'vetada', si no es admin, ignoramos ese campo o damos error.
-        // Aquí simplificamos: actualizamos todo lo que venga.
-        // Pero idealmente solo admin debería poder enviar 'vetada=true'.
-        
         $data = $request->only(['titulo', 'descripcion']);
 
-        if ($user->rol === 'admin' && $request->has('vetada')) {
+        if ($isAdmin && $request->has('vetada')) {
             $data['vetada'] = $request->vetada;
         }
 
@@ -115,8 +112,8 @@ class FotografiaController extends Controller
         }
 
         $user = $request->user();
-        // Allow if user is owner OR user is admin
-        if ($user->id !== $foto->usuario_id && $user->rol !== 'admin') {
+        // Allow if user is owner OR user is admin/SuperAdmin
+        if ($user->id !== $foto->usuario_id && !in_array($user->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 

@@ -24,8 +24,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        // Admin check should ideally be in middleware, but double check here or just return all
-        if ($request->user()->rol !== 'admin') {
+        if (!in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -87,7 +86,7 @@ class UserController extends Controller
      */
     public function updateAdmin(Request $request, string $id)
     {
-        if ($request->user()->rol !== 'admin') {
+        if (!in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -128,7 +127,7 @@ class UserController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        if ($request->user()->rol !== 'admin') {
+        if (!in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
            return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -264,7 +263,8 @@ class UserController extends Controller
 
             return response()->json(['message' => 'Ubicación actualizada correctamente']);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+            \Illuminate\Support\Facades\Log::error('Error actualizando ubicación: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al actualizar la ubicación.'], 500);
         }
     }
 
@@ -300,7 +300,8 @@ class UserController extends Controller
                 'avatar' => $partner->avatar_url
             ]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+            \Illuminate\Support\Facades\Log::error('Error obteniendo ubicación de pareja: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al obtener la ubicación.'], 500);
         }
     }
 }

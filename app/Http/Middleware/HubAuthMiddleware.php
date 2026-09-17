@@ -19,10 +19,10 @@ class HubAuthMiddleware
             return redirect('/hub/login')->with('error', 'Debes iniciar sesión para acceder al Hub.');
         }
 
-        // Verificar si tiene rol de super administrador
-        if (Auth::user()->rol !== 'SuperAdmin') {
+        // Verificar si tiene rol de administrador o super administrador
+        if (!in_array(Auth::user()->rol, ['SuperAdmin', 'admin'])) {
             Auth::logout();
-            return redirect('/hub/login')->with('error', 'No tienes permisos de SuperAdmin.');
+            return redirect('/hub/login')->with('error', 'No tienes permisos de administrador para acceder al Hub.');
         }
 
         return $next($request);

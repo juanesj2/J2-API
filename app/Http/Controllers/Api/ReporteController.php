@@ -14,8 +14,12 @@ class ReporteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if (!in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $reportes = Reporte::with('foto')->get();
         return response()->json(['data' => $reportes]);
     }
@@ -71,7 +75,7 @@ class ReporteController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        if ($request->user()->rol !== 'admin') {
+        if (!in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -86,7 +90,7 @@ class ReporteController extends Controller
      */
     public function destroyByPhoto(Request $request, string $fotoId)
     {
-        if ($request->user()->rol !== 'admin') {
+        if (!in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 

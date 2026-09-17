@@ -2,7 +2,10 @@
 
 namespace App\DTOs;
 
-class CoupleInventory
+use ArrayAccess;
+use JsonSerializable;
+
+class CoupleInventory implements ArrayAccess, JsonSerializable
 {
     public int $gift_teddy;
     public int $gift_rose;
@@ -19,6 +22,8 @@ class CoupleInventory
     // Virtual properties populated on-the-fly
     public array $received_gifts;
     public array $sent_gifts;
+
+    protected array $dynamicAttributes = [];
 
     public function __construct(array $data = [])
     {
@@ -42,11 +47,70 @@ class CoupleInventory
         
         $this->received_gifts = is_array($data['received_gifts'] ?? null) ? $data['received_gifts'] : [];
         $this->sent_gifts = is_array($data['sent_gifts'] ?? null) ? $data['sent_gifts'] : [];
+
+        // Guardar cualquier otro campo adicional
+        foreach ($data as $k => $v) {
+            if (!property_exists($this, $k)) {
+                $this->dynamicAttributes[$k] = $v;
+            }
+        }
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return property_exists($this, $offset) || array_key_exists($offset, $this->dynamicAttributes);
+    }
+
+    public function &offsetGet(mixed $offset): mixed
+    {
+        if (property_exists($this, $offset)) {
+            return $this->$offset;
+        }
+        if (array_key_exists($offset, $this->dynamicAttributes)) {
+            return $this->dynamicAttributes[$offset];
+        }
+        $null = null;
+        return $null;
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        if (is_null($offset)) {
+            $this->dynamicAttributes[] = $value;
+        } elseif (property_exists($this, $offset)) {
+            $this->$offset = $value;
+        } else {
+            $this->dynamicAttributes[$offset] = $value;
+        }
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        if (property_exists($this, $offset)) {
+            unset($this->$offset);
+        } else {
+            unset($this->dynamicAttributes[$offset]);
+        }
+    }
+
+    public function __get(string $name): mixed
+    {
+        return $this->dynamicAttributes[$name] ?? null;
+    }
+
+    public function __set(string $name, mixed $value): void
+    {
+        $this->dynamicAttributes[$name] = $value;
+    }
+
+    public function __isset(string $name): bool
+    {
+        return property_exists($this, $name) || array_key_exists($name, $this->dynamicAttributes);
     }
 
     public function toArray(): array
     {
-        return [
+        $base = [
             'gift_teddy' => $this->gift_teddy,
             'gift_rose' => $this->gift_rose,
             'gift_ring' => $this->gift_ring,
@@ -61,5 +125,12 @@ class CoupleInventory
             'received_gifts' => $this->received_gifts,
             'sent_gifts' => $this->sent_gifts,
         ];
+
+        return array_merge($base, $this->dynamicAttributes);
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }

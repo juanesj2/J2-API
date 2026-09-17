@@ -68,14 +68,37 @@ class AuthController extends Controller
             'email' => 'required|email',
             'name' => 'required|string',
             'uid' => 'required|string',
+            'id_token' => 'nullable|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $email = strtolower(trim($request->email));
+
+        // Si se proporciona id_token, verificar con Google
+        if ($request->filled('id_token')) {
+            try {
+                $response = \Illuminate\Support\Facades\Http::get('https://oauth2.googleapis.com/tokeninfo', [
+                    'id_token' => $request->id_token
+                ]);
+
+                if (!$response->successful() || strtolower($response->json('email')) !== $email) {
+                    return response()->json(['error' => 'Token de Google inválido o no coincide con el correo.'], 401);
+                }
+            } catch (\Throwable $e) {
+                return response()->json(['error' => 'Error al verificar token con Google.'], 500);
+            }
+        }
+
+        $user = User::where('email', $email)->first();
+
+        // Blindaje: proteger cuentas administrativas de suplantación sin id_token
+        if ($user && in_array($user->rol, ['admin', 'SuperAdmin']) && !$request->filled('id_token')) {
+            return response()->json(['error' => 'Las cuentas de administrador requieren verificación de token de Google.'], 403);
+        }
 
         if (!$user) {
             $user = User::create([
                 'name' => $request->name,
-                'email' => $request->email,
+                'email' => $email,
                 'password' => Hash::make($request->uid . '_google_auth'),
                 'app' => 'love_widget',
             ]);
@@ -86,6 +109,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'user' => $user
         ]);
     }
 
@@ -140,25 +164,6 @@ class AuthController extends Controller
         }
         
         return back()->withErrors(['email' => [__($status)]]);
-    }
-
-    public function testResetLink($email)
-    {
-        $user = User::where('email', $email)->first();
-        if (!$user) {
-            return response()->json(['error' => 'Usuario no encontrado']);
-        }
-
-        $token = Password::getRepository()->create($user);
-        $link = url(route('password.reset', [
-            'token' => $token,
-            'email' => $email,
-        ], false));
-
-        return response()->json([
-            'email' => $email,
-            'reset_link' => $link
-        ]);
     }
 
     public function logout(Request $request)

@@ -59,8 +59,7 @@ class GrupoController extends Controller
     {
         $grupo = Grupo::findOrFail($id);
         
-        // Opcional: solo admin del grupo o de la app puede borrarlo.
-        if ($grupo->creado_por !== $request->user()->id && $request->user()->rol !== 'admin') {
+        if ($grupo->creado_por !== $request->user()->id && !in_array($request->user()->rol, ['admin', 'SuperAdmin'])) {
             return response()->json(['error' => 'No tienes permiso para eliminar este grupo'], 403);
         }
 
